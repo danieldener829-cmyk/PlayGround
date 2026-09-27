@@ -1,7 +1,7 @@
 // ZapHost — servidor de hospedagem pra bot Discord (zero deps, só Node built-in)
 import { createServer } from 'node:http';
 import { spawn, execFile } from 'node:child_process';
-import { mkdirSync, existsSync, readFileSync, writeFileSync, readdirSync, statSync, rmSync, appendFileSync } from 'node:fs';
+import { mkdirSync, existsSync, readFileSync, writeFileSync, readdirSync, statSync, rmSync, appendFileSync, renameSync } from 'node:fs';
 import { join, resolve, extname, basename, dirname } from 'node:path';
 import { randomUUID } from 'node:crypto';
 
@@ -86,6 +86,16 @@ function detectMain(id) {
   const anyPy = files.find(f => f.endsWith('.py'));
   if (anyPy) return { runtime: 'python', main: anyPy, files };
   return { runtime: 'node', main: '', files };
+}
+function looksLikePython(s) {
+  if (!s) return false;
+  const head = s.slice(0, 2000);
+  if (/^\s*(from\s+[\w.]+\s+import\s+|import\s+discord\b|from\s+discord\b)/m.test(head)) return true;
+  return /^\s*def\s+\w+\s*\(/m.test(head) && /^\s*(import\s+\w+|from\s+\S+\s+import\s+)/m.test(head);
+}
+function looksLikeJS(s) {
+  if (!s) return false;
+  return /require\s*\(\s*['"]|module\.exports|console\.log|process\.env|=>/.test(s.slice(0, 2000));
 }
 const run = (file, args, opts) => new Promise((res, rej) => {
   execFile(file, args, { timeout: 120000, maxBuffer: 8 * 1024 * 1024, ...opts }, (err, stdout, stderr) => {
@@ -180,6 +190,154 @@ function stopProc(id) {
   if (e) procs.set(id, { logs: e.logs || [] });
 }
 
+// 🛠️ Auto-reparo: diagnostica problemas comuns, corrige e deixa o bot online
+async function repairBot(id) {
+  let bot = getBot(id);
+  if (!bot) throw new Error('Bot não encontrado');
+  const fixes = [];
+  stopProc(id);
+  patchBot(id, { status: 'installing' });
+  pushLog(id, '🛠️ Auto-reparo iniciado…');
+  const dir = appDir(id);
+  // 1) principal ausente ou apontando p/ arquivo que não existe
+  const d = detectMain(id);
+  if (!bot.main || !existsSync(join(dir, bot.main))) {
+    if (d.main) {
+      bot = patchBot(id, { runtime: d.runtime, main: d.main, files: d.files });
+      fixes.push(`principal corrigido: ${d.main}`);
+      pushLog(id, `🔧 Principal corrigido → ${d.main}`);
+    } else {
+      bot = patchBot(id, { files: d.files });
+      pushLog(id, '❌ Nenhum arquivo principal encontrado. Envie um ZIP com index.js ou bot.py.');
+      patchBot(id, { status: 'offline' });
+      return { bot: getBot(id), fixes, logs: fullLogs(id) };
+    }
+  } else if (!bot.files?.length) {
+    bot = patchBot(id, { runtime: bot.runtime || d.runtime, files: d.files });
+  }
+  bot = getBot(id);
+  // 2) comando custom quebrado (aponta p/ arquivo inexistente)
+  if (bot.startCmd && /\.(js|py)\b/.test(bot.startCmd)) {
+    const mref = bot.startCmd.match(/[\w\-./]+\.(js|py)/);
+    if (mref && !existsSync(join(dir, mref[0]))) {
+      bot = patchBot(id, { startCmd: '' });
+      fixes.push('comando custom inválido removido');
+      pushLog(id, '🔧 Comando custom apontava p/ arquivo inexistente — removido.');
+    }
+  }
+  // 3) checagem de sintaxe antes de subir (detecta linguagem trocada: Python em .js e vice-versa)
+  bot = getBot(id);
+  const syntaxFail = (main, e) => {
+    const msg = String(e.stderr || e.message || '').split('\n').slice(0, 3).join(' ').slice(0, 300);
+    pushLog(id, '❌ Erro de sintaxe em ' + main + ': ' + msg);
+    fixes.push('erro de sintaxe em ' + main + ' — veja os logs');
+    patchBot(id, { status: 'offline' });
+  };
+  if (bot.main?.endsWith('.js')) {
+    try { await run('node', ['--check', join(dir, bot.main)]); fixes.push('sintaxe JS ok'); }
+    catch (e) {
+      let content = '';
+      try { content = readFileSync(join(dir, bot.main), 'utf8'); } catch {}
+      if (looksLikePython(content)) {
+        const newMain = bot.main.replace(/\.js$/, '.py');
+        try {
+          renameSync(join(dir, bot.main), join(dir, newMain));
+          bot = patchBot(id, { runtime: 'python', main: newMain });
+          fixes.push(`código Python estava em .js — renomeado para ${newMain}`);
+          pushLog(id, `🔧 Código Python em arquivo .js — renomeado para ${newMain}.`);
+          try { await run('python3', ['-m', 'py_compile', join(dir, newMain)]); fixes.push('sintaxe Python ok'); }
+          catch (e2) { syntaxFail(newMain, e2); return { bot: getBot(id), fixes, logs: fullLogs(id) }; }
+        } catch (err) { syntaxFail(bot.main, e); return { bot: getBot(id), fixes, logs: fullLogs(id) }; }
+      } else { syntaxFail(bot.main, e); return { bot: getBot(id), fixes, logs: fullLogs(id) }; }
+    }
+  } else if (bot.main?.endsWith('.py')) {
+    try { await run('python3', ['-m', 'py_compile', join(dir, bot.main)]); fixes.push('sintaxe Python ok'); }
+    catch (e) {
+      let content = '';
+      try { content = readFileSync(join(dir, bot.main), 'utf8'); } catch {}
+      if (looksLikeJS(content)) {
+        const newMain = bot.main.replace(/\.py$/, '.js');
+        try {
+          renameSync(join(dir, bot.main), join(dir, newMain));
+          bot = patchBot(id, { runtime: 'node', main: newMain });
+          fixes.push(`código JS estava em .py — renomeado para ${newMain}`);
+          pushLog(id, `🔧 Código JavaScript em arquivo .py — renomeado para ${newMain}.`);
+          try { await run('node', ['--check', join(dir, newMain)]); fixes.push('sintaxe JS ok'); }
+          catch (e2) { syntaxFail(newMain, e2); return { bot: getBot(id), fixes, logs: fullLogs(id) }; }
+        } catch (err) { syntaxFail(bot.main, e); return { bot: getBot(id), fixes, logs: fullLogs(id) }; }
+      } else { syntaxFail(bot.main, e); return { bot: getBot(id), fixes, logs: fullLogs(id) }; }
+    }
+  }
+  // 3b) requirements.txt com pacotes Node num bot Python (ex: discord.js@...) → reescreve p/ pip
+  bot = getBot(id);
+  if (bot.runtime === 'python') {
+    const reqPath = join(dir, 'requirements.txt');
+    if (existsSync(reqPath)) {
+      let req = '';
+      try { req = readFileSync(reqPath, 'utf8'); } catch {}
+      if (!/discord\.py/i.test(req) && /discord\.js|better-sqlite3|dotenv@|@\d+\.\d+/i.test(req)) {
+        let mainCode = '';
+        try { mainCode = readFileSync(join(dir, bot.main), 'utf8'); } catch {}
+        writeFileSync(reqPath, 'discord.py\n' + (/dotenv|load_dotenv/.test(mainCode) ? 'python-dotenv\n' : ''));
+        fixes.push('requirements.txt corrigido para Python (discord.py)');
+        pushLog(id, '🔧 requirements.txt tinha pacotes Node — reescrito para discord.py.');
+        try { rmSync(join(dir, 'node_modules'), { recursive: true, force: true }); } catch {}
+      }
+    }
+  }
+  // 3c) token colado no código → passa a vir da env DISCORD_TOKEN (some com o vazamento do disco)
+  bot = getBot(id);
+  try {
+    const mainPath = join(dir, bot.main);
+    let code = readFileSync(mainPath, 'utf8');
+    if (/[MN][\w-]{20,}\.[\w-]{5,}\.[\w-]{20,}/.test(code)) {
+      if (bot.main.endsWith('.py')) code = code.replace(/^(\s*TOKEN\s*=\s*)["'][^"'\n]*["']/m, '$1os.getenv("DISCORD_TOKEN", "")');
+      else code = code.replace(/^(\s*(?:const|let|var)?\s*(?:TOKEN|token|DISCORD_TOKEN)\s*=\s*)["'][^"'\n]*["']/m, '$1process.env.DISCORD_TOKEN || ""');
+      if (!/[MN][\w-]{20,}\.[\w-]{5,}\.[\w-]{20,}/.test(code)) {
+        writeFileSync(mainPath, code);
+        fixes.push('token colado no código movido para DISCORD_TOKEN (env)');
+        pushLog(id, '🔒 Token que estava colado no código agora vem da variável DISCORD_TOKEN. Cole o token válido em Config.');
+      } else {
+        pushLog(id, '⚠️ Achei um token colado no código num formato que não migrei sozinho — revise o arquivo principal.');
+      }
+    }
+  } catch {}
+  // bytecode velho pode conter código/token antigo compilado — remove sempre
+  try { rmSync(join(dir, '__pycache__'), { recursive: true, force: true }); } catch {}
+  // 4) dependência faltando? força reinstalação
+  if (/Cannot find module|MODULE_NOT_FOUND|No module named/i.test(fullLogs(id))) {
+    try { rmSync(join(dir, 'node_modules'), { recursive: true, force: true }); } catch {}
+    fixes.push('dependências serão reinstaladas');
+    pushLog(id, '🔧 Módulo faltando — reinstalando dependências…');
+  }
+  bot = getBot(id);
+  if (!bot.token) {
+    fixes.push('aviso: sem token (DISCORD_TOKEN ausente)');
+    pushLog(id, '⚠️ Sem token — o bot vai subir, mas pode não logar no Discord. Cole o token em Config.');
+  }
+  // 5) sobe e confere se ficou online
+  await startBot(id);
+  await new Promise(r => setTimeout(r, 6000));
+  const cur = getBot(id);
+  const alive = procs.get(id)?.proc && !procs.get(id).proc.killed && cur.status === 'online';
+  const logs = fullLogs(id);
+  const mi = logs.lastIndexOf('🛠️ Auto-reparo iniciado…');
+  const fresh = mi >= 0 ? logs.slice(mi) : logs;
+  if (alive && !/❌|Error:|Traceback|Falha no login/i.test(fresh.slice(-2000))) {
+    fixes.push('bot online ✅');
+    pushLog(id, '✅ Auto-reparo concluído: bot online.');
+  } else if (alive) {
+    fixes.push('bot rodando com avisos (veja os logs)');
+  } else {
+    if (/401|Unauthorized/i.test(fresh)) fixes.push('diagnóstico: token inválido (401) — gere um novo no Developer Portal');
+    else if (/Token não encontrado/i.test(fresh)) fixes.push('diagnóstico: falta o token — Reset Token no Developer Portal e cole em Config');
+    else if (/Cannot find module|No module named/i.test(fresh)) fixes.push('diagnóstico: falta dependência — confira package.json/requirements.txt');
+    else if (/SyntaxError|Erro de sintaxe/i.test(fresh)) fixes.push('diagnóstico: erro de código — veja os logs');
+    else fixes.push('bot ainda offline — veja os logs');
+  }
+  return { bot: getBot(id), fixes, logs: fullLogs(id) };
+}
+
 // ---------- HTTP ----------
 const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json; charset=utf-8', '.png': 'image/png', '.svg': 'image/svg+xml', '.ico': 'image/x-icon', '.webmanifest': 'application/manifest+json' };
 
@@ -237,7 +395,7 @@ const server = createServer(async (req, res) => {
             rmSync(inner, { recursive: true, force: true });
           }
         }
-      } catch {}
+  } catch {}
       const d = detectMain(id);
       const bot = { id, name, token, runtime: d.runtime, main: mainHint || d.main, startCmd: '', files: d.files, status: 'offline', createdAt: Date.now() };
       const bots = loadDB(); bots.unshift(bot); saveDB(bots);
@@ -247,7 +405,7 @@ const server = createServer(async (req, res) => {
       else pushLog(id, '⚠️ Não detectei o arquivo principal — configure em Config.');
       return send(res, 200, { ...bot, token: undefined });
     }
-    const m = url.pathname.match(/^\/api\/bots\/([^/]+)(?:\/(start|stop|restart|config))?$/);
+    const m = url.pathname.match(/^\/api\/bots\/([^/]+)(?:\/(start|stop|restart|repair|config))?$/);
     if (m) {
       const id = basename(m[1]);
       const action = m[2];
@@ -259,6 +417,7 @@ const server = createServer(async (req, res) => {
       if (req.method === 'POST' && action === 'start') { const b = await startBot(id); return send(res, 200, { ...b, token: undefined, logs: fullLogs(id) }); }
       if (req.method === 'POST' && (action === 'stop')) { stopProc(id); const b = patchBot(id, { status: 'offline' }); pushLog(id, '⏹ Bot desligado por você.'); return send(res, 200, { ...b, token: undefined, logs: fullLogs(id) }); }
       if (req.method === 'POST' && action === 'restart') { const b = await startBot(id); pushLog(id, '🔄 Reiniciado.'); return send(res, 200, { ...b, token: undefined, logs: fullLogs(id) }); }
+      if (req.method === 'POST' && action === 'repair') { const r = await repairBot(id); return send(res, 200, { ...r.bot, token: undefined, fixes: r.fixes, logs: r.logs }); }
       if (req.method === 'PUT' && action === 'config') {
         const body = JSON.parse((await readRaw(req, 1024 * 1024)).toString() || '{}');
         const cur = getBot(id);

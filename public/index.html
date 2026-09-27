@@ -183,7 +183,7 @@ footer{padding:28px 0 40px;color:var(--mut);font-size:13px;text-align:center}
   <div class="modal-h"><div><div class="bname" id="mName">bot</div><div class="bmeta" id="mMeta"></div></div><button class="btn ghost small" onclick="document.getElementById('modal').close()">✕ Fechar</button></div>
   <div class="modal-b">
     <div class="tabs"><button class="tab active" data-t="logs" onclick="tab(this)">📡 Logs ao vivo</button><button class="tab" data-t="files" onclick="tab(this)">📁 Arquivos</button><button class="tab" data-t="config" onclick="tab(this)">🔑 Config</button></div>
-    <div id="pane-logs"><div class="terminal" id="mLogs">carregando…</div><div class="row"><button class="btn small ok" id="mStart">▶ Ligar</button><button class="btn small danger" id="mStop">⏹ Desligar</button><button class="btn small ghost" id="mRestart">🔄 Reiniciar</button><button class="btn small ghost" id="mRefresh">🔁 Atualizar logs</button></div></div>
+    <div id="pane-logs"><div class="terminal" id="mLogs">carregando…</div><div class="row"><button class="btn small ok" id="mStart">▶ Ligar</button><button class="btn small danger" id="mStop">⏹ Desligar</button><button class="btn small ghost" id="mRestart">🔄 Reiniciar</button><button class="btn small" id="mRepair">🛠️ Arrumar e ligar</button><button class="btn small ghost" id="mRefresh">🔁 Atualizar logs</button></div></div>
     <div id="pane-files" class="hidden"><div class="filelist" id="mFiles"></div></div>
     <div id="pane-config" class="hidden">
       <label>Token do Discord</label><input id="mToken" type="password" placeholder="Cole o novo token">
@@ -201,7 +201,16 @@ let bots=[], current=null, logTimer=null, backend=true;
 const $=id=>document.getElementById(id);
 function toast(msg,ok=true){const d=document.createElement('div');d.style.borderLeftColor=ok?'#2ecc71':'#ed4245';d.textContent=msg;$('toasts').appendChild(d);setTimeout(()=>d.remove(),4200)}
 function tab(el){document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));el.classList.add('active');['logs','files','config'].forEach(k=>$('pane-'+k).classList.toggle('hidden',el.dataset.t!==k))}
-async function api(path,opt={}){const r=await fetch(path,{...opt,headers:{...(opt.headers||{})}});const t=await r.text();let j;try{j=JSON.parse(t)}catch{j={raw:t}};if(!r.ok)throw new Error(j.error||j.message||('HTTP '+r.status));return j}
+async function api(path,opt={}){
+  const r=await fetch(path,{...opt,headers:{...(opt.headers||{})}});
+  const ct=r.headers.get('content-type')||'';
+  const t=await r.text();
+  // Servidor estático (sem backend) devolve o index.html para /api/* -> detecta e avisa
+  if(!ct.includes('json')&&/^\s*<!doctype html/i.test(t)) throw new Error('backend ausente (versão estática sem servidor)');
+  let j;try{j=JSON.parse(t)}catch{j={raw:t}}
+  if(!r.ok)throw new Error(j.error||j.message||('HTTP '+r.status));
+  return j;
+}
 
 // ---- demo fallback (quando for só estático, sem backend) ----
 function demoLoad(){try{return JSON.parse(localStorage.getItem('zaphost-demo')||'[]')}catch{return[]}}
@@ -210,7 +219,9 @@ function demoSeed(){if(!bots.length){bots=[{id:'demo-1',name:'bot-loja-exemplo',
 
 async function refresh(){
   try{
-    bots=await api('/api/bots');backend=true;
+    const data=await api('/api/bots');
+    if(!Array.isArray(data)) throw new Error('backend ausente (resposta não é lista de bots)');
+    bots=data;backend=true;
     $('modeBadge').innerHTML='<span class="dot on"></span>backend online';
   }catch(e){
     backend=false;
@@ -230,6 +241,7 @@ async function refresh(){
       ${on?'':`<button class="btn small ok" data-a="start">▶ Ligar</button>`}
       ${on?`<button class="btn small danger" data-a="stop">⏹ Desligar</button>`:`<button class="btn small ghost" data-a="open">📡 Abrir</button>`}
       <button class="btn small ghost" data-a="restart">🔄 Reiniciar</button>
+      <button class="btn small" data-a="repair">🛠️ Arrumar e ligar</button>
       <button class="btn small ghost" data-a="del">🗑</button>
     </div>`;
     el.querySelectorAll('button').forEach(btn=>btn.onclick=()=>act(b,btn.dataset.a));
@@ -243,6 +255,12 @@ async function act(b,a){
   try{
     if(a==='del'&&!confirm('Excluir '+b.name+'?'))return;
     if(a==='open')return openModal(b);
+    if(a==='repair'){
+      toast('🛠️ Arrumando '+b.name+'…');
+      const r=await api('/api/bots/'+b.id+'/repair',{method:'POST'});
+      toast('🛠️ '+(r.fixes&&r.fixes.length?r.fixes.join(' • '):'concluído'), true);
+      await refresh();await loadModal();return;
+    }
     await api('/api/bots/'+b.id+(a==='del'?'':'/'+a),{method:a==='del'?'DELETE':'POST'});
     toast('OK: '+a+' → '+b.name);refresh();
   }catch(e){toast('Erro: '+e.message,false)}
@@ -268,7 +286,7 @@ async function loadModal(quiet){
   }catch(e){if(!quiet)toast(e.message,false)}
 }
 $('mStart').onclick=()=>act(current,'start');$('mStop').onclick=()=>act(current,'stop');
-$('mRestart').onclick=async()=>{await act(current,'restart')};$('mRefresh').onclick=()=>loadModal();
+$('mRestart').onclick=async()=>{await act(current,'restart')};$('mRepair').onclick=async()=>{await act(current,'repair')};$('mRefresh').onclick=()=>loadModal();
 $('mSave').onclick=async()=>{
   try{
     if(!backend){const b=bots.find(x=>x.id===current.id);b.main=$('mMain').value;b.startCmd=$('mCmd').value;demoSave();toast('Salvo (demo).');return}
@@ -294,9 +312,20 @@ async function doUpload(file){
   try{
     const buf=await file.arrayBuffer();
     let done=0;const tick=setInterval(()=>{done=Math.min(92,done+8);$('bar').style.width=done+'%'},120);
-    const res=await fetch('/api/bots/upload',{method:'POST',headers:{'X-Bot-Name':encodeURIComponent(name),'X-Bot-Token':encodeURIComponent($('botToken').value||''),'X-Bot-Main':encodeURIComponent($('botMain').value||''),'Content-Type':'application/zip','X-Filename':encodeURIComponent(file.name)},body:buf});
+    let res;
+    try{
+      res=await fetch('/api/bots/upload',{method:'POST',headers:{'X-Bot-Name':encodeURIComponent(name),'X-Bot-Token':encodeURIComponent($('botToken').value||''),'X-Bot-Main':encodeURIComponent($('botMain').value||''),'Content-Type':'application/zip','X-Filename':encodeURIComponent(file.name)},body:buf});
+    }catch(net){clearInterval(tick);throw new Error('sem conexão com o servidor. Confira se o backend Node está rodando.')}
     clearInterval(tick);$('bar').style.width='100%';
-    const j=await res.json();if(!res.ok)throw new Error(j.error||res.status);
+    const ct=res.headers.get('content-type')||'';
+    const txt=await res.text();
+    if(!ct.includes('json')||/^\s*<!doctype html/i.test(txt)){
+      backend=false;
+      $('modeBadge').innerHTML='<span class="dot work"></span>modo demonstração';
+      throw new Error('servidor de upload ausente nesta versão (estática). Abra o preview com backend Node — o ZIP foi salvo em demonstração.');
+    }
+    let j;try{j=JSON.parse(txt)}catch{throw new Error('resposta inválida do servidor (não-JSON)')}
+    if(!res.ok)throw new Error(j.error||res.status);
     toast('🎉 '+name+' hospedado! Clique em Ligar.');$('botName').value='';$('botToken').value='';
     await refresh();openModal(bots.find(b=>b.id===j.id)||j);
   }catch(e){toast('Falha no upload: '+e.message,false)}
