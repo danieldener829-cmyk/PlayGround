@@ -1,0 +1,28 @@
+version: "3.9"
+services:
+  web:
+    build: .
+    ports: ["3000:3000"]
+    env_file: [.env]
+    environment:
+      - DATABASE_URL=${DATABASE_URL:-}
+      - ENV_ENC_KEY=${ENV_ENC_KEY:-hostbots-dev-key-32chars-12345678}
+    restart: unless-stopped
+  orchestrator:
+    image: node:20-alpine
+    working_dir: /app
+    volumes: [".:/app", "/var/run/docker.sock:/var/run/docker.sock"]
+    command: node orchestrator/manager.js
+    restart: unless-stopped
+  nginx:
+    image: nginx:alpine
+    ports: ["80:80", "443:443"]
+    volumes: ["./nginx.conf:/etc/nginx/nginx.conf:ro", "./ssl:/etc/nginx/ssl:ro"]
+    depends_on: [web]
+    restart: unless-stopped
+  # Postgres opcional (ou use Supabase na nuvem):
+  # db:
+  #   image: postgres:16-alpine
+  #   environment: [POSTGRES_PASSWORD=hostbots]
+  #   volumes: ["pgdata:/var/lib/postgresql/data"]
+# volumes: { pgdata: {} }

@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { color-scheme: dark; }
+body { background: #07070f; color: #e9e9f2; font-family: Inter, ui-sans-serif, system-ui, sans-serif; }
+.glass { background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08); backdrop-filter: blur(12px); }
+.btn-neon { background: linear-gradient(135deg,#a855f7,#6366f1 50%,#22d3ee); box-shadow: 0 0 30px rgba(168,85,247,.45); }
+.btn-neon:hover { filter: brightness(1.15); }
+.grid-bg { background-image: radial-gradient(rgba(168,85,247,.15) 1px, transparent 1px); background-size: 28px 28px; }
+.logbox { font-family: ui-monospace, Menlo, monospace; }
+.scroll-thin::-webkit-scrollbar { width: 6px; height: 6px; }
+.scroll-thin::-webkit-scrollbar-thumb { background: #a855f7; border-radius: 8px; }
