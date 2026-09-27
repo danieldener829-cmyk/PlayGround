@@ -14,8 +14,9 @@
   #game { position:fixed; inset:0; }
   #game canvas { display:block; width:100%; height:100%; }
   /* Crosshair */
-  #cross { position:fixed; left:50%; top:50%; width:22px; height:22px; transform:translate(-50%,-50%); pointer-events:none; z-index:20; mix-blend-mode:difference; }
-  #cross::before,#cross::after { content:''; position:absolute; background:#fff; }
+  /* BUGFIX: mira branca com sombra (antes o mix-blend ficava vermelha na grama) */
+  #cross { position:fixed; left:50%; top:50%; width:22px; height:22px; transform:translate(-50%,-50%); pointer-events:none; z-index:20; }
+  #cross::before,#cross::after { content:''; position:absolute; background:#fff; box-shadow:0 0 3px #000, 0 0 1px #000; border-radius:1px; }
   #cross::before { left:10px; top:2px; width:2px; height:18px; }
   #cross::after { left:2px; top:10px; width:18px; height:2px; }
   /* HUD top */
@@ -60,7 +61,7 @@
   @media (pointer:fine) { #joy { opacity:.9; } }
 </style>
 <script type="importmap">
-{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js" } }
+{ "imports": { "three": "./three.module.js" } }
 </script>
 </head>
 <body>
@@ -81,6 +82,7 @@
   <div class="row">
     <div class="abtn small" id="btn-fly" title="Voar">🕊️</div>
     <div class="abtn small" id="btn-save" title="Salvar">💾</div>
+    <div class="abtn small" id="btn-new" title="Novo mundo">🔄</div>
   </div>
   <div class="row">
     <div class="abtn" id="btn-break" title="Quebrar">⛏️</div>
@@ -112,8 +114,9 @@
 import * as THREE from 'three';
 
 /* ============ CONFIG ============ */
-const SX=64, SY=40, SZ=64, WATER_Y=9;
-const BLOCK = { AIR:0, GRASS:1, DIRT:2, STONE:3, LOG:4, LEAVES:5, SAND:6, WATER:7, PLANK:8, BRICK:9, GLASS:10, BEDROCK:11, COBBLE:12 };
+const SX=64, SY=40, SZ=64, WATER_Y=9, ATLAS_N=24;
+const BLOCK = { AIR:0, GRASS:1, DIRT:2, STONE:3, LOG:4, LEAVES:5, SAND:6, WATER:7, PLANK:8, BRICK:9, GLASS:10, BEDROCK:11, COBBLE:12,
+  FLOWER_R:13, FLOWER_Y:14, TGRASS:15, SNOW:16, COAL:17, IRON:18, DIAMOND:19 };
 const DEFS = {
   1:{name:'Grama', top:0, side:1, bottom:2},
   2:{name:'Terra', top:2, side:2, bottom:2},
@@ -127,6 +130,13 @@ const DEFS = {
   10:{name:'Vidro', top:11, side:11, bottom:11, transparent:true},
   11:{name:'Rocha', top:12, side:12, bottom:12},
   12:{name:'Pedregulho', top:13, side:13, bottom:13},
+  13:{name:'Flor', tile:14, cross:true},
+  14:{name:'Flor', tile:15, cross:true},
+  15:{name:'Grama alta', tile:16, cross:true},
+  16:{name:'Neve', top:17, side:18, bottom:2},
+  17:{name:'Carvão', top:19, side:19, bottom:19},
+  18:{name:'Ferro', top:20, side:20, bottom:20},
+  19:{name:'Diamante', top:21, side:21, bottom:21},
 };
 const HOTBAR = [1,2,3,4,8,9,10,6];
 const idx=(x,y,z)=> (y*SZ+z)*SX+x;
@@ -150,10 +160,19 @@ function genWorld(){
       let b;
       if(y===0) b=BLOCK.BEDROCK;
       else if(y===h){
-        b = h<=WATER_Y+1 ? BLOCK.SAND : (noise(x*0.5,z*0.5)>0.82?BLOCK.COBBLE:BLOCK.GRASS);
+        // MELHORIA: picos altos ganham capa de neve
+        if(h>=15&&h>WATER_Y+1) b=BLOCK.SNOW;
+        else b = h<=WATER_Y+1 ? BLOCK.SAND : (noise(x*0.5,z*0.5)>0.82?BLOCK.COBBLE:BLOCK.GRASS);
       }
       else if(y>h-4) b = h<=WATER_Y+1?BLOCK.SAND:BLOCK.DIRT;
-      else b = BLOCK.STONE;
+      else {
+        // MELHORIA: minérios escondidos na pedra (diamante fundo, ferro meio, carvão raso)
+        const rr=Math.random(), depth=h-y;
+        if(y<=4&&rr<0.008) b=BLOCK.DIAMOND;
+        else if(depth>=4&&rr<0.035) b=BLOCK.IRON;
+        else if(depth>=3&&rr<0.06) b=BLOCK.COAL;
+        else b = BLOCK.STONE;
+      }
       vox[idx(x,y,z)]=b;
     }
     for(let y=h+1;y<=WATER_Y;y++) vox[idx(x,y,z)]=BLOCK.WATER;
@@ -176,11 +195,22 @@ function genWorld(){
     placed++;
   }
   // (spawn já livre de árvores — sem limpeza extra)
+  // MELHORIA: flores e grama alta espalhadas nos gramados (decoração sem colisão)
+  for(let x=1;x<SX-1;x++) for(let z=1;z<SZ-1;z++){
+    const h=heightAt(x,z);
+    if(h<=WATER_Y+1||h+1>=SY) continue;
+    if(vox[idx(x,h,z)]!==BLOCK.GRASS||vox[idx(x,h+1,z)]!==0) continue;
+    if(Math.abs(x-SX/2)<3&&Math.abs(z-SZ/2)<3) continue;
+    const r=Math.random();
+    if(r<0.035) vox[idx(x,h+1,z)]=BLOCK.FLOWER_R;
+    else if(r<0.07) vox[idx(x,h+1,z)]=BLOCK.FLOWER_Y;
+    else if(r<0.16) vox[idx(x,h+1,z)]=BLOCK.TGRASS;
+  }
 }
 
 /* ============ TEXTURE ATLAS ============ */
 function makeAtlas(){
-  const T=32, N=16, c=document.createElement('canvas'); c.width=T*N; c.height=T;
+  const T=32, N=ATLAS_N, c=document.createElement('canvas'); c.width=T*N; c.height=T;
   const g=c.getContext('2d');
   const px=(t,fx,fy,col)=>{ g.fillStyle=col; g.fillRect(t*T+fx*2, fy*2, 2, 2); };
   const fill=(t,base,varc)=>{ g.fillStyle=base; g.fillRect(t*T,0,T,T);
@@ -219,6 +249,38 @@ function makeAtlas(){
   fill(12,'#3a3a3a',['#2c2c2c','#484848','#222']);
   // 13 pedregulho
   fill(13,'#7d7d7d',['#6a6a6a','#8f8f8f','#5a5a5a']); for(let i=0;i<6;i++){ g.fillStyle='#555'; g.fillRect(13*T+Math.random()*24,Math.random()*24,8,6); }
+  // 14 flor vermelha (fundo transparente p/ geometria em X)
+  g.clearRect(14*T,0,T,T);
+  g.fillStyle='#2f7d26'; g.fillRect(14*T+15,14,2,18); g.fillRect(14*T+9,20,6,2); g.fillRect(14*T+17,24,6,2);
+  g.fillStyle='#d93a2b'; g.fillRect(14*T+11,5,10,9);
+  g.fillStyle='#ff7a6b'; g.fillRect(14*T+12,6,4,3); g.fillStyle='#8f1d12'; g.fillRect(14*T+14,8,4,4);
+  // 15 flor amarela
+  g.clearRect(15*T,0,T,T);
+  g.fillStyle='#2f7d26'; g.fillRect(15*T+15,14,2,18); g.fillRect(15*T+9,22,6,2); g.fillRect(15*T+17,18,6,2);
+  g.fillStyle='#f2c21b'; g.fillRect(15*T+11,5,10,9);
+  g.fillStyle='#ffe27a'; g.fillRect(15*T+12,6,4,3); g.fillStyle='#9c6d0c'; g.fillRect(15*T+14,8,4,4);
+  // 16 grama alta (moitas)
+  g.clearRect(16*T,0,T,T);
+  g.fillStyle='#3f9c33';
+  for(let i=0;i<9;i++){ const bx=16*T+2+i*3, bh=10+Math.floor(Math.random()*14); g.fillRect(bx,T-bh,2,bh); }
+  g.fillStyle='#5cc44a';
+  for(let i=0;i<5;i++){ const bx=16*T+3+i*6, bh=12+Math.floor(Math.random()*12); g.fillRect(bx,T-bh,2,bh); }
+  // 17 neve (topo)
+  fill(17,'#eef4f8',['#e2ecf3','#ffffff','#d5e5f0']);
+  // 18 neve (lateral: terra com faixa branca)
+  fill(18,'#7a5a36',['#6b4e2e','#86643e']); g.fillStyle='#eef4f8'; g.fillRect(18*T,0,T,10);
+  for(let i=0;i<16;i++){ const d=10+Math.floor(Math.random()*5); g.fillStyle='#eef4f8'; g.fillRect(18*T+i*2,d,2,2); }
+  // 19 carvão (pedra + manchas pretas)
+  fill(19,'#8d8d8d',['#7e7e7e','#9c9c9c']); g.fillStyle='#1d1d1d';
+  for(let i=0;i<5;i++) g.fillRect(19*T+3+Math.floor(Math.random()*22),3+Math.floor(Math.random()*22),5,5);
+  // 20 ferro (pedra + manchas laranja)
+  fill(20,'#8d8d8d',['#7e7e7e','#9c9c9c']); g.fillStyle='#d0894f';
+  for(let i=0;i<5;i++) g.fillRect(20*T+3+Math.floor(Math.random()*22),3+Math.floor(Math.random()*22),5,5);
+  g.fillStyle='#f2c89a'; g.fillRect(20*T+6,6,4,4); g.fillRect(20*T+20,20,4,4);
+  // 21 diamante (pedra + manchas ciano)
+  fill(21,'#8d8d8d',['#7e7e7e','#9c9c9c']); g.fillStyle='#3fd8d0';
+  for(let i=0;i<4;i++) g.fillRect(21*T+4+Math.floor(Math.random()*22),4+Math.floor(Math.random()*22),6,5);
+  g.fillStyle='#d8fffb'; g.fillRect(21*T+6,6,4,3); g.fillRect(21*T+20,18,4,3);
   const tex=new THREE.CanvasTexture(c);
   tex.magFilter=THREE.NearestFilter; tex.minFilter=THREE.NearestFilter; tex.colorSpace=THREE.SRGBColorSpace;
   // recorta cada tile p/ ícones isométricos
@@ -290,7 +352,8 @@ async function init(){
   opaqueMesh.frustumCulled=false; // BUGFIX: mesh do mundo sempre desenhado
   scene.add(opaqueMesh);
   waterTex=makeWaterTexture();
-  waterMesh=new THREE.Mesh(new THREE.BufferGeometry(), new THREE.MeshLambertMaterial({map:waterTex, transparent:true, opacity:0.78, depthWrite:false, side:THREE.DoubleSide}));
+  // GRÁFICO: leve emissive p/ a água não apagar na sombra + nunca some por culling
+  waterMesh=new THREE.Mesh(new THREE.BufferGeometry(), new THREE.MeshLambertMaterial({map:waterTex, transparent:true, opacity:0.8, depthWrite:false, side:THREE.DoubleSide, emissive:0x0a2c66, emissiveIntensity:0.55}));
   waterMesh.renderOrder=3; waterMesh.frustumCulled=false; // BUGFIX: água nunca some por culling
   scene.add(waterMesh);
   rebuild();
@@ -306,23 +369,28 @@ async function init(){
   shadowBlob=new THREE.Mesh(new THREE.CircleGeometry(0.55,20), new THREE.MeshBasicMaterial({color:0x000000, transparent:true, opacity:0.32, depthWrite:false}));
   shadowBlob.rotation.x=-Math.PI/2; scene.add(shadowBlob);
   // mão em 1ª pessoa segurando o bloco
+  // BUGFIX: posição antiga (0.48,-0.42) deixava a mão cortada no canto; nova fica visível
   handGroup=new THREE.Group();
-  const arm=new THREE.Mesh(new THREE.BoxGeometry(0.16,0.16,0.5), new THREE.MeshLambertMaterial({color:0xd9a066}));
-  arm.position.set(0.02,-0.02,0.18); handGroup.add(arm);
+  const arm=new THREE.Mesh(new THREE.BoxGeometry(0.1,0.1,0.3), new THREE.MeshLambertMaterial({color:0xd9a066}));
+  arm.position.set(0.0,-0.02,0.12); handGroup.add(arm);
+  const sleeve=new THREE.Mesh(new THREE.BoxGeometry(0.12,0.12,0.1), new THREE.MeshLambertMaterial({color:0x2e9e4f}));
+  sleeve.position.set(0.0,-0.02,0.28); handGroup.add(sleeve); // manga verde da camisa
   heldMats=[];
   for(let f=0;f<6;f++){
-    const t=tex.clone(); t.needsUpdate=true; t.repeat.set(1/16,1); t.offset.set(0,0);
+    const t=tex.clone(); t.needsUpdate=true; t.repeat.set(1/ATLAS_N,1); t.offset.set(0,0);
     heldMats.push(new THREE.MeshLambertMaterial({map:t}));
   }
-  const held=new THREE.Mesh(new THREE.BoxGeometry(0.24,0.24,0.24), heldMats);
-  held.position.set(0.02,0.1,-0.12); handGroup.add(held);
-  handGroup.position.set(0.48,-0.42,-0.75); handGroup.rotation.set(0.15,-0.25,0);
+  const held=new THREE.Mesh(new THREE.BoxGeometry(0.18,0.18,0.18), heldMats);
+  held.position.set(0.0,0.11,-0.02); held.rotation.set(0.1,0.5,0); handGroup.add(held);
+  handGroup.position.set(0.42,-0.36,-0.8); handGroup.rotation.set(0.12,-0.18,0.06);
   camera.add(handGroup); scene.add(camera);
   updateHeldBlock();
   initParticles();
 
   setupPlayer(); setupInput(); setupHotbar(); setupSound();
-  document.getElementById('btn-play').onclick=()=>{ document.getElementById('menu').classList.add('hidden'); unlockAudio(); renderer.domElement.requestPointerLock?.(); toast('Boa! Use ⛏️ e 🧱 na mira +'); };
+  // BUGFIX: pointer-lock com chamada segura (no celular/iframe o lock falha; sem isso gerava erro no console)
+  const safeLock=()=>{ try{ const r=renderer.domElement.requestPointerLock?.(); if(r&&typeof r.catch==='function') r.catch(()=>{}); }catch(e){} };
+  document.getElementById('btn-play').onclick=()=>{ document.getElementById('menu').classList.add('hidden'); unlockAudio(); safeLock(); toast('Boa! Use ⛏️ e 🧱 na mira +'); };
   document.getElementById('btn-menu').onclick=()=>document.getElementById('menu').classList.remove('hidden');
   loadingEl.textContent='Mundo pronto! Toque em JOGAR.';
   addEventListener('resize',()=>{ camera.aspect=innerWidth/innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth,innerHeight); });
@@ -330,9 +398,11 @@ async function init(){
 }
 
 /* ============ MESH BUILD ============ */
-function isOpaque(b){ if(!b) return false; const d=DEFS[b]; return d && !d.transparent; }
+function isOpaque(b){ if(!b) return false; const d=DEFS[b]; return d && !d.transparent && !d.cross; }
+// MELHORIA: plantas não são sólidas (sem parede invisível) nem contam como chão
+function isSolid(b){ if(!b||b===BLOCK.WATER) return false; const d=DEFS[b]; return !(d&&d.cross); }
 function tileUV(tile){
-  const N=16, e=0.5/512, u0=tile/N+e, u1=(tile+1)/N-e, v0=0+e, v1=1-e;
+  const N=ATLAS_N, e=0.5/(32*N), u0=tile/N+e, u1=(tile+1)/N-e, v0=0+e, v1=1-e;
   return [u0,v0,u1,v1];
 }
 function rebuild(){
@@ -351,13 +421,35 @@ function rebuild(){
     const isWater=b===BLOCK.WATER;
     // vidro vai p/ o mesh opaco como recorte (alphaTest): moldura com depth, centro vazio — zero bug de ordenação
     const target=isWater?wa:op;
+    // MELHORIA: flores/grama alta = 2 planos cruzados (geometria em X), sem face-culling
+    if(def.cross){
+      const [u0,v0,u1,v1]=tileUV(def.tile);
+      const base=target.p.length/3, e2=0.18, hh=0.75;
+      const quads=[
+        [x+e2,0,z+e2, x+1-e2,hh,z+1-e2],
+        [x+1-e2,0,z+e2, x+e2,hh,z+1-e2],
+      ];
+      for(const [x0,y0,z0,x1,y1,z1] of quads){
+        const vb=target.p.length/3;
+        target.p.push(x0,y+y0,z0, x1,y+y0,z1, x1,y+y1,z1, x0,y+y0,z0, x1,y+y1,z1, x0,y+y1,z0);
+        for(let k=0;k<6;k++){ target.n.push(0,1,0); target.c.push(1,1,1); }
+        target.u.push(u0,v0, u1,v0, u1,v1, u0,v0, u1,v1, u0,v1);
+        target.i.push(vb,vb+1,vb+2, vb+3,vb+4,vb+5);
+      }
+      continue;
+    }
     for(let f=0;f<6;f++){
       const nx=x+F[f].d[0], ny=y+F[f].d[1], nz=z+F[f].d[2];
       const nb=inB(nx,ny,nz)?vox[idx(nx,ny,nz)]:0;
       if(nb===b && def.transparent) continue;
       if(isOpaque(nb)) continue;
       if(def.liquid && nb!==0 && f!==2) continue;
-      const base=target.p.length/3, sh=F[f].s;
+      const base=target.p.length/3;
+      // GRÁFICO: variação de tom por coluna no topo (tira o aspecto chapado do gramado)
+      let sh=F[f].s;
+      if(f===2&&(b===BLOCK.GRASS||b===BLOCK.SAND||b===BLOCK.LEAVES||b===BLOCK.STONE||b===BLOCK.DIRT)){
+        sh*=0.9+hash2(x*1.7+9,z*2.3+4)*0.16;
+      }
       // água afunda o topo
       const pts=F[f].c.map(([px,py,pz])=>{
         let yy=py; if(isWater&&f!==3&&py===1) yy=0.86;
@@ -384,20 +476,20 @@ function rebuild(){
 
 /* ============ PLAYER ============ */
 const P={ pos:new THREE.Vector3(), vel:new THREE.Vector3(), yaw:0, pitch:-0.1, onGround:false, fly:false, w:0.32, h:1.8, eye:1.62 };
-function groundH(x,z){ x=Math.max(0,Math.min(SX-1,Math.floor(x))); z=Math.max(0,Math.min(SZ-1,Math.floor(z))); for(let y=SY-1;y>0;y--){ const b=vox[idx(x,y,z)]; if(b&&b!==BLOCK.WATER) return y+1; } return 2; }
+function groundH(x,z){ x=Math.max(0,Math.min(SX-1,Math.floor(x))); z=Math.max(0,Math.min(SZ-1,Math.floor(z))); for(let y=SY-1;y>0;y--){ const b=vox[idx(x,y,z)]; if(isSolid(b)) return y+1; } return 2; }
 function setupPlayer(){
   const sx=SX/2+0.5, sz=SZ/2+0.5;
   if(window._savedPos){ P.pos.set(...window._savedPos); }
   else P.pos.set(sx, groundH(sx,sz)+1.5, sz);
   P.yaw=Math.PI*0.25;
 }
-function solid(x,y,z){ if(!inB(Math.floor(x),Math.floor(y),Math.floor(z))) return false; const b=vox[idx(Math.floor(x),Math.floor(y),Math.floor(z))]; return b!==0&&b!==BLOCK.WATER; }
+function solid(x,y,z){ if(!inB(Math.floor(x),Math.floor(y),Math.floor(z))) return false; return isSolid(vox[idx(Math.floor(x),Math.floor(y),Math.floor(z))]); }
 function boxHits(px,py,pz){
   const w=P.w, h=P.h;
   const x0=Math.floor(px-w), x1=Math.floor(px+w), y0=Math.floor(py), y1=Math.floor(py+h-0.01), z0=Math.floor(pz-w), z1=Math.floor(pz+w);
   for(let x=x0;x<=x1;x++) for(let y=y0;y<=y1;y++) for(let z=z0;z<=z1;z++){
     if(!inB(x,y,z)) continue;
-    const b=vox[idx(x,y,z)]; if(b!==0&&b!==BLOCK.WATER) return true;
+    if(isSolid(vox[idx(x,y,z)])) return true;
   }
   return false;
 }
@@ -443,7 +535,8 @@ function rayVoxel(maxD=7){
     else if(tMax.y<tMax.z){ y+=sty; t=tMax.y; tMax.y+=tDelta.y; face=[0,-sty,0]; }
     else { z+=stz; t=tMax.z; tMax.z+=tDelta.z; face=[0,0,-stz]; }
     if(t>maxD) return null;
-    if(inB(x,y,z)){ const b=vox[idx(x,y,z)]; if(b&&b!==BLOCK.WATER) return {x,y,z,face,b}; }
+    // MELHORIA: mira atravessa flores/grama (como a água) — sem highlight flutuante
+    if(inB(x,y,z)){ const b=vox[idx(x,y,z)]; if(b&&b!==BLOCK.WATER&&!(DEFS[b]&&DEFS[b].cross)) return {x,y,z,face,b}; }
   }
   return null;
 }
@@ -459,7 +552,9 @@ function doPlace(){
   const h=rayVoxel(); if(!h) return toast('Mire em um bloco próximo');
   const [fx,fy,fz]=h.face, nx=h.x+fx, ny=h.y+fy, nz=h.z+fz;
   if(!inB(nx,ny,nz)) return;
-  if(vox[idx(nx,ny,nz)]!==0&&vox[idx(nx,ny,nz)]!==BLOCK.WATER) return;
+  // MELHORIA: construir sobre flor/grama alta substitui a decoração em vez de recusar
+  const occ=vox[idx(nx,ny,nz)];
+  if(occ!==0&&occ!==BLOCK.WATER&&!(DEFS[occ]&&DEFS[occ].cross)) return;
   // não colocar dentro do jogador
   const p=P.pos;
   if(selected!==BLOCK.WATER && nx>=Math.floor(p.x-P.w)&&nx<=Math.floor(p.x+P.w)&&nz>=Math.floor(p.z-P.w)&&nz<=Math.floor(p.z+P.w)&&(ny===Math.floor(p.y)||ny===Math.floor(p.y+1))) return toast('Aí não — é você!');
@@ -473,9 +568,9 @@ let handSwing=0;
 function updateHeldBlock(){
   const d=DEFS[selected]; if(!d||!heldMats.length) return;
   const faces=[d.side,d.side,d.top,d.bottom,d.side,d.side];
-  for(let f=0;f<6;f++){ heldMats[f].map.offset.set(faces[f]/16,0); }
+  for(let f=0;f<6;f++){ heldMats[f].map.offset.set(faces[f]/ATLAS_N,0); }
 }
-const PCOL={1:[0.37,0.68,0.25],2:[0.48,0.35,0.21],3:[0.55,0.55,0.55],4:[0.36,0.26,0.15],5:[0.18,0.49,0.15],6:[0.88,0.82,0.6],7:[0.25,0.5,0.9],8:[0.65,0.49,0.25],9:[0.64,0.29,0.23],10:[0.81,0.91,0.96],11:[0.23,0.23,0.23],12:[0.49,0.49,0.49]};
+const PCOL={1:[0.37,0.68,0.25],2:[0.48,0.35,0.21],3:[0.55,0.55,0.55],4:[0.36,0.26,0.15],5:[0.18,0.49,0.15],6:[0.88,0.82,0.6],7:[0.25,0.5,0.9],8:[0.65,0.49,0.25],9:[0.64,0.29,0.23],10:[0.81,0.91,0.96],11:[0.23,0.23,0.23],12:[0.49,0.49,0.49],13:[0.85,0.23,0.17],14:[0.95,0.76,0.11],15:[0.25,0.61,0.2],16:[0.93,0.96,0.97],17:[0.15,0.15,0.15],18:[0.82,0.54,0.31],19:[0.25,0.85,0.82]};
 const PMAX=240; let pGeo, pPts; const pData=[];
 function initParticles(){
   pGeo=new THREE.BufferGeometry();
@@ -570,7 +665,11 @@ function setupHotbar(){
     d.onclick=()=>{ selected=b; updateHeldBlock(); hb.querySelectorAll('.slot').forEach(e=>e.classList.remove('sel')); d.classList.add('sel'); };
     hb.appendChild(d);
   });
-  addEventListener('keydown',e=>{ const n=parseInt(e.key); if(n>=1&&n<=HOTBAR.length){ selected=HOTBAR[n-1]; updateHeldBlock(); setupHotbar(); } });
+  // BUGFIX: registra o atalho 1-8 uma única vez (antes cada rebuild empilhava outro listener)
+  if(!setupHotbar._keys){
+    setupHotbar._keys=true;
+    addEventListener('keydown',e=>{ const n=parseInt(e.key); if(n>=1&&n<=HOTBAR.length){ selected=HOTBAR[n-1]; updateHeldBlock(); setupHotbar(); } });
+  }
 }
 
 /* ============ INPUT (touch + pc) ============ */
@@ -677,9 +776,20 @@ function setupInput(){
   placeBtn.addEventListener('pointerdown',e=>{ e.preventDefault(); doPlace(); });
   document.getElementById('btn-fly').onclick=()=>toggleFly();
   document.getElementById('btn-save').onclick=()=>save();
+  document.getElementById('btn-new').onclick=()=>newWorld();
 }
 function toggleFly(){ P.fly=!P.fly; P.vel.y=0; document.getElementById('btn-fly').classList.toggle('on',P.fly); toast(P.fly?'🕊️ Modo voar ON':'🚶 Modo andar'); }
 function save(){ try{ localStorage.setItem('minicraft-mobile-v1', JSON.stringify({edits, pos:[P.pos.x,P.pos.y,P.pos.z]})); toast('💾 Mundo salvo!'); }catch(e){ toast('Erro ao salvar'); } }
+// MELHORIA: botão 🔄 gera um mundo zerado (limpa save, regenera, reposiciona)
+function newWorld(){
+  if(!confirm('Gerar um mundo novo? Suas construções serão apagadas.')) return;
+  try{ localStorage.removeItem('minicraft-mobile-v1'); }catch(e){}
+  edits={}; genWorld(); rebuild();
+  P.pos.set(SX/2+0.5, groundH(SX/2+0.5,SZ/2+0.5)+1.2, SZ/2+0.5);
+  P.vel.set(0,0,0); P.yaw=Math.PI*0.25; P.pitch=-0.1; P.fly=false;
+  document.getElementById('btn-fly').classList.remove('on');
+  toast('🌍 Mundo novo gerado!');
+}
 
 /* ============ LOOP ============ */
 let last=performance.now(), frames=0, fpsT=0, fps=0, walkPhase=0;
@@ -734,8 +844,8 @@ function loop(now){
   camera.rotation.set(0,0,0); camera.rotateY(P.yaw); camera.rotateX(P.pitch);
   // mão: balanço + golpe
   if(handSwing>0) handSwing=Math.max(0,handSwing-dt*3.5);
-  handGroup.position.y=-0.42+Math.sin(walkPhase*2)*0.018;
-  handGroup.rotation.x=0.15-Math.sin(handSwing*Math.PI)*0.75;
+  handGroup.position.y=-0.36+Math.sin(walkPhase*2)*0.018;
+  handGroup.rotation.x=0.12-Math.sin(handSwing*Math.PI)*0.75;
   // água animada + nuvens
   waterTex.offset.x=(now*0.00003)%1; waterTex.offset.y=(now*0.00006)%1;
   tickParticles(dt);
@@ -748,7 +858,7 @@ function loop(now){
   let gy=-100;
   for(let y=Math.floor(P.pos.y); y>=Math.max(0,Math.floor(P.pos.y)-9); y--){
     const bx=Math.floor(P.pos.x), bz=Math.floor(P.pos.z);
-    if(inB(bx,y,bz)&&vox[idx(bx,y,bz)]!==0&&vox[idx(bx,y,bz)]!==BLOCK.WATER){ gy=y+1; break; }
+    if(inB(bx,y,bz)&&isSolid(vox[idx(bx,y,bz)])){ gy=y+1; break; }
   }
   if(gy>-50&&P.pos.y-gy<7){ shadowBlob.visible=true; shadowBlob.position.set(P.pos.x,gy+0.03,P.pos.z);
     const d=(P.pos.y-gy)/7; shadowBlob.material.opacity=0.34*(1-d); const s=1+d*0.8; shadowBlob.scale.set(s,s,1);
