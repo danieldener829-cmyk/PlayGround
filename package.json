@@ -1,0 +1,12 @@
+{
+  "name": "zaphost-discord-bot-hosting",
+  "version": "1.0.0",
+  "description": "Hospedagem pra bot Discord — é só jogar o ZIP. Node.js + Python, logs ao vivo.",
+  "type": "module",
+  "scripts": {
+    "start": "node server.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

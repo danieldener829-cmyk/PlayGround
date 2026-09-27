@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZapHost — Hospedagem pra Bot Discord | É só jogar o ZIP</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤖</text></svg>">
+<meta name="description" content="Hospede seu bot de Discord em segundos. Arraste o ZIP, configure o token e pronto. Suporte a Node.js e Python.">
+<style>
+:root{
+  --bg:#0b0e17; --bg2:#111625; --card:#161c31; --card2:#1c2340;
+  --line:rgba(255,255,255,.09); --txt:#eef1ff; --mut:#9aa3c7;
+  --blurple:#5865F2; --blurple2:#4752c4; --green:#3ba55d; --green2:#2ecc71;
+  --red:#ed4245; --yellow:#fee75c; --radius:18px;
+  --shadow:0 20px 60px rgba(0,0,0,.45);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial,sans-serif;background:radial-gradient(1000px 500px at 20% -5%,#2b3a9e55,transparent),radial-gradient(900px 500px at 90% 0%,#00c2ff33,transparent),radial-gradient(700px 600px at 50% 110%,#5865f233,transparent),var(--bg);color:var(--txt);min-height:100vh}
+a{color:inherit}
+.wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+header{position:sticky;top:0;z-index:30;backdrop-filter:blur(14px);background:rgba(11,14,23,.78);border-bottom:1px solid var(--line)}
+.nav{display:flex;align-items:center;justify-content:space-between;padding:14px 0;gap:12px}
+.brand{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:.2px}
+.logo{width:42px;height:42px;border-radius:13px;background:linear-gradient(135deg,var(--blurple),#9b5cf6 60%,#00c2ff);display:grid;place-items:center;font-size:22px;box-shadow:0 8px 24px #5865f255}
+.brand small{display:block;font-weight:600;color:var(--mut);font-size:12px;letter-spacing:.4px}
+.nav-links{display:flex;gap:18px;color:var(--mut);font-size:14px}
+.nav-links a{text-decoration:none}.nav-links a:hover{color:#fff}
+.btn{border:0;cursor:pointer;border-radius:12px;padding:12px 18px;font-weight:800;font-size:14px;color:#fff;background:linear-gradient(180deg,var(--blurple),var(--blurple2));box-shadow:0 10px 26px #5865f244;transition:.18s}
+.btn:hover{transform:translateY(-1px);filter:brightness(1.07)}
+.btn.ghost{background:rgba(255,255,255,.08);box-shadow:none;border:1px solid var(--line)}
+.btn.small{padding:8px 12px;font-size:13px;border-radius:10px}
+.btn.danger{background:linear-gradient(180deg,#f05252,#c93a3a);box-shadow:0 10px 26px #ed424533}
+.btn.ok{background:linear-gradient(180deg,#2ecc71,#1f9d55);box-shadow:0 10px 26px #2ecc7133}
+.btn:disabled{opacity:.55;cursor:not-allowed;transform:none}
+.hero{padding:52px 0 18px;display:grid;grid-template-columns:1.05fr .95fr;gap:28px;align-items:center}
+@media(max-width:900px){.hero{grid-template-columns:1fr}.nav-links{display:none}}
+.pill{display:inline-flex;align-items:center;gap:8px;background:#3ba55d22;border:1px solid #3ba55d55;color:#b9f0c9;font-size:12.5px;font-weight:700;padding:7px 12px;border-radius:999px}
+h1{font-size:clamp(32px,5vw,56px);line-height:1.02;margin:16px 0 12px;letter-spacing:-1px}
+h1 span{background:linear-gradient(90deg,#8b9bff,#c084fc,#22d3ee);-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{color:var(--mut);font-size:16.5px;line-height:1.6;margin:0 0 20px}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:18px 0}
+@media(max-width:640px){.steps{grid-template-columns:1fr}}
+.step{background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:14px;padding:12px;font-size:13.5px;color:#d6dbff}
+.step b{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.num{width:24px;height:24px;border-radius:8px;display:inline-grid;place-items:center;background:var(--blurple);font-size:13px}
+.card{background:linear-gradient(180deg,var(--card),#12172a);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+.drop{padding:22px}
+.dropzone{border:2px dashed #5865f288;border-radius:16px;background:#5865f211;padding:30px 18px;text-align:center;transition:.2s;cursor:pointer}
+.dropzone.over{border-color:#fff;background:#5865f233;transform:scale(1.01)}
+.dropzone .big{font-size:44px}
+.dropzone h3{margin:10px 0 6px}
+.dropzone p{margin:0;color:var(--mut);font-size:14px}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+input,select,textarea{width:100%;background:#0d1224;border:1px solid var(--line);color:var(--txt);border-radius:12px;padding:12px 13px;font-size:14px;outline:none}
+input:focus,select:focus,textarea:focus{border-color:var(--blurple)}
+label{font-size:12.5px;color:var(--mut);font-weight:700;display:block;margin:12px 0 6px;text-transform:uppercase;letter-spacing:.5px}
+.progress{height:10px;background:rgba(255,255,255,.08);border-radius:999px;overflow:hidden;margin-top:12px;display:none}
+.progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--blurple),#22d3ee);transition:.2s}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:18px 0 6px}
+@media(max-width:700px){.stats{grid-template-columns:repeat(2,1fr)}}
+.stat{padding:14px 16px}
+.stat .n{font-size:24px;font-weight:900}
+.stat .l{color:var(--mut);font-size:12.5px;font-weight:700;text-transform:uppercase;letter-spacing:.6px}
+.section{padding:18px 0 8px}
+.section h2{font-size:22px;margin:6px 0}
+.section p.desc{color:var(--mut);margin:0 0 14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px}
+.bot{padding:16px;position:relative;overflow:hidden}
+.bot .top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.avatar{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;font-size:22px;font-weight:900;background:linear-gradient(135deg,#2b3a9e,#5865F2)}
+.bname{font-weight:900;font-size:16px;margin:0}
+.bmeta{color:var(--mut);font-size:12.5px;margin:3px 0 0;word-break:break-all}
+.dot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:6px;vertical-align:middle}
+.on{background:var(--green2);box-shadow:0 0 10px var(--green2)}.off{background:#72767d}.work{background:var(--yellow);box-shadow:0 0 10px var(--yellow)}
+.status{font-size:12.5px;font-weight:800;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.07);border:1px solid var(--line);white-space:nowrap}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.terminal{background:#05070f;border:1px solid var(--line);border-radius:12px;padding:12px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;line-height:1.55;height:220px;overflow:auto;white-space:pre-wrap;margin-top:12px}
+.empty{padding:34px 20px;text-align:center;color:var(--mut)}
+.empty .big{font-size:44px}
+dialog{border:1px solid var(--line);background:var(--bg2);color:var(--txt);border-radius:18px;padding:0;max-width:860px;width:calc(100vw - 32px);box-shadow:var(--shadow)}
+dialog::backdrop{background:rgba(0,0,0,.65);backdrop-filter:blur(4px)}
+.modal-h{padding:18px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:10px}
+.modal-b{padding:18px 20px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.tab{padding:9px 13px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.05);cursor:pointer;font-size:13px;font-weight:800;color:var(--mut)}
+.tab.active{background:var(--blurple);color:#fff;border-color:transparent}
+.filelist{max-height:260px;overflow:auto;border:1px solid var(--line);border-radius:12px;padding:8px;background:#0d1224;font-size:13px}
+.filelist div{padding:7px 9px;border-radius:8px;display:flex;justify-content:space-between;gap:8px}
+.filelist div:nth-child(odd){background:rgba(255,255,255,.03)}
+.toast{position:fixed;right:18px;bottom:18px;display:flex;flex-direction:column;gap:10px;z-index:99}
+.toast div{background:#12172a;border:1px solid var(--line);border-left:4px solid var(--blurple);padding:12px 14px;border-radius:12px;box-shadow:var(--shadow);font-size:14px;max-width:340px}
+.how{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+@media(max-width:800px){.how{grid-template-columns:1fr}}
+.how .card{padding:18px}
+code.inline{background:rgba(255,255,255,.08);padding:2px 7px;border-radius:7px;font-size:12.5px}
+footer{padding:28px 0 40px;color:var(--mut);font-size:13px;text-align:center}
+.hidden{display:none!important}
+.hint{font-size:12.5px;color:var(--mut);margin-top:8px;line-height:1.5}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap nav">
+    <div class="brand"><div class="logo">🤖</div><div>ZapHost<small>HOSPEDAGEM PRA BOT DISCORD</small></div></div>
+    <nav class="nav-links"><a href="#subir">Subir ZIP</a><a href="#meus">Meus bots</a><a href="#como">Como funciona</a><a href="#faq">Dúvidas</a></nav>
+    <div style="display:flex;gap:8px"><span id="modeBadge" class="status"><span class="dot off"></span>conectando…</span><button class="btn small" onclick="document.getElementById('subir').scrollIntoView({behavior:'smooth'})">+ Novo bot</button></div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="hero">
+    <div>
+      <span class="pill">🟢 Online • Node.js + Python • Sem cartão</span>
+      <h1>Hospedagem pra bot Discord.<br><span>É só jogar o ZIP.</span></h1>
+      <p class="sub">Arraste o <code class="inline">.zip</code> do seu bot, cole o token e aperte <b>Ligar</b>. A gente detecta <code class="inline">index.js</code> / <code class="inline">bot.py</code>, instala as dependências e deixa online com logs ao vivo.</p>
+      <div class="steps">
+        <div class="step"><b><span class="num">1</span> 📦 Jogue o ZIP</b>Qualquer estrutura: discord.js, discord.py, eris…</div>
+        <div class="step"><b><span class="num">2</span> 🔑 Cole o token</b>Vira variável <code class="inline">DISCORD_TOKEN</code> sozinho.</div>
+        <div class="step"><b><span class="num">3</span> ⚡ Aperte Ligar</b>Deploy + logs em tempo real.</div>
+      </div>
+      <div class="row">
+        <button class="btn" onclick="document.getElementById('fileInput').click()">📤 Escolher arquivo .zip</button>
+        <button class="btn ghost" onclick="baixarExemplo()">⬇️ Baixar ZIP de exemplo</button>
+      </div>
+      <p class="hint">Formatos aceitos: <code class="inline">bot.zip</code> até 100MB • precisa ter <code class="inline">package.json</code> ou <code class="inline">.js</code>/<code class="inline">.py</code> principal • <code class="inline">node_modules</code> é ignorado.</p>
+    </div>
+    <div class="card drop" id="subir">
+      <div class="dropzone" id="dropzone">
+        <div class="big">📦</div>
+        <h3>Arraste seu bot.zip aqui</h3>
+        <p>ou clique para selecionar • extração automática</p>
+        <div class="progress" id="progress"><i id="bar"></i></div>
+      </div>
+      <input type="file" id="fileInput" accept=".zip,application/zip" class="hidden">
+      <label>Nome do bot</label>
+      <input id="botName" placeholder="Ex: meu-bot-loja" maxlength="40">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div><label>Token do Discord (opcional agora)</label><input id="botToken" type="password" placeholder="MTk4... (vira DISCORD_TOKEN)"></div>
+        <div><label>Arquivo principal (auto se vazio)</label><input id="botMain" placeholder="Ex: index.js, bot.py, src/main.js"></div>
+      </div>
+      <div class="row"><button class="btn" id="btnUpload" style="flex:1">🚀 Hospedar agora</button></div>
+      <p class="hint" id="uploadHint">Vamos detectar runtime, instalar (<code class="inline">npm install</code> / <code class="inline">pip install -r requirements.txt</code>) e subir.</p>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="card stat"><div class="n" id="stTotal">0</div><div class="l">🤖 bots hospedados</div></div>
+    <div class="card stat"><div class="n" id="stOn">0</div><div class="l">🟢 online agora</div></div>
+    <div class="card stat"><div class="n">~8s</div><div class="l">⚡ deploy médio</div></div>
+    <div class="card stat"><div class="n">24/7</div><div class="l">📡 monitoramento</div></div>
+  </div>
+
+  <div class="section" id="meus">
+    <h2>📋 Meus bots</h2>
+    <p class="desc">Ligar, desligar, ver logs ao vivo, arquivos extraídos e trocar o token sem reenviar o ZIP.</p>
+    <div class="grid" id="botGrid"></div>
+    <div class="card empty hidden" id="emptyBox"><div class="big">💤</div><h3 style="margin:8px 0">Nenhum bot ainda</h3><p style="margin:0">Jogue o ZIP ali em cima e seu bot aparece aqui.</p></div>
+  </div>
+
+  <div class="section" id="como">
+    <h2>⚙️ Como funciona</h2>
+    <p class="desc">Feito pra quem só quer ver o bot online, sem VPS, sem terminal.</p>
+    <div class="how">
+      <div class="card"><h3>📦 1. Upload inteligente</h3><p class="sub" style="font-size:14px">Extraímos o ZIP, ignoramos <code class="inline">__MACOSX</code> e listamos os arquivos. Se achar <code class="inline">package.json</code>, roda <code class="inline">npm install</code>. Se achar <code class="inline">requirements.txt</code>, roda <code class="inline">pip install</code>.</p></div>
+      <div class="card"><h3>🔍 2. Detecção automática</h3><p class="sub" style="font-size:14px">Procuramos nessa ordem: seu campo “principal” → <code class="inline">package.json main</code> → <code class="inline">index.js, bot.js, main.js, src/index.js</code> → <code class="inline">bot.py, main.py, app.py, index.py</code>.</p></div>
+      <div class="card"><h3>📡 3. Processo isolado + logs</h3><p class="sub" style="font-size:14px">Cada bot roda num processo próprio com <code class="inline">DISCORD_TOKEN</code> injetado. Logs ficam salvos, dá pra reiniciar com 1 clique.</p></div>
+    </div>
+  </div>
+
+  <div class="section" id="faq">
+    <h2>❓ Dúvidas rápidas</h2>
+    <div class="how">
+      <div class="card"><h3>Meu bot é discord.js v14, funciona?</h3><p class="sub" style="font-size:14px">Sim. Se o ZIP tem <code class="inline">package.json</code> com <code class="inline">discord.js</code>, instalamos tudo com <code class="inline">npm install</code> e rodamos com Node 22.</p></div>
+      <div class="card"><h3>E se for Python?</h3><p class="sub" style="font-size:14px">Sim. Com <code class="inline">requirements.txt</code> (ex: <code class="inline">discord.py</code>) instalamos e rodamos com <code class="inline">python3 bot.py</code>.</p></div>
+      <div class="card"><h3>Onde coloco o token?</h3><p class="sub" style="font-size:14px">No campo token ao subir, ou depois em Config. Nunca commite o token no ZIP — use <code class="inline">process.env.DISCORD_TOKEN</code> ou <code class="inline">os.getenv("DISCORD_TOKEN")</code>.</p></div>
+    </div>
+  </div>
+  <footer>ZapHost • feito pra comunidade BR 🇧🇷 • seus bots, seus tokens, seus logs.</footer>
+</div>
+
+<dialog id="modal">
+  <div class="modal-h"><div><div class="bname" id="mName">bot</div><div class="bmeta" id="mMeta"></div></div><button class="btn ghost small" onclick="document.getElementById('modal').close()">✕ Fechar</button></div>
+  <div class="modal-b">
+    <div class="tabs"><button class="tab active" data-t="logs" onclick="tab(this)">📡 Logs ao vivo</button><button class="tab" data-t="files" onclick="tab(this)">📁 Arquivos</button><button class="tab" data-t="config" onclick="tab(this)">🔑 Config</button></div>
+    <div id="pane-logs"><div class="terminal" id="mLogs">carregando…</div><div class="row"><button class="btn small ok" id="mStart">▶ Ligar</button><button class="btn small danger" id="mStop">⏹ Desligar</button><button class="btn small ghost" id="mRestart">🔄 Reiniciar</button><button class="btn small ghost" id="mRefresh">🔁 Atualizar logs</button></div></div>
+    <div id="pane-files" class="hidden"><div class="filelist" id="mFiles"></div></div>
+    <div id="pane-config" class="hidden">
+      <label>Token do Discord</label><input id="mToken" type="password" placeholder="Cole o novo token">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div><label>Arquivo principal</label><input id="mMain" placeholder="index.js / bot.py"></div><div><label>Comando custom (avançado)</label><input id="mCmd" placeholder="Ex: node src/bot.js"></div></div>
+      <div class="row"><button class="btn small" id="mSave">💾 Salvar e reiniciar</button><button class="btn small danger" id="mDel">🗑 Excluir bot</button></div>
+      <p class="hint">O token é salvo como env <code class="inline">DISCORD_TOKEN</code> e nunca aparece nos logs.</p>
+    </div>
+  </div>
+</dialog>
+
+<div class="toast" id="toasts"></div>
+
+<script>
+let bots=[], current=null, logTimer=null, backend=true;
+const $=id=>document.getElementById(id);
+function toast(msg,ok=true){const d=document.createElement('div');d.style.borderLeftColor=ok?'#2ecc71':'#ed4245';d.textContent=msg;$('toasts').appendChild(d);setTimeout(()=>d.remove(),4200)}
+function tab(el){document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));el.classList.add('active');['logs','files','config'].forEach(k=>$('pane-'+k).classList.toggle('hidden',el.dataset.t!==k))}
+async function api(path,opt={}){const r=await fetch(path,{...opt,headers:{...(opt.headers||{})}});const t=await r.text();let j;try{j=JSON.parse(t)}catch{j={raw:t}};if(!r.ok)throw new Error(j.error||j.message||('HTTP '+r.status));return j}
+
+// ---- demo fallback (quando for só estático, sem backend) ----
+function demoLoad(){try{return JSON.parse(localStorage.getItem('zaphost-demo')||'[]')}catch{return[]}}
+function demoSave(){localStorage.setItem('zaphost-demo',JSON.stringify(bots))}
+function demoSeed(){if(!bots.length){bots=[{id:'demo-1',name:'bot-loja-exemplo',status:'offline',runtime:'node',main:'index.js',files:['package.json','index.js','commands/ping.js'],logs:'[demo] este é o modo estático (sem servidor).\n[dica] rode com o backend Node para hospedagem real.\n',createdAt:Date.now()}]}}
+
+async function refresh(){
+  try{
+    bots=await api('/api/bots');backend=true;
+    $('modeBadge').innerHTML='<span class="dot on"></span>backend online';
+  }catch(e){
+    backend=false;
+    $('modeBadge').innerHTML='<span class="dot work"></span>modo demonstração';
+    bots=demoLoad();demoSeed();
+  }
+  $('stTotal').textContent=bots.length;
+  $('stOn').textContent=bots.filter(b=>b.status==='online').length;
+  const g=$('botGrid');g.innerHTML='';
+  $('emptyBox').classList.toggle('hidden',bots.length>0);
+  for(const b of bots){
+    const el=document.createElement('div');el.className='card bot';
+    const on=b.status==='online', work=b.status==='starting'||b.status==='installing';
+    el.innerHTML=`<div class="top"><div style="display:flex;gap:10px;align-items:center"><div class="avatar">${(b.name||'B')[0].toUpperCase()}</div><div><p class="bname">${esc(b.name)}</p><p class="bmeta">${esc(b.runtime||'auto')} • <code class="inline">${esc(b.main||'auto')}</code> • ${new Date(b.createdAt||Date.now()).toLocaleString('pt-BR')}</p></div></div><span class="status"><span class="dot ${on?'on':work?'work':'off'}"></span>${esc(b.status||'offline')}</span></div>
+    <div class="terminal" style="height:120px" id="log-${b.id}">${esc((b.logs||'— sem logs ainda —').slice(-1500))}</div>
+    <div class="actions">
+      ${on?'':`<button class="btn small ok" data-a="start">▶ Ligar</button>`}
+      ${on?`<button class="btn small danger" data-a="stop">⏹ Desligar</button>`:`<button class="btn small ghost" data-a="open">📡 Abrir</button>`}
+      <button class="btn small ghost" data-a="restart">🔄 Reiniciar</button>
+      <button class="btn small ghost" data-a="del">🗑</button>
+    </div>`;
+    el.querySelectorAll('button').forEach(btn=>btn.onclick=()=>act(b,btn.dataset.a));
+    el.ondblclick=()=>openModal(b);
+    g.appendChild(el);
+  }
+}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+async function act(b,a){
+  if(!backend){toast('Modo demonstração: suba com o servidor Node para ligar de verdade.',false);if(a==='open')openModal(b);return}
+  try{
+    if(a==='del'&&!confirm('Excluir '+b.name+'?'))return;
+    if(a==='open')return openModal(b);
+    await api('/api/bots/'+b.id+(a==='del'?'':'/'+a),{method:a==='del'?'DELETE':'POST'});
+    toast('OK: '+a+' → '+b.name);refresh();
+  }catch(e){toast('Erro: '+e.message,false)}
+}
+async function openModal(b){
+  current=b;$('mName').textContent='🤖 '+b.name;
+  $('mMeta').textContent=(b.runtime||'auto')+' • '+(b.main||'auto-detect')+' • '+b.id;
+  $('mToken').value='';$('mMain').value=b.main||'';$('mCmd').value=b.startCmd||'';
+  document.getElementById('modal').showModal();tab(document.querySelector('.tab'));
+  await loadModal();
+  clearInterval(logTimer);logTimer=setInterval(()=>{if(document.getElementById('modal').open)loadModal(true)},2500);
+}
+async function loadModal(quiet){
+  if(!current)return;
+  try{
+    let b;
+    if(backend){b=await api('/api/bots/'+current.id);const i=bots.findIndex(x=>x.id===current.id);if(i>=0)bots[i]=b;}
+    else{b=bots.find(x=>x.id===current.id)}
+    current=b;
+    if(!quiet){$('mFiles').innerHTML=(b.files||[]).map(f=>`<div><span>📄 ${esc(f)}</span></div>`).join('')||'sem arquivos';
+      $('mMain').value=b.main||'';$('mCmd').value=b.startCmd||'';}
+    const t=$('mLogs');t.textContent=b.logs||'— sem logs ainda —';t.scrollTop=t.scrollHeight;
+  }catch(e){if(!quiet)toast(e.message,false)}
+}
+$('mStart').onclick=()=>act(current,'start');$('mStop').onclick=()=>act(current,'stop');
+$('mRestart').onclick=async()=>{await act(current,'restart')};$('mRefresh').onclick=()=>loadModal();
+$('mSave').onclick=async()=>{
+  try{
+    if(!backend){const b=bots.find(x=>x.id===current.id);b.main=$('mMain').value;b.startCmd=$('mCmd').value;demoSave();toast('Salvo (demo).');return}
+    await api('/api/bots/'+current.id+'/config',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:$('mToken').value,main:$('mMain').value,startCmd:$('mCmd').value})});
+    toast('Config salva. Reiniciando…');loadModal();refresh();
+  }catch(e){toast(e.message,false)}
+};
+$('mDel').onclick=async()=>{await act(current,'del');document.getElementById('modal').close();refresh()};
+
+// upload
+const dz=$('dropzone'), fi=$('fileInput');
+dz.onclick=()=>fi.click();
+['dragover','dragenter'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.add('over')}));
+['dragleave','drop'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.remove('over')}));
+dz.addEventListener('drop',e=>{if(e.dataTransfer.files[0]){fi.files=e.dataTransfer.files;doUpload(e.dataTransfer.files[0])}});
+fi.onchange=()=>fi.files[0]&&doUpload(fi.files[0]);
+$('btnUpload').onclick=()=>fi.files[0]?doUpload(fi.files[0]):toast('Escolha um .zip primeiro 📦',false);
+async function doUpload(file){
+  if(!/\.zip$/i.test(file.name)){toast('Só aceito .zip 🙂',false);return}
+  const name=($('botName').value||file.name.replace(/\.zip$/i,'')).toLowerCase().replace(/[^a-z0-9-_]/g,'-').slice(0,40)||'meu-bot';
+  if(!backend){bots.push({id:'demo-'+Date.now(),name,status:'offline',runtime:'node',main:$('botMain').value||'index.js',files:['(demo) '+file.name],logs:'[demo] "'+file.name+'" recebido no modo estático.\nPara rodar de verdade, use o servidor Node.\n',createdAt:Date.now()});demoSave();refresh();toast('Bot criado no modo demonstração ✨');return}
+  $('progress').style.display='block';
+  try{
+    const buf=await file.arrayBuffer();
+    let done=0;const tick=setInterval(()=>{done=Math.min(92,done+8);$('bar').style.width=done+'%'},120);
+    const res=await fetch('/api/bots/upload',{method:'POST',headers:{'X-Bot-Name':encodeURIComponent(name),'X-Bot-Token':encodeURIComponent($('botToken').value||''),'X-Bot-Main':encodeURIComponent($('botMain').value||''),'Content-Type':'application/zip','X-Filename':encodeURIComponent(file.name)},body:buf});
+    clearInterval(tick);$('bar').style.width='100%';
+    const j=await res.json();if(!res.ok)throw new Error(j.error||res.status);
+    toast('🎉 '+name+' hospedado! Clique em Ligar.');$('botName').value='';$('botToken').value='';
+    await refresh();openModal(bots.find(b=>b.id===j.id)||j);
+  }catch(e){toast('Falha no upload: '+e.message,false)}
+  finally{setTimeout(()=>{$('progress').style.display='none';$('bar').style.width='0'},800)}
+}
+function baixarExemplo(){
+  const pkg=JSON.stringify({name:"bot-exemplo",version:"1.0.0",main:"index.js",dependencies:{"discord.js":"^14.16.1"}},null,2);
+  const code=`// Bot exemplo — use DISCORD_TOKEN\nconst { Client, GatewayIntentBits } = require('discord.js');\nconst client = new Client({ intents: [GatewayIntentBits.Guilds] });\nclient.once('ready', () => console.log('🤖 Logado como ' + client.user.tag));\nclient.on('interactionCreate', async i => { if (i.commandName === 'ping') await i.reply('🏓 Pong!'); });\nconst t = process.env.DISCORD_TOKEN;\nif (!t) { console.log('⚠️ Sem DISCORD_TOKEN — modo teste.'); setInterval(()=>console.log('💓 heartbeat teste...'), 5000); }\nelse client.login(t).catch(e => console.error('Falha login:', e.message));\n`;
+  alert('Crie um ZIP com:\n\n• package.json:\n'+pkg+'\n\n• index.js:\n'+code.slice(0,220)+'...\n\nDepois arraste o ZIP aqui 🙂');
+  console.log('package.json:',pkg,'\nindex.js:',code);
+}
+document.getElementById('modal').addEventListener('close',()=>clearInterval(logTimer));
+refresh();setInterval(refresh,8000);
+</script>
+</body>
+</html>
