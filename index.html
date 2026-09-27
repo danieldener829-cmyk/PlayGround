@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>BRHost — Hospedagem de Sites .com.br | Domínio + Hospedagem + SSL</title>
+<meta name="description" content="Hospede seu site em .com.br: busca de domínio, hospedagem rápida no Brasil, SSL grátis, instalador em 1 clique e publicação instantânea. A partir de R$ 14,90/mês." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%2300963E'/><text x='50' y='68' font-size='52' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>BR</text></svg>">
+</head>
+<body>
+
+<div class="topbar">
+  <span>🇧🇷 Servidores em São Paulo • <strong>SSL Grátis + Domínio .com.br a partir de R$ 49,90/ano</strong></span>
+  <a href="#planos">Ver ofertas →</a>
+</div>
+
+<header class="header" id="topo">
+  <nav class="nav container">
+    <a href="#topo" class="logo">
+      <span class="logo-badge">BR</span>
+      <span class="logo-text">BRHost<small>hospedagem .com.br</small></span>
+    </a>
+    <div class="nav-links" id="navLinks">
+      <a href="#dominios">Domínios</a>
+      <a href="#planos">Planos</a>
+      <a href="#publicar">Hospedar site</a>
+      <a href="#painel">Meus sites</a>
+      <a href="#ajuda">Ajuda</a>
+    </div>
+    <div class="nav-actions">
+      <button class="btn ghost sm" id="btnCartNav">🛒 Carrinho <span class="cart-count" id="cartCount">0</span></button>
+      <a href="#publicar" class="btn primary sm">Criar site grátis</a>
+      <button class="hamburger" id="hamburger" aria-label="Menu">☰</button>
+    </div>
+  </nav>
+</header>
+
+<main>
+<!-- HERO -->
+<section class="hero">
+  <div class="container hero-grid">
+    <div class="hero-copy">
+      <div class="pill">● Online agora • Datacenter São Paulo • 99,9% uptime</div>
+      <h1>Hospede seu site no <span class="hl">.com.br</span> em minutos</h1>
+      <p class="lead">Busque o domínio, escolha a hospedagem e publique seu site. Ideal para empresas, lojas, portfólios e blogs brasileiros. Com SSL, e-mail profissional e suporte em português.</p>
+
+      <form class="domain-search" id="domainSearchForm">
+        <div class="search-box">
+          <span class="www">www.</span>
+          <input id="domainInput" type="text" placeholder="nomedasuaempresa" autocomplete="off" spellcheck="false" />
+          <span class="tld">.com.br</span>
+          <button type="submit" class="btn primary">Buscar 🔍</button>
+        </div>
+        <p class="hint">Ex.: <button type="button" class="linklike" data-suggest="padariapaulista">padariapaulista</button>, <button type="button" class="linklike" data-suggest="advocacia-silva">advocacia-silva</button>, <button type="button" class="linklike" data-suggest="lojaesportiva123">lojaesportiva123</button> • 2 a 26 caracteres, sem espaços</p>
+      </form>
+
+      <div id="domainResult" class="domain-result hidden"></div>
+
+      <div class="hero-stats">
+        <div><strong>+48 mil</strong><span>sites hospedados</span></div>
+        <div><strong>187ms</strong><span>resposta média BR</span></div>
+        <div><strong>4.9★</strong><span>12.400 avaliações</span></div>
+      </div>
+    </div>
+
+    <div class="hero-card">
+      <div class="browser-dots"><i></i><i></i><i></i><span id="heroUrl">seusite.com.br</span><em class="ssl">🔒 SSL</em></div>
+      <div class="site-preview" id="heroPreview">
+        <div class="mini-nav"><b>Minha Loja</b><span>Início • Produtos • Contato</span><button>Comprar</button></div>
+        <div class="mini-hero"><h3>Sua marca no .com.br</h3><p>Loja rápida, segura e pronta para vender.</p><div class="mini-btns"><span class="solid">Ver produtos</span><span class="outline">Falar no WhatsApp</span></div></div>
+        <div class="mini-cards"><div></div><div></div><div></div></div>
+      </div>
+      <div class="hero-card-footer">
+        <div><small>Status</small><strong class="online">● Online • SSL ativo</strong></div>
+        <div><small>Plano</small><strong>Profissional R$ 24,90/mês</strong></div>
+        <button class="btn primary sm" onclick="document.getElementById('publicar').scrollIntoView({behavior:'smooth'})">Publicar o meu agora</button>
+      </div>
+    </div>
+  </div>
+  <div class="brands container">
+    <span>Pagamento via</span><b>PIX • Visa • Master • Boleto</b>
+    <span class="sep">•</span><span>Registro oficial via</span><b>Registro.br</b>
+    <span class="sep">•</span><span>Tecnologia</span><b>LiteSpeed • NVMe • CloudLinux</b>
+  </div>
+</section>
+
+<!-- COMO FUNCIONA -->
+<section class="section container" id="como-funciona">
+  <h2>Hospede em <span class="hl">3 passos</span></h2>
+  <p class="sub">Sem código, sem burocracia. Do domínio ao site no ar.</p>
+  <div class="steps">
+    <div class="step"><div class="step-n">1</div><h3>Busque seu .com.br</h3><p>Verificamos disponibilidade, regras do Registro.br e já reservamos para você por 1 ano.</p></div>
+    <div class="step"><div class="step-n">2</div><h3>Escolha a hospedagem</h3><p>Planos com painel em português, e-mail @seudominio.com.br, backups diários e SSL grátis.</p></div>
+    <div class="step"><div class="step-n">3</div><h3>Publique o site</h3><p>Use o criador abaixo: escolha um modelo, edite o conteúdo e clique em Publicar. Pronto!</p><a href="#publicar" class="linklike">→ Testar criador grátis</a></div>
+  </div>
+</section>
+
+<!-- DOMINIOS -->
+<section class="section alt" id="dominios">
+  <div class="container">
+    <h2>Domínios <span class="hl">.com.br</span></h2>
+    <p class="sub">O .com.br transmite confiança para clientes brasileiros e melhora seu SEO no Google Brasil. Entenda as regras oficiais.</p>
+    <div class="grid2">
+      <div class="card">
+        <h3>🔍 Buscar disponibilidade</h3>
+        <p>Digite acima ou aqui:</p>
+        <form id="domainSearchForm2" class="mini-search">
+          <input id="domainInput2" placeholder="suamarca" />
+          <button class="btn primary sm" type="submit">Verificar</button>
+        </form>
+        <div id="domainResult2" class="domain-result hidden"></div>
+        <ul class="price-list">
+          <li><b>.com.br</b> — R$ 49,90/ano <span class="tag">mais popular</span></li>
+          <li><b>.com</b> — R$ 69,90/ano</li>
+          <li><b>.store / .shop</b> — R$ 89,90/ano</li>
+          <li><b>.adv.br / .eng.br / .med.br</b> — R$ 49,90/ano</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>📋 Regras do Registro.br (oficial)</h3>
+        <ul class="check">
+          <li><b>Quem pode registrar:</b> CPF ou CNPJ válido. Estrangeiros precisam de procurador no Brasil.</li>
+          <li><b>Formato:</b> 2 a 26 caracteres (letras, números e hífen). Não pode começar/terminar com hífen.</li>
+          <li><b>Pagamento:</b> registro oficial é feito em <b>registro.br</b> (~R$ 40/ano). Aqui cuidamos disso para você ou você traz seu domínio (DNS gratuito).</li>
+          <li><b>Importante:</b> esta página é uma <b>demonstração</b>. A disponibilidade real deve ser confirmada em <a href="https://registro.br" target="_blank" rel="noopener">registro.br</a> ou via WHOIS/RDAP.</li>
+        </ul>
+        <div class="btn-row">
+          <a class="btn ghost sm" href="https://registro.br/dominio/com-br/" target="_blank" rel="noopener">Abrir Registro.br ↗</a>
+          <a class="btn ghost sm" href="https://rdap.registro.br/domain/" target="_blank" rel="noopener">Consultar WHOIS ↗</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PLANOS -->
+<section class="section container" id="planos">
+  <div class="plans-head">
+    <div><h2>Planos de hospedagem</h2><p class="sub">Preço promocional no 1º ano. Renovação sem surpresa. Cancele quando quiser (30 dias de garantia).</p></div>
+    <label class="billing-toggle"><span>Mensal</span><button id="billingToggle" class="switch" aria-label="Alternar ciclo"><span class="knob"></span></button><span><b>Anual −40%</b></span></label>
+  </div>
+  <div class="plans" id="plansGrid"></div>
+  <p class="guarantee">🛡️ Todos os planos incluem: SSL grátis • CDN Brasil • Backup diário • E-mails ilimitados • Migração gratuita • Suporte 24h em PT-BR</p>
+</section>
+
+<!-- PUBLICAR -->
+<section class="section alt" id="publicar">
+  <div class="container">
+    <h2>Hospede seu site <span class="hl">agora mesmo</span> 🚀</h2>
+    <p class="sub">Criador funcional de demonstração: escolha um modelo, edite e publique. Seu site fica salvo neste navegador e ganha um endereço .com.br simulado + preview ao vivo.</p>
+    <div class="publisher-grid">
+      <form class="card form" id="publishForm">
+        <label>Nome do site / marca<input id="siteName" required maxlength="40" placeholder="Ex.: Padaria Pão Dourado" /></label>
+        <label>Endereço .com.br desejado
+          <div class="domain-inline"><span>www.</span><input id="siteDomain" required placeholder="paodourado" pattern="[a-zA-Z0-9-]{2,26}" /><span>.com.br</span></div>
+        </label>
+        <label>Modelo
+          <select id="siteTemplate">
+            <option value="loja">🛍️ Loja virtual</option>
+            <option value="institucional">🏢 Institucional / Empresa</option>
+            <option value="portfolio">🎨 Portfólio</option>
+            <option value="blog">✍️ Blog</option>
+            <option value="landing">⚡ Landing page</option>
+            <option value="custom">🧑‍💻 HTML personalizado</option>
+          </select>
+        </label>
+        <label>Cor principal<input type="color" id="siteColor" value="#00963e" /></label>
+        <label>Descrição / conteúdo<textarea id="siteDesc" rows="3" placeholder="Ex.: Padaria artesanal em São Paulo. Pães, bolos e encomendas pelo WhatsApp."></textarea></label>
+        <label id="customHtmlWrap" class="hidden">HTML personalizado<textarea id="siteCustomHtml" rows="6" placeholder="<h1>Meu site</h1><p>Edite aqui...</p>"></textarea></label>
+        <button class="btn primary" type="submit">🌐 Publicar site no .com.br</button>
+        <p class="tiny">Ao publicar você concorda com os Termos de demonstração. Nada é enviado para servidores reais.</p>
+      </form>
+      <div class="card preview-card">
+        <div class="browser-dots"><i></i><i></i><i></i><span id="liveUrl">preview .com.br</span><em class="ssl">🔒 SSL</em></div>
+        <iframe id="livePreview" title="Preview do site" sandbox="allow-same-origin"></iframe>
+        <div class="preview-actions">
+          <button class="btn ghost sm" id="btnRefreshPreview" type="button">↻ Atualizar preview</button>
+          <button class="btn ghost sm" id="btnCopyHtml" type="button">⧉ Copiar HTML</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PAINEL -->
+<section class="section container" id="painel">
+  <h2>Painel — meus sites hospedados</h2>
+  <p class="sub">Tudo que você publicar ou comprar aqui aparece nesta lista (salvo no seu navegador via localStorage).</p>
+  <div class="panel-actions">
+    <button class="btn ghost sm" id="btnExport">⬇ Exportar backup (JSON)</button>
+    <label class="btn ghost sm">⬆ Importar <input type="file" id="importFile" accept="application/json" hidden /></label>
+    <button class="btn danger sm" id="btnClear">🗑 Limpar tudo</button>
+  </div>
+  <div id="sitesList" class="sites"></div>
+  <div id="ordersList"></div>
+</section>
+
+<!-- RECURSOS -->
+<section class="section alt">
+  <div class="container">
+    <h2>Por que hospedar com a BRHost?</h2>
+    <div class="features">
+      <div class="feat">⚡<h3>NVMe + LiteSpeed</h3><p>Até 20× mais rápido que hospedagem comum. Cache e HTTP/3 ativados.</p></div>
+      <div class="feat">🔒<h3>SSL + Backup grátis</h3><p>Certificado Let's Encrypt automático e backup diário com 1 clique para restaurar.</p></div>
+      <div class="feat">📧<h3>E-mail profissional</h3><p>contato@suamarca.com.br com antispam, webmail e acesso no celular.</p></div>
+      <div class="feat">🇧🇷<h3>Suporte em português 24h</h3><p>Chat, WhatsApp e tickets. Migração gratuita do seu provedor antigo.</p></div>
+      <div class="feat">🧩<h3>Instalador 1-clique</h3><p>WordPress, WooCommerce, Joomla, Moodle e +400 apps prontos.</p></div>
+      <div class="feat">📈<h3>Escala fácil</h3><p>Comece no compartilhado e evolua para VPS e Dedicado sem downtime.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- AJUDA -->
+<section class="section container" id="ajuda">
+  <h2>Dúvidas frequentes</h2>
+  <div class="faq" id="faq">
+    <details open><summary>Como registro um .com.br de verdade?</summary><p>No Brasil, o registro oficial é feito pelo <b>Registro.br (NIC.br)</b>. Você cria uma conta com CPF/CNPJ, busca o domínio, paga (~R$ 40/ano) e aponta os DNS para nossa hospedagem (ex.: <code>ns1.brhost.com.br</code>). Se contratar aqui, fazemos esse processo para você sem custo extra de configuração.</p></details>
+    <details><summary>Posso trazer meu domínio de outro lugar?</summary><p>Sim! Basta alterar os nameservers para os nossos ou apontar o registro A. Oferecemos migração gratuita e seu site não sai do ar.</p></details>
+    <details><summary>O criador desta página publica de verdade?</summary><p>Não — é uma <b>demonstração funcional no navegador</b>. O site gerado fica salvo no seu dispositivo com preview real em HTML. Para publicar de verdade você precisa de um plano + DNS apontado. Use o botão “Exportar” para baixar o HTML e enviar para qualquer hospedagem.</p></details>
+    <details><summary>Quais formas de pagamento?</summary><p>PIX (aprovação instantânea), cartão de crédito em até 12×, boleto e transferência. Nota fiscal para CNPJ.</p></details>
+    <details><summary>Existe garantia?</summary><p>Sim: 30 dias de garantia incondicional + 99,9% de SLA de uptime.</p></details>
+  </div>
+
+  <div class="card support">
+    <div><h3>💬 Fale com um especialista .com.br</h3><p>Respondemos em ~2 min no horário comercial.</p></div>
+    <form id="supportForm" class="support-form">
+      <input id="supName" placeholder="Seu nome" required />
+      <input id="supEmail" type="email" placeholder="seu@email.com" required />
+      <input id="supMsg" placeholder="Ex.: quero migrar minha loja..." required />
+      <button class="btn primary sm" type="submit">Enviar</button>
+    </form>
+    <p id="supOk" class="hidden ok">✅ Recebido! Protocolo <b id="proto"></b>. Retornaremos por e-mail (demonstração — nada foi enviado).</p>
+  </div>
+</section>
+</main>
+
+<footer class="footer">
+  <div class="container foot-grid">
+    <div><div class="logo"><span class="logo-badge">BR</span><span class="logo-text">BRHost</span></div><p>BRHost Hospedagem LTDA • CNPJ 00.000.000/0001-00<br>Av. Paulista, 1000 — São Paulo/SP<br>Site de <b>demonstração</b> para fins educacionais.</p></div>
+    <div><h4>Produtos</h4><a href="#dominios">Registrar .com.br</a><a href="#planos">Hospedagem</a><a href="#planos">VPS Brasil</a><a href="#publicar">Criador de sites</a></div>
+    <div><h4>Ajuda</h4><a href="#ajuda">Central de ajuda</a><a href="https://registro.br" target="_blank" rel="noopener">Registro.br ↗</a><a href="#painel">Meus sites</a></div>
+    <div><h4>Status</h4><p class="online">● Todos os sistemas operacionais</p><p class="tiny">Uptime 90 dias: 99,98%</p></div>
+  </div>
+  <div class="container tiny foot-bottom">© 2026 BRHost • Feito no Brasil 🇧🇷 • <a href="#topo">Voltar ao topo ↑</a></div>
+</footer>
+
+<!-- CARRINHO / CHECKOUT -->
+<div class="drawer-overlay hidden" id="drawerOverlay"></div>
+<aside class="drawer hidden" id="cartDrawer" aria-label="Carrinho">
+  <div class="drawer-head"><h3>🛒 Seu carrinho</h3><button id="btnCloseCart" class="icon-btn">✕</button></div>
+  <div id="cartItems" class="cart-items"></div>
+  <div class="cart-foot">
+    <div class="total-row"><span>Total</span><strong id="cartTotal">R$ 0,00</strong></div>
+    <button class="btn primary" id="btnCheckout">Finalizar compra →</button>
+    <button class="btn ghost sm" id="btnClearCart">Esvaziar</button>
+  </div>
+</aside>
+
+<div class="modal-overlay hidden" id="checkoutModal">
+  <div class="modal">
+    <h3>Finalizar pedido</h3>
+    <p class="sub">Demonstração — nenhum pagamento real é processado.</p>
+    <div id="checkoutSummary"></div>
+    <form id="checkoutForm" class="form">
+      <label>Nome completo<input id="coName" required placeholder="Maria Silva" /></label>
+      <label>E-mail<input id="coEmail" type="email" required placeholder="maria@empresa.com.br" /></label>
+      <label>CPF/CNPJ (exigido p/ .com.br)<input id="coDoc" required placeholder="000.000.000-00" /></label>
+      <label>Pagamento<select id="coPay"><option value="PIX">PIX — aprovação imediata</option><option value="Cartão">Cartão de crédito até 12×</option><option value="Boleto">Boleto bancário</option></select></label>
+      <div class="btn-row"><button type="button" class="btn ghost" id="btnCancelCheckout">Voltar</button><button type="submit" class="btn primary">Pagar <span id="payTotal"></span></button></div>
+    </form>
+    <div id="checkoutSuccess" class="hidden ok-box"></div>
+  </div>
+</div>
+
+<div class="toast hidden" id="toast"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
