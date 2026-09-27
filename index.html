@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="pt-BR" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SITE GENIUS — Gerador de Sites com IA</title>
+  <meta name="description" content="Descreva e a IA cria seu site completo em 10 segundos. Editor visual, templates premium, publicação instantânea." />
+  <script>
+  /* SITE GENIUS — gateway de subdomínios.
+     Quando a hospedagem recebe *.sitegenius.com.br, <slug>.sitegenius.com.br
+     injeta na hora o conteúdo de /s/<slug>.html (ver HOSPEDAGEM.md).
+     Mantém a URL bonita no navegador. */
+  (function () {
+    try {
+      var host = (location.hostname || '').toLowerCase();
+      var port = location.port ? ':' + location.port : '';
+      function baseOf(h) {
+        var m = h.match(/^(.*?)\.(sitegenius\.com\.br)$/);
+        if (m) return { sub: m[1], home: 'https://sitegenius.com.br' };
+        var l = h.match(/^(.*?)\.localhost$/);
+        if (l) return { sub: l[1], home: 'http://localhost' + port };
+        return null;
+      }
+      var b = baseOf(host);
+      if (!b || !b.sub || b.sub === 'www' || b.sub.indexOf('.') !== -1) return;
+      window.__SG_GATEWAY = true;
+      function notFound() {
+        document.title = 'Site não encontrado';
+        document.body.innerHTML = '<div style="background:#05050a;color:#fff;font-family:sans-serif;text-align:center;padding:80px 20px;min-height:100vh;box-sizing:border-box"><div style="font-size:56px">🔍</div><h1>Este endereço ainda não tem um site publicado</h1><p style="opacity:.6">Verifique o nome ou publique novamente no Site Genius.</p><a style="display:inline-block;margin-top:20px;background:linear-gradient(135deg,#7c3aed,#06b6d4);color:#fff;padding:12px 28px;border-radius:12px;text-decoration:none;font-weight:bold" href="' + b.home + '">Criar meu site grátis</a></div>';
+      }
+      function boot() {
+        fetch('/s/manifest.json').then(function (r) { if (!r.ok) throw 0; return r.json(); }).then(function (man) {
+          var sites = (man && man.sites) || [], found = null;
+          for (var i = 0; i < sites.length; i++) { if (sites[i].slug === b.sub) { found = sites[i]; break; } }
+          if (!found) throw 0;
+          return fetch(found.file).then(function (r) { if (!r.ok) throw 0; return r.text(); });
+        }).then(function (html) {
+          var t = html.match(/<title>([^<]*)<\/title>/i);
+          if (t) document.title = t[1];
+          var m = html.match(/<body[^>]*>([\s\S]*)<\/body>/i);
+          document.body.innerHTML = m ? m[1] : html;
+          var tmp = document.createElement('div');
+          tmp.innerHTML = html;
+          var scripts = tmp.querySelectorAll('script[src]');
+          for (var i = 0; i < scripts.length; i++) {
+            var el = document.createElement('script');
+            el.src = scripts[i].src;
+            document.head.appendChild(el);
+          }
+        }).catch(notFound);
+      }
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+      else boot();
+    } catch (e) { /* segue o app normalmente */ }
+  })();
+  </script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: { extend: {
+        colors: { genius: { 500:'#7c3aed', 600:'#6d28d9' }, neon:'#a78bfa' },
+        fontFamily: { sans: ['Inter','system-ui','sans-serif'], display:['Sora','Inter','sans-serif'] },
+        animation: { float:'float 6s ease-in-out infinite', glow:'glow 3s ease-in-out infinite' }
+      }}
+    }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+<body class="bg-[#05050a] text-white antialiased">
+  <div id="app"></div>
+  <div id="toasts" class="fixed bottom-6 right-6 z-[9999] flex flex-col gap-2"></div>
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

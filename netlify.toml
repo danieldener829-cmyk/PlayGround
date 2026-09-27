@@ -1,0 +1,9 @@
+# Netlify — deploy do Site Genius (+ gateway de subdomínios via JS, sem config extra)
+[build]
+  publish = "dist"
+  command = "npm run build"
+
+# DNS necessário no provedor do domínio:
+#   @    A/CNAME -> balanceador da Netlify (ou use o DNS da Netlify)
+#   *    CNAME   -> <seu-site>.netlify.app   (wildcard = todos os <slug>.sitegenius.com.br)
+# SSL: automático e gratuito (Let's Encrypt, cobre o wildcard).
