@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NuvemOS — Linux real no navegador</title>
+<meta name="description" content="NuvemOS: rode Linux de verdade no navegador via WebVM, JSLinux e v86. Máquina integrada funcional, catálogo e guia de servidor. Código original educacional.">
+<meta name="theme-color" content="#2563eb">
+<meta property="og:title" content="NuvemOS — Linux real no navegador">
+<meta property="og:description" content="Máquina virtual real (v86) integrada + Lab com Debian, Alpine, Arch e ReactOS. Sem instalar nada.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="preconnect" href="https://i.copy.sh">
+<link rel="manifest" href="manifest.json">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="stylesheet" href="styles.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%232563eb'/><circle cx='50' cy='42' r='20' fill='white'/><rect x='28' y='66' width='44' height='8' rx='4' fill='%23bfdbfe'/></svg>">
+</head>
+<body>
+<a class="skip" href="#maquina">Pular para a máquina real</a>
+<header class="topbar">
+  <div class="wrap topbar-inner">
+    <a class="brand" href="#inicio" aria-label="NuvemOS início">
+      <span class="brand-logo" aria-hidden="true">
+        <svg viewBox="0 0 100 100" width="34" height="34"><rect width="100" height="100" rx="22" fill="#2563eb"/><circle cx="50" cy="42" r="20" fill="#fff"/><rect x="28" y="66" width="44" height="8" rx="4" fill="#bfdbfe"/></svg>
+      </span>
+      <span class="brand-text"><strong>NuvemOS</strong><small>linux real • no navegador</small></span>
+    </a>
+    <nav class="nav" id="mainNav">
+      <a href="#inicio">Início</a>
+      <a href="#maquina">Máquina</a>
+      <a href="#lab">Lab</a>
+      <a href="#sistemas">Sistemas</a>
+      <a href="#apps">Apps</a>
+      <a href="#servidor">Servidor</a>
+      <a href="#win10vnc">Win10+VNC</a>
+      <a href="#sobre">Sobre</a>
+    </nav>
+    <div class="top-actions">
+      <span class="net-dot" id="netDot" title="Status da rede">●</span>
+      <button id="themeBtn" class="btn ghost" title="Alternar tema">🌙</button>
+      <button id="menuBtn" class="btn ghost only-mobile" aria-label="Abrir menu">☰</button>
+      <a href="#maquina" class="btn primary">▶ Ligar agora</a>
+    </div>
+  </div>
+  <div class="searchbar wrap">
+    <span aria-hidden="true">🔎</span>
+    <input id="globalSearch" type="search" placeholder="Buscar sistema, app ou comando… ex: debian, reactos, ls" autocomplete="off">
+    <kbd>Ctrl K</kbd>
+  </div>
+</header>
+
+<main id="inicio">
+  <section class="hero wrap">
+    <div class="hero-copy">
+      <span class="pill">⚡ Execução real • WebAssembly • sem servidor nosso</span>
+      <h1>Rode <span class="grad">Linux de verdade</span> no navegador</h1>
+      <p>Nada simulado: <strong>máquina v86 integrada</strong> nesta página + <strong>WebVM (Debian)</strong>, <strong>JSLinux (Alpine)</strong> e <strong>v86 (Arch / ReactOS)</strong> no Lab. Tudo executa no seu navegador.</p>
+      <ul class="hero-list">
+        <li>✅ Boot real com tela, teclado e terminal serial</li>
+        <li>✅ Screenshot, salvar/restaurar estado, tela cheia</li>
+        <li>✅ Funciona no celular — comece pelo TinyCore/KolibriOS</li>
+      </ul>
+    <div class="hero-cta">
+      <button class="btn primary big" onclick="document.getElementById('maquina').scrollIntoView({behavior:'smooth'});v86Boot()">▶ Ligar máquina agora</button>
+      <button class="btn dark big" onclick="ligarWindows10()">🪟 Ligar Windows</button>
+      <button class="btn light big" onclick="openReal('debian')">🐧 Debian real</button>
+    </div>
+      <div class="stats">
+        <div><strong id="statBoots">0</strong><span>boots reais nesta máquina</span></div>
+        <div><strong id="statSnaps">0</strong><span>snapshots salvos</span></div>
+        <div><strong id="statUp">0min</strong><span>tempo ligado somado</span></div>
+      </div>
+      <p class="disclaimer">Real = kernel/sistema executando de verdade no seu navegador (lento, mas real). Windows da Microsoft <b>não</b> pode ser oferecido grátis por site estático por causa de licença — para Windows real veja a seção Servidor.</p>
+    </div>
+    <div class="hero-demo" aria-label="Lab real">
+      <div class="window">
+        <div class="window-bar"><i></i><i></i><i></i><span>nuvemos — lab real</span></div>
+        <div class="window-screen">
+          <div class="real-pick">
+            <button class="btn primary" onclick="ligarWindows10()">▶ Windows (compatível real)</button>
+            <button class="btn dark" onclick="openReal('debian')">▶ Debian (WebVM)</button>
+            <button class="btn light" onclick="openReal('win98')">▶ Win98 histórico</button>
+            <button class="btn light" onclick="openReal('win2k')">▶ Win2000 histórico</button>
+          </div>
+          <p class="muted small">Primeiro boot baixa ~20-50MB e pode levar 10-30s. É o sistema real iniciando.</p>
+          <a class="btn ghost" href="#servidor">Preciso de Windows/Ubuntu com rede total? → veja Servidor</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div id="tourBanner" class="wrap tour" hidden>
+    <span>👋 Novo aqui? Aperte <kbd>Ctrl K</kbd> para a paleta de comandos, ou clique em <strong>Ligar máquina agora</strong>.</span>
+    <button class="btn ghost" onclick="dismissTour()">Entendi</button>
+  </div>
+
+  <section id="maquina" class="wrap section lab">
+    <div class="section-head">
+      <div>
+        <h2>💻 Máquina integrada — 100% funcional aqui dentro</h2>
+        <p class="muted">Emulador x86 v86 carregado nesta página. Sem iframe externo: tela, teclado, serial, salvar estado e screenshot funcionam.</p>
+      </div>
+    </div>
+    <div class="vm-controls">
+      <label>Sistema
+        <select id="vmProfile">
+          <option value="buildroot">Buildroot Linux (6 MB • boot rápido • terminal)</option>
+          <option value="kolibri">KolibriOS (1,4 MB • desktop gráfico + jogos)</option>
+          <option value="freedos">FreeDOS (0,6 MB • DOS real)</option>
+        </select>
+      </label>
+      <label>RAM
+        <select id="vmMem">
+          <option value="64">64 MB</option>
+          <option value="128" selected>128 MB</option>
+          <option value="256">256 MB</option>
+        </select>
+      </label>
+      <button class="btn primary" id="vmStart" onclick="v86Boot()">▶ Ligar</button>
+      <button class="btn dark" id="vmPause" onclick="v86Pause()" disabled>Pausar</button>
+      <button class="btn ghost" onclick="v86Reset()">↻ Reset</button>
+      <button class="btn ghost" onclick="v86Stop()">⏻ Desligar</button>
+    </div>
+    <div class="vm-controls wrap2">
+      <button class="btn ghost" onclick="v86CtrlAltDel()">Ctrl+Alt+Del</button>
+      <button class="btn ghost" onclick="v86Fullscreen()">⛶ Tela cheia</button>
+      <button class="btn ghost" onclick="v86Screenshot()">📸 Screenshot</button>
+      <button class="btn ghost" onclick="v86Save()">💾 Salvar estado</button>
+      <button class="btn ghost" onclick="document.getElementById('vmRestoreFile').click()">📂 Restaurar</button>
+      <button class="btn ghost" onclick="v86SendKeys('ctrl-c')">Ctrl+C</button>
+      <button class="btn ghost" onclick="v86SendKeys('ctrl-d')">Ctrl+D</button>
+      <button class="btn ghost" onclick="v86PasteClipboard()">📋 Colar na VM</button>
+      <button class="btn ghost" onclick="v86Mute()" id="vmMuteBtn">🔊 Som</button>
+      <button class="btn ghost" onclick="v86ClearSerial()">🧹 Limpar serial</button>
+      <label class="scale">Escala <input type="range" id="vmScale" min="50" max="150" value="100" oninput="v86Scale(this.value)"> <span id="vmScaleVal">100%</span></label>
+      <input type="file" id="vmRestoreFile" accept=".bin" hidden onchange="v86RestoreFile(this)">
+    </div>
+    <div class="progress" id="v86_progress" hidden><div id="v86_progress_bar"></div></div>
+    <div class="vm-statusline"><span class="muted small" id="v86_status">Desligada.</span></div>
+    <div class="vm-grid">
+      <div class="vm-screen-box">
+        <div id="v86_screen_container"><div id="v86_screen"></div><canvas id="v86_canvas" style="display:none"></canvas></div>
+        <div class="vm-statusbar"><span id="v86_time">0s</span><span id="v86_speed">0 mIPS</span><span id="v86_net">rede: off (Buildroot local)</span></div>
+      </div>
+      <div class="vm-serial-box">
+        <strong>Terminal serial (digite e Enter — vai direto para a VM)</strong>
+        <pre id="v86_serial" class="term serial"></pre>
+        <form id="v86_serial_form" class="term-input"><span>›</span><input id="v86_serial_in" placeholder="ex: ls /bin e Enter" autocomplete="off"></form>
+        <div class="vm-help muted small">No Buildroot: tente <code>uname -a</code>, <code>ls /</code>, <code>lua -e "print(2+2)"</code>, <code>ping -c2 127.0.0.1</code>. No KolibriOS use o mouse na tela. Clique na tela uma vez para capturar o teclado.</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="lab" class="wrap section lab">
+    <div class="section-head">
+      <div>
+        <h2>🧪 Lab Real — escolha o motor</h2>
+        <p class="muted">Todos abrem em tela cheia com o sistema real. Se um falhar no seu navegador, teste outro.</p>
+      </div>
+    </div>
+    <div class="grid" id="labGrid"></div>
+    <div class="lab-frame">
+      <div class="lab-bar">
+        <strong id="labTitle">Nenhum sistema carregado</strong>
+        <div class="lab-btns">
+          <button class="btn ghost" onclick="reloadLab()">↻ Recarregar</button>
+          <button class="btn ghost" onclick="openLabNewTab()">↗ Abrir em nova aba</button>
+          <button class="btn ghost" onclick="copyLabLink()">🔗 Copiar link</button>
+          <button class="btn ghost" onclick="closeLab()">✕ Fechar</button>
+        </div>
+      </div>
+      <div id="labEmpty" class="lab-empty">👆 Clique em “Abrir real” acima. O sistema vai bootar aqui dentro.<br><span class="small">Dica: no celular, prefira a máquina integrada KolibriOS (1,4 MB).</span></div>
+      <div id="labLoading" class="lab-empty" hidden><span class="spinner" aria-hidden="true"></span> Carregando sistema real…</div>
+      <iframe id="labFrame" title="Sistema real" hidden allow="autoplay; clipboard-read; clipboard-write; cross-origin-isolated" sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals"></iframe>
+      <p class="muted small">Fontes: WebVM (leaningtech/webvm, Debian via CheerpX) • JSLinux (Fabrice Bellard, Alpine via TinyEMU) • v86 (copy.sh, emulador x86 open-source). Uso educacional com atribuição.</p>
+    </div>
+  </section>
+
+  <section class="wrap section steps">
+    <h2>🚀 Como funciona em 3 passos</h2>
+    <div class="grid">
+      <div class="card"><h3>1. Ligue</h3><p>Escolha Buildroot (rápido), KolibriOS (gráfico) ou FreeDOS. O boot baixa poucos MB uma vez.</p></div>
+      <div class="card"><h3>2. Use</h3><p>Clique na tela para o teclado, digite no serial ou use o mouse no KolibriOS. Salve o estado para continuar depois.</p></div>
+      <div class="card"><h3>3. Expanda</h3><p>Precisa de Debian completo ou desktop? Use o Lab externo ou conecte seu servidor na seção Servidor.</p></div>
+    </div>
+    <h2 class="mt">⚖️ Qual motor usar?</h2>
+    <div class="table-wrap"><table class="cmp">
+      <tr><th>Motor</th><th>Tamanho</th><th>Boot</th><th>Desktop</th><th>Terminal</th><th>Offline*</th></tr>
+      <tr><td><strong>Integrada (Buildroot)</strong></td><td>~6 MB</td><td>~5-10s</td><td>—</td><td>✅ serial + tela</td><td>✅ após 1º boot</td></tr>
+      <tr><td><strong>Integrada (KolibriOS)</strong></td><td>~1,4 MB</td><td>~3-5s</td><td>✅ jogos e apps</td><td>—</td><td>✅ após 1º boot</td></tr>
+      <tr><td><strong>WebVM Debian</strong></td><td>~50 MB+</td><td>~20-40s</td><td>—</td><td>✅ completo</td><td>—</td></tr>
+      <tr><td><strong>JSLinux Alpine</strong></td><td>~10 MB</td><td>~10-20s</td><td>✅ (modo X)</td><td>✅ root</td><td>—</td></tr>
+      <tr><td><strong>ReactOS (v86)</strong></td><td>~17 MB+</td><td>~30-60s</td><td>✅ Win-like</td><td>—</td><td>—</td></tr>
+    </table></div>
+    <p class="muted small">*Shell e VM integrada funcionam offline após o primeiro carregamento (PWA). Imagens externas exigem rede.</p>
+  </section>
+
+  <section class="wrap strip">
+    <h2>⭐ Catálogo</h2>
+    <p class="muted">Cada “Executar real” abre o motor real mais próximo do sistema pedido.</p>
+    <div class="grid" id="featuredGrid"></div>
+  </section>
+
+  <section id="sistemas" class="wrap section">
+    <div class="section-head">
+      <div>
+        <h2>🖥️ Sistemas</h2>
+        <p class="muted">Linux abre Debian/Alpine/Arch reais. Entradas “Windows” abrem ReactOS real (clone aberto compatível) + guia para Windows licenciado.</p>
+      </div>
+      <div class="tabs" role="tablist">
+        <button class="tab active" data-sys="all">Todos</button>
+        <button class="tab" data-sys="ubuntu">Ubuntu</button>
+        <button class="tab" data-sys="debian">Debian</button>
+        <button class="tab" data-sys="fedora">Fedora</button>
+        <button class="tab" data-sys="windows">Windows</button>
+        <button class="tab" data-sys="fav">♥ Favoritos</button>
+      </div>
+    </div>
+    <div class="grid" id="systemsGrid"></div>
+  </section>
+
+  <section id="apps" class="wrap section">
+    <div class="section-head">
+      <div>
+        <h2>📦 Apps — o que dá para rodar de verdade aqui?</h2>
+        <p class="muted">Dentro do Debian/Alpine real você pode instalar e rodar ferramentas de terminal. Exemplos testáveis:</p>
+      </div>
+      <div class="tabs" role="tablist">
+        <button class="tab active" data-app="all">Todos</button>
+        <button class="tab" data-app="linux">Linux</button>
+        <button class="tab" data-app="windows">Windows</button>
+        <button class="tab" data-app="multimidia">Multimídia</button>
+        <button class="tab" data-app="dev">Dev</button>
+      </div>
+    </div>
+    <div class="grid" id="appsGrid"></div>
+  </section>
+
+  <section id="comandos" class="wrap section">
+    <div class="section-head">
+      <div>
+        <h2>⌨️ Comandos para rodar no sistema real</h2>
+        <p class="muted">Clique em “Abrir no Lab” — o comando será copiado e você cola dentro do Debian/Alpine real.</p>
+      </div>
+    </div>
+    <div class="cmd-list" id="cmdList"></div>
+  </section>
+
+  <section id="servidor" class="wrap section about">
+    <h2>🔌 Quer Windows / Ubuntu real com rede, disco e desktop completo?</h2>
+    <p>Um site estático <strong>não consegue</strong> hospedar VPS grátis para todo mundo — precisa de servidor, licença Windows e banda. Você tem 2 caminhos reais:</p>
+    <div class="grid">
+      <div class="card"><h3>1. Conectar seu servidor</h3><p>Rode um container e cole a URL abaixo para embutir aqui via iframe/noVNC.</p>
+        <code class="code">docker run -p 3000:3000 lscr.io/linuxserver/webtop:ubuntu-xfce</code>
+        <code class="code">docker run -p 7681:7681 tsl0922/ttyd</code>
+      </div>
+      <div class="card"><h3>2. Nuvens com nível grátis</h3><p>Oracle Cloud Free, Google Cloud Free, Azure for Students, GitHub Codespaces. Depois aponte o Guacamole/noVNC para este site.</p></div>
+    </div>
+    <form id="backendForm" class="backend-form">
+      <input id="backendUrl" type="url" required placeholder="https://seu-servidor:3000 ou http://localhost:7681">
+      <button class="btn primary" type="submit">Carregar meu servidor aqui</button>
+      <button class="btn ghost" type="button" onclick="closeLab()">Limpar</button>
+    </form>
+    <div class="gen">
+      <h3>🧪 Gerador de comando Docker</h3>
+      <div class="vm-controls">
+        <label>Imagem
+          <select id="genImg">
+            <option value="lscr.io/linuxserver/webtop:ubuntu-xfce">Ubuntu XFCE (webtop)</option>
+            <option value="lscr.io/linuxserver/webtop:fedora-xfce">Fedora XFCE (webtop)</option>
+            <option value="tsl0922/ttyd">ttyd (terminal web)</option>
+          </select>
+        </label>
+        <label>Porta <input id="genPort" type="number" value="3000" min="1024" max="65535"></label>
+        <button class="btn dark" type="button" onclick="genCompose()">Gerar</button>
+        <button class="btn ghost" type="button" onclick="copyGen()">📋 Copiar</button>
+      </div>
+      <code class="code" id="genOut">docker run -d -p 3000:3000 lscr.io/linuxserver/webtop:ubuntu-xfce</code>
+    </div>
+    <ul class="about-list">
+      <li>⚠️ Nunca cole URL com senha pública sem autenticação.</li>
+      <li>🪟 Windows real exige licença Microsoft (Windows 365 / Azure VM / seu PC com RustDesk).</li>
+      <li>✅ ReactOS via v86 já incluso no Lab — é Windows-compatível e 100% aberto.</li>
+    </ul>
+  </section>
+
+  <section id="win10vnc" class="wrap section lab">
+    <div class="section-head">
+      <div>
+        <h2>🪟 PC virtual Windows 10 para VNC Viewer</h2>
+        <p class="muted">Monte um Windows 10 de verdade no <strong>seu computador/servidor</strong> e acesse pelo <strong>RealVNC Viewer</strong> (ou qualquer VNC). Este site não hospeda Windows — ele gera os comandos e o painel de conexão.</p>
+      </div>
+    </div>
+    <p class="disclaimer">⚖️ <strong>Licença:</strong> use sua própria licença do Windows 10 ou a <strong>ISO de avaliação da Microsoft</strong> (90 dias, grátis para testes). Não distribuímos imagens do Windows. O container <code>dockur/windows</code> baixa o Windows dos servidores da Microsoft e exige aceite do EULA.</p>
+    <div class="grid">
+      <div class="card"><h3>A. Docker (mais fácil)</h3><p>1 comando e o Windows 10 sobe com tela web + VNC. Ideal para testar.</p><code class="code">docker run -d --name win10 -p 8006:8006 -p 5900:5900 -e RAM_SIZE=4G -e CPU_CORES=2 dockur/windows</code></div>
+      <div class="card"><h3>B. QEMU/KVM (manual)</h3><p>Controle total com sua ISO. VNC na porta 5900 para o VNC Viewer.</p><code class="code">qemu-system-x86_64 -m 4096 -smp 2 -hda win10.qcow2 -cdrom Win10.iso -boot d -vnc :0 -usbdevice tablet</code></div>
+      <div class="card"><h3>C. No VNC Viewer</h3><p>No app RealVNC Viewer digite <strong>SEU-IP:5900</strong>, aceite o aviso e informe a senha do VNC. Ex: <strong>192.168.1.50:5900</strong>.</p></div>
+    </div>
+    <div class="gen">
+      <h3>▶ Ligar agora no navegador</h3>
+      <p class="muted small">Windows 10 da Microsoft <strong>não pode</strong> ser embutido num site (licença). Mas você pode ligar <strong>agora</strong> o Windows-compatível real ou um Windows histórico real:</p>
+      <div class="vm-controls">
+        <button class="btn primary" type="button" onclick="ligarWindows10()">🪟 Ligar Windows-compatível (ReactOS)</button>
+        <button class="btn dark" type="button" onclick="openReal('win98')">▶ Ligar Win98</button>
+        <button class="btn ghost" type="button" onclick="openReal('win2k')">▶ Ligar Win2000</button>
+      </div>
+    </div>
+    <div class="gen">
+      <h3>🪟 Windows 11 adicionado</h3>
+      <p class="muted small">Win11 exige TPM 2.0 e 4GB+ RAM — o container <code>dockur/windows</code> já emula o TPM. Escolha o caminho:</p>
+      <div class="vm-controls">
+        <button class="btn primary" type="button" onclick="ligarWindows11()">⬇ Gerar Docker Win11</button>
+        <a class="btn dark" href="https://www.microsoft.com/software-download/windows11" target="_blank" rel="noopener">⬇ ISO oficial Microsoft</a>
+        <a class="btn ghost" href="https://www.microsoft.com/evalcenter/evaluate-windows-11-enterprise" target="_blank" rel="noopener">Versão avaliação (90 dias)</a>
+      </div>
+      <p class="muted small">QEMU manual com TPM: <code class="code">qemu-system-x86_64 -m 8192 -smp 4 -hda win11.qcow2 -cdrom Win11.iso -boot d -vnc :0 -tpmdev emulator,id=tpm0 -device tpm-tis,tpmdev=tpm0</code></p>
+    </div>
+    <div class="gen">
+      <h3>🧪 Gerador Windows 10 + VNC</h3>
+      <div class="vm-controls">
+        <label>Versão
+          <select id="winVer">
+            <option value="10">Windows 10</option>
+            <option value="10l">Windows 10 LTSC (leve)</option>
+            <option value="11">Windows 11</option>
+            <option value="tiny11">Tiny11 (comunidade, leve)</option>
+          </select>
+        </label>
+        <label>RAM <select id="winRam"><option>2G</option><option selected>4G</option><option>8G</option></select></label>
+        <label>CPUs <select id="winCpu"><option>2</option><option>4</option></select></label>
+        <label>Porta VNC <input id="winVnc" type="number" value="5900" min="5900" max="5999"></label>
+        <label>Porta Web <input id="winWeb" type="number" value="8006" min="1024" max="65535"></label>
+        <button class="btn dark" type="button" onclick="genWin10()">Gerar</button>
+        <button class="btn ghost" type="button" onclick="copyWin10()">📋 Copiar</button>
+      </div>
+      <code class="code" id="winOut">docker run -d --name win10 -p 8006:8006 -p 5900:5900 -e RAM_SIZE=4G -e CPU_CORES=2 dockur/windows</code>
+      <p class="muted small">Depois de subir: aguarde a instalação (10-30 min na 1ª vez), abra <code>http://SEU-IP:8006</code> no navegador ou conecte o VNC Viewer em <code>SEU-IP:5900</code>. Troque a senha padrão no primeiro acesso.</p>
+    </div>
+    <div class="gen">
+      <h3>🔌 Conectar meu VNC (Viewer / Web)</h3>
+      <div class="vm-controls">
+        <label>Host/IP <input id="vncHost" placeholder="192.168.1.50 ou meuservidor.com" style="min-width:220px"></label>
+        <label>Porta <input id="vncPort" type="number" value="5900" min="1" max="65535"></label>
+        <label>Senha VNC <input id="vncPass" type="password" placeholder="••••••"></label>
+        <button class="btn primary" type="button" onclick="vncWebConnect()">🌐 Abrir via Web</button>
+        <button class="btn dark" type="button" onclick="vncAppConnect()">📲 Abrir no app VNC</button>
+        <button class="btn ghost" type="button" onclick="copyVnc()">📋 Copiar</button>
+      </div>
+      <code class="code" id="vncOut">SEU-IP:5900</code>
+      <ul class="about-list">
+        <li>📲 <strong>RealVNC Viewer:</strong> Arquivo → Nova conexão → endereço <code>IP:5900</code> → conecte e digite a senha. Marque “Lembrar” só em PC pessoal.</li>
+        <li>🌐 <strong>Via Web:</strong> abre o cliente noVNC apontando para seu servidor (exige <strong>websockify</strong> ou a tela web do container na porta 8006).</li>
+        <li>🔒 Nunca exponha VNC sem senha na internet — use VPN (Tailscale/WireGuard) ou túnel SSH: <code class="code">ssh -L 5900:localhost:5900 usuario@seu-servidor</code> e conecte em <code>localhost:5900</code>.</li>
+        <li>🧱 No Windows da VM: instale o <strong>TightVNC Server</strong>, libere a porta no Firewall e defina senha forte.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="wrap newsletter">
+    <div>
+      <h3>📬 Receba novidades</h3>
+      <p class="muted">Lista local, salva só no seu navegador.</p>
+    </div>
+    <form id="newsForm">
+      <input id="newsEmail" type="email" required placeholder="voce@exemplo.com">
+      <button class="btn primary" type="submit">Assinar</button>
+    </form>
+  </section>
+
+  <section id="sobre" class="wrap section about">
+    <h2>Sobre o NuvemOS</h2>
+    <p>Interface e textos 100% originais, inspirados apenas na <em>ideia</em> de “rodar sistemas no navegador”. Os sistemas executados são projetos abertos de terceiros carregados dos sites oficiais: <strong>WebVM</strong> (Leaning Technologies), <strong>JSLinux</strong> (Fabrice Bellard) e <strong>v86</strong> (copy.sh). Sem afiliação com OnWorks, Microsoft ou Canonical.</p>
+    <details class="faq"><summary>É grátis? Tem limite?</summary><p>Sim, tudo aqui roda no seu navegador, então não há fila nem custo de servidor. O limite é o seu dispositivo: VMs pedem 64-256 MB de RAM e o primeiro boot baixa a imagem.</p></details>
+    <details class="faq"><summary>Por que não tem Windows 10/11 direto?</summary><p>Licença da Microsoft: não posso distribuir Windows fechado num site estático. Uso ReactOS (aberto, compatível) + guia para você rodar seu Windows licenciado no seu servidor.</p></details>
+    <details class="faq"><summary>Meus dados ficam salvos?</summary><p>Estado da VM só se você clicar em “Salvar estado”. Favoritos e newsletter ficam no localStorage do seu navegador. Nada vai para servidor nosso — nem temos um.</p></details>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap foot-grid">
+    <div>
+      <strong>NuvemOS</strong>
+      <p class="muted">Créditos de execução: WebVM • JSLinux • v86. Marcas citadas pertencem aos donos.</p>
+    </div>
+    <div>
+      <strong>Links</strong>
+      <a href="#lab">Lab Real</a><a href="#sistemas">Sistemas</a><a href="#servidor">Servidor</a><a href="#win10vnc">Win10+VNC</a>
+    </div>
+    <div>
+      <strong>Motores reais</strong>
+      <a href="https://webvm.io" target="_blank" rel="noopener">webvm.io</a>
+      <a href="https://bellard.org/jslinux/" target="_blank" rel="noopener">bellard.org/jslinux</a>
+      <a href="https://copy.sh/v86/" target="_blank" rel="noopener">copy.sh/v86</a>
+    </div>
+  </div>
+  <p class="copy">© 2026 NuvemOS — código original MIT. Sistemas emulados pertencem aos seus projetos. <span id="ver">v2</span></p>
+</footer>
+<button id="topBtn" title="Voltar ao topo" onclick="window.scrollTo({top:0,behavior:'smooth'})" hidden>↑</button>
+
+<div id="runnerModal" class="modal" hidden>
+  <div class="modal-box wide">
+    <div class="modal-head">
+      <strong id="runnerTitle">Sistema real</strong>
+      <div>
+        <button class="btn ghost" onclick="openRunnerNewTab()">↗ Nova aba</button>
+        <button class="btn ghost" id="runnerClose">✕ Fechar</button>
+      </div>
+    </div>
+    <div class="modal-body">
+      <p class="muted small" id="runnerDesc"></p>
+      <iframe id="runnerFrame" title="Sistema real em execução" allow="autoplay; clipboard-read; clipboard-write" sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals"></iframe>
+    </div>
+  </div>
+</div>
+
+<div id="palette" class="modal" hidden>
+  <div class="modal-box pal">
+    <input id="paletteInput" placeholder="Digite: ligar kolibri, debian, tema, maquinas…" autocomplete="off" aria-label="Paleta de comandos">
+    <div id="paletteList"></div>
+    <p class="muted small pal-hint"><kbd>↑↓</kbd> navegar • <kbd>Enter</kbd> executar • <kbd>Esc</kbd> fechar</p>
+  </div>
+</div>
+
+<div id="infoModal" class="modal" hidden>
+  <div class="modal-box">
+    <div class="modal-head"><strong id="infoTitle">Detalhes</strong><button class="btn ghost" id="infoClose">✕ Fechar</button></div>
+    <div class="modal-body" id="infoBody"></div>
+  </div>
+</div>
+
+<div id="toast" class="toast" role="status" hidden></div>
+<script src="app.js"></script>
+</body>
+</html>
