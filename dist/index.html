@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aurora Roleplay — SA-MP Gamemode</title>
+<style>
+:root{color-scheme:dark;--bg:#0b0f17;--card:#141b2a;--acc:#ffd60a;--txt:#e8ecf3;--mut:#9aa4b5}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--txt);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:960px;margin:0 auto;padding:24px 16px 64px}
+.hero{background:linear-gradient(135deg,#1a2340,#0e2a4a);border:1px solid #2a3a5f;border-radius:16px;padding:32px 24px;margin:16px 0}
+.hero h1{margin:0 0 8px;font-size:clamp(28px,5vw,44px)}.hero h1 span{color:var(--acc)}
+.hero p{margin:4px 0;color:var(--mut)}.badge{display:inline-block;background:var(--acc);color:#111;font-weight:700;border-radius:999px;padding:2px 12px;font-size:13px;margin-bottom:12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:20px 0}
+.card{background:var(--card);border:1px solid #26314d;border-radius:12px;padding:14px 16px}
+.card h3{margin:0 0 6px;font-size:16px;color:var(--acc)}.card p,.card li{font-size:14px;color:var(--mut);margin:2px 0}.card ul{padding-left:18px;margin:4px 0}
+h2{margin-top:32px;border-bottom:1px solid #26314d;padding-bottom:6px}
+code,pre{background:#0a0e15;border:1px solid #26314d;border-radius:8px}code{padding:1px 6px;font-size:13px}pre{padding:12px;overflow:auto;font-size:13px}
+.tree{columns:2}@media(max-width:600px){.tree{columns:1}}
+footer{margin-top:40px;color:var(--mut);font-size:13px;text-align:center}
+a{color:var(--acc)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="hero">
+<div class="badge">SA-MP 0.3.7 &bull; Pawn &bull; MySQL</div>
+<h1>Aurora <span>Roleplay</span></h1>
+<p>Gamemode RP completo, modular e seguro para GTA San Andreas Multiplayer.</p>
+<p>Login com hash Whirlpool &bull; HUD moderno &bull; 9 empregos &bull; Orgs &bull; Casas, empresas e ve&iacute;culos persistentes &bull; Admin &bull; Anti-exploit</p>
+</div>
+<h2>Sistemas inclu&iacute;dos</h2>
+<div class="grid">
+<div class="card"><h3>Contas</h3><ul><li>Registro / login / personagem</li><li>Whirlpool + salt, sem SQL injection</li><li>Salvamento em login, logout e a cada 5 min</li></ul></div>
+<div class="card"><h3>Economia</h3><ul><li>Dinheiro em m&atilde;os + banco</li><li>Transfer&ecirc;ncias, payday, logs</li><li>Server-authoritative anti-dupe</li></ul></div>
+<div class="card"><h3>Empregos (9)</h3><ul><li>Caminhoneiro, taxista, &ocirc;nibus</li><li>Entregador, mec&acirc;nico, agricultor</li><li>Lixeiro, pescador, minerador</li></ul></div>
+<div class="card"><h3>Organiza&ccedil;&otilde;es</h3><ul><li>Pol&iacute;cia, hospital, mec&acirc;nicos</li><li>Convite, demiss&atilde;o, cargos 0-6, cofre</li></ul></div>
+<div class="card"><h3>Patrim&ocirc;nio</h3><ul><li>Ve&iacute;culos: combust&iacute;vel, tranca, seguro</li><li>Casas e empresas persistentes</li><li>Invent&aacute;rio com peso e slots</li></ul></div>
+<div class="card"><h3>Admin &amp; Seguran&ccedil;a</h3><ul><li>/kick /ban /mute /jail /spec /goto</li><li>Anti-flood, anti-teleport, gate pr&eacute;-login</li></ul></div>
+</div>
+<h2>Estrutura do projeto</h2>
+<pre class="tree">gamemodes/main.pwn        — gamemode principal
+include/config.inc        — config central + dados do jogador
+include/database.inc      — conex&atilde;o MySQL R41-4
+include/accounts.inc      — registro / login
+include/players.inc       — personagem, save/load, XP
+include/security.inc      — anti-flood, anti-teleport
+include/ui.inc            — HUD PlayerTextDraws, notifica&ccedil;&otilde;es
+include/inventory.inc     — itens, peso, anti-dupe
+include/vehicles.inc      — ve&iacute;culos persistentes
+include/houses.inc        — casas + empresas
+include/jobs.inc          — 9 empregos com checkpoints
+include/organizations.inc — orgs, cargos, cofre
+include/phone_gps.inc     — celular, SMS, GPS
+include/admin.inc         — puni&ccedil;&otilde;es
+include/commands.inc      — comandos pawn.cmd
+sql/schema.sql            — 16 tabelas + seeds
+docs/INSTALL.md           — instala&ccedil;&atilde;o e compila&ccedil;&atilde;o</pre>
+<h2>Como rodar o servidor SA-MP</h2>
+<pre>mysql -u samp -p samp_rp &lt; sql/schema.sql
+cp scriptfiles/mysql.ini.example scriptfiles/mysql.ini  # edite a senha
+pawncc gamemodes/main.pwn -o gamemodes/main.amx -;+ -(+
+./samp03svr   # server.cfg aponta gamemode0 main</pre>
+<p>Guia completo em <code>docs/INSTALL.md</code> no reposit&oacute;rio.</p>
+<footer>Aurora Roleplay v1.0.0 — preview est&aacute;tico gerado por start.sh (o servidor SA-MP roda em porta 7777, n&atilde;o no navegador).</footer>
+</div>
+</body>
+</html>

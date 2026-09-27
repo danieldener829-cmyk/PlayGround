@@ -1,0 +1,26 @@
+echo "SA-MP server config — Aurora RP"
+gamemode0 main 1
+filterscripts
+maxplayers 100
+port 7777
+hostname Aurora Roleplay v1.0.0
+language Portugues Brasileiro
+mapname San Andreas
+weburl www.aurora-rp.exemplo
+maxnpc 0
+onfoot_rate 40
+incar_rate 40
+weapon_rate 40
+stream_distance 300.0
+stream_rate 1000
+sleep 5
+ackslimit 3000
+password 0
+announce 0
+query 1
+rcon_password TROQUE_AQUI_RCON_FORTE
+logtimeformat [%H:%M:%S]
+chatlogging 0
+anticheat 0
+useartwork 0
+plugins mysql_static.so streamer.so sscanf.so Whirlpool.so pawncmd.so

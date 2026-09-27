@@ -1,0 +1,6 @@
+# mysql.ini — copie para scriptfiles/mysql.ini e ajuste (NUNCA commite senha real)
+host=127.0.0.1
+user=samp
+pass=troque_aqui
+db=samp_rp
+port=3306
