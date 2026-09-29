@@ -33,6 +33,13 @@ kbd{background:var(--card);border:1px solid var(--line);border-bottom-width:2px;
 .gen{border:1px dashed var(--line);border-radius:14px;padding:14px;margin-top:12px}
 .gen input,.gen select{padding:9px 11px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink)}
 .badge{display:inline-block;font-size:11px;font-weight:800;border-radius:999px;padding:2px 9px;background:#e0e7ff;color:#1e2a78}
+.cloud-store{border:2px solid transparent;background:linear-gradient(var(--card),var(--card)) padding-box,linear-gradient(135deg,#2563eb,#7c3aed,#06b6d4) border-box}
+.plan .price{font-size:30px;font-weight:900;margin:4px 0}.plan .price span{font-size:14px;color:var(--muted);font-weight:600}
+.plan.featured{box-shadow:var(--shadow);transform:translateY(-2px)}
+.plan-list{margin:6px 0;padding-left:18px;color:var(--muted);font-size:13.5px;display:grid;gap:4px}
+.steps-mini{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:14px 0}
+.step{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:10px 12px;display:flex;gap:10px;align-items:center;font-weight:600;font-size:14px}
+.step strong{background:linear-gradient(135deg,#2563eb,#7c3aed);color:#fff;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;flex:0 0 28px}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 body.dark{--bg:#0b1220;--card:#111c33;--ink:#e8eefc;--muted:#93a4c4;--line:#223152}
 .wrap{max-width:1120px;margin:0 auto;padding:0 18px}

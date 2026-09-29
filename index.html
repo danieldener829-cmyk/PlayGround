@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NuvemOS — Linux real no navegador</title>
-<meta name="description" content="NuvemOS: rode Linux de verdade no navegador via WebVM, JSLinux e v86. Máquina integrada funcional, catálogo e guia de servidor. Código original educacional.">
+<title>NuvemPC — PC virtual na nuvem para FiveM no celular</title>
+<meta name="description" content="NuvemPC: alugue um PC virtual gamer na nuvem e jogue FiveM/GTA RP no celular ou PC fraco via acesso remoto. Planos por hora, dia e mês. Site original inspirado em vídeos de PC virtual.">
 <meta name="theme-color" content="#2563eb">
 <meta property="og:title" content="NuvemOS — Linux real no navegador">
 <meta property="og:description" content="Máquina virtual real (v86) integrada + Lab com Debian, Alpine, Arch e ReactOS. Sem instalar nada.">
@@ -30,6 +30,7 @@
     </a>
     <nav class="nav" id="mainNav">
       <a href="#inicio">Início</a>
+      <a href="#cloudpc">PC Virtual</a>
       <a href="#maquina">Máquina</a>
       <a href="#lab">Lab</a>
       <a href="#sistemas">Sistemas</a>
@@ -42,7 +43,7 @@
       <span class="net-dot" id="netDot" title="Status da rede">●</span>
       <button id="themeBtn" class="btn ghost" title="Alternar tema">🌙</button>
       <button id="menuBtn" class="btn ghost only-mobile" aria-label="Abrir menu">☰</button>
-      <a href="#maquina" class="btn primary">▶ Ligar agora</a>
+      <a href="#cloudpc" class="btn primary">🎮 Quero PC virtual</a>
     </div>
   </div>
   <div class="searchbar wrap">
@@ -96,6 +97,87 @@
     <span>👋 Novo aqui? Aperte <kbd>Ctrl K</kbd> para a paleta de comandos, ou clique em <strong>Ligar máquina agora</strong>.</span>
     <button class="btn ghost" onclick="dismissTour()">Entendi</button>
   </div>
+
+  <div id="tourBanner" class="wrap tour" hidden>
+    <span>👋 Novo aqui? Aperte <kbd>Ctrl K</kbd> para a paleta de comandos, ou clique em <strong>Ligar máquina agora</strong>.</span>
+    <button class="btn ghost" onclick="dismissTour()">Entendi</button>
+  </div>
+
+  <section id="cloudpc" class="wrap section lab cloud-store">
+    <div class="section-head">
+      <div>
+        <span class="pill">🎮 PC virtual gamer • jogue no celular ou PC fraco</span>
+        <h2>Tenha um PC virtual para FiveM / GTA RP no celular</h2>
+        <p class="muted">Funciona assim: você aluga um PC gamer de verdade num datacenter e joga pelo celular via streaming (acesso remoto). O jogo roda no PC da nuvem — seu celular vira só a tela + controle. Ideal para FiveM, GTA V RP e outros jogos de PC.</p>
+      </div>
+    </div>
+    <div class="steps-mini">
+      <div class="step"><strong>1</strong><span>Escolha o plano</span></div>
+      <div class="step"><strong>2</strong><span>Receba IP + login</span></div>
+      <div class="step"><strong>3</strong><span>Conecte pelo app remoto</span></div>
+      <div class="step"><strong>4</strong><span>Abra o FiveM e jogue</span></div>
+    </div>
+    <div class="grid" id="cloudPlans">
+      <article class="card plan" data-plan="Hora Flex" data-price="4.99" data-unit="hora">
+        <span class="badge">⚡ Avulso</span>
+        <h3>Hora Flex</h3>
+        <p class="price">R$ 4,99<span>/hora</span></p>
+        <ul class="plan-list">
+          <li>✅ 6 vCPU • 16 GB RAM • GPU dedicada</li>
+          <li>✅ FiveM + GTA V pré-instaláveis</li>
+          <li>✅ Acesso pelo celular ou PC</li>
+          <li>✅ Sem fidelidade</li>
+        </ul>
+        <div class="card-actions"><button class="btn primary" onclick="orderCloud('Hora Flex', 4.99, 'hora')">Quero este</button></div>
+      </article>
+      <article class="card plan featured" data-plan="Diária Gamer" data-price="24.99" data-unit="dia">
+        <span class="badge">🔥 Mais pedido</span>
+        <h3>Diária Gamer</h3>
+        <p class="price">R$ 24,99<span>/dia</span></p>
+        <ul class="plan-list">
+          <li>✅ 8 vCPU • 32 GB RAM • GPU RTX</li>
+          <li>✅ Fila prioritária à noite</li>
+          <li>✅ Save mantido por 7 dias</li>
+          <li>✅ Suporte no Discord</li>
+        </ul>
+        <div class="card-actions"><button class="btn primary" onclick="orderCloud('Diária Gamer', 24.99, 'dia')">Quero este</button></div>
+      </article>
+      <article class="card plan" data-plan="Mensal RP" data-price="149.99" data-unit="mês">
+        <span class="badge">💎 Melhor valor</span>
+        <h3>Mensal RP</h3>
+        <p class="price">R$ 149,99<span>/mês</span></p>
+        <ul class="plan-list">
+          <li>✅ PC fixo só seu, 24h ligado</li>
+          <li>✅ 8 vCPU • 32 GB RAM • 500 GB NVMe</li>
+          <li>✅ IP fixo + senha sua</li>
+          <li>✅ Troca de jogo liberada</li>
+        </ul>
+        <div class="card-actions"><button class="btn primary" onclick="orderCloud('Mensal RP', 149.99, 'mês')">Quero este</button></div>
+      </article>
+    </div>
+    <div class="gen">
+      <h3>🧮 Calculadora: quanto vou gastar?</h3>
+      <div class="vm-controls">
+        <label>Plano
+          <select id="calcPlan">
+            <option value="4.99">Hora Flex — R$ 4,99/hora</option>
+            <option value="24.99">Diária — R$ 24,99/dia (equivale a ~R$ 1,04/hora)</option>
+            <option value="149.99">Mensal — R$ 149,99/mês</option>
+          </select>
+        </label>
+        <label>Qtd. (horas / dias / meses) <input id="calcQty" type="number" value="2" min="1" max="720"></label>
+        <button class="btn dark" type="button" onclick="calcCloud()">Calcular</button>
+        <button class="btn ghost" type="button" onclick="orderCloud('Personalizado', null, null)">📲 Pedir no WhatsApp</button>
+      </div>
+      <code class="code" id="calcOut">Total estimado: R$ 9,98</code>
+      <p class="muted small">Valores de demonstração para você editar — troque pelos seus preços reais no código (procure por <code>cloudPlans</code>). Internet mínima recomendada: 15 Mbps estáveis.</p>
+    </div>
+    <div class="grid">
+      <div class="card"><h3>📲 Como conectar (celular)</h3><p>1. Instale o app de acesso remoto indicado no pedido. 2. Digite IP, usuário e senha que você recebeu. 3. Toque para mouse, teclado virtual para digitar. Use Wi-Fi 5G ou 4G bom.</p></div>
+      <div class="card"><h3>💻 Como conectar (PC fraco)</h3><p>Use o app remoto de PC ou o navegador. Seu PC só exibe a imagem — todo o peso roda na nuvem. Fone + teclado USB no celular via OTG melhoram a mira.</p></div>
+      <div class="card"><h3>⚠️ Regras honestas</h3><p>Você precisa de conta GTA V original (Steam/Epic/Rockstar) e seguir as regras do servidor de RP. Não vendemos contas nem liberamos whitelist — o PC é seu, o RP é por sua conta.</p></div>
+    </div>
+  </section>
 
   <section id="maquina" class="wrap section lab">
     <div class="section-head">
@@ -433,6 +515,6 @@
 </div>
 
 <div id="toast" class="toast" role="status" hidden></div>
-<script src="app.js"></script>
+<script src="app.js?v=4"></script>
 </body>
 </html>

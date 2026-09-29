@@ -250,6 +250,8 @@ const PAL_ACTIONS = [
   {t:'Abrir Windows 98 real', run:()=>openReal('win98')},
   {t:'Abrir Windows 2000 real', run:()=>openReal('win2k')},
   {t:'Abrir guia Win10 + VNC Viewer', run:()=>document.getElementById('win10vnc').scrollIntoView({behavior:'smooth'})},
+  {t:'Ver planos de PC virtual (FiveM no celular)', run:()=>document.getElementById('cloudpc').scrollIntoView({behavior:'smooth'})},
+  {t:'Pedir PC virtual no WhatsApp', run:()=>orderCloud('Personalizado', null, null)},
   {t:'Gerar comando Windows 10 Docker', run:()=>{document.getElementById('win10vnc').scrollIntoView({behavior:'smooth'});genWin10();}},
   {t:'Alternar tema claro/escuro', run:()=>document.getElementById('themeBtn').click()},
   {t:'Ir para Máquina', run:()=>document.getElementById('maquina').scrollIntoView({behavior:'smooth'})},
@@ -264,6 +266,22 @@ function openPal(){ $('#palette').hidden=false; $('#paletteInput').value=''; pal
 function closePal(){ $('#palette').hidden=true; }
 window.genCompose = ()=>{ const img=$('#genImg').value; const port=$('#genPort').value||3000; const p1=img.includes('ttyd')?'7681:7681':port+':3000'; $('#genOut').textContent=`docker run -d --name nuvemos -p ${p1} ${img}`; };
 window.copyGen = ()=>copyText($('#genOut').textContent);
+// ---- Loja PC virtual (landing estilo vídeo: preços demo editáveis) ----
+const WHATS_NUMBER = '5500000000000'; // <-- TROQUE pelo seu WhatsApp (DDI+DDD+número)
+window.calcCloud = ()=>{
+  const price=parseFloat(($('#calcPlan')||{}).value||'4.99');
+  const qty=Math.max(1, parseInt(($('#calcQty')||{}).value||'1',10));
+  const total=(price*qty).toFixed(2).replace('.',',');
+  $('#calcOut').textContent=`Total estimado: R$ ${total} (${qty}x R$ ${String(price.toFixed(2)).replace('.',',')})`;
+};
+window.orderCloud = (plan, price, unit)=>{
+  let msg=`Olá! Quero o plano ${plan}`;
+  if(price) msg+=` (R$ ${String(price.toFixed(2)).replace('.',',')}/${unit})`;
+  msg+=` para PC virtual / FiveM no celular. Como faço o pagamento e recebo o acesso?`;
+  try{ localStorage.setItem('nuvemos_last_order', JSON.stringify({plan, at:new Date().toISOString()})); }catch(e){}
+  window.open(`https://wa.me/${WHATS_NUMBER}?text=${encodeURIComponent(msg)}`,'_blank');
+  toast('Abrindo WhatsApp com seu pedido…');
+};
 // ---- PC virtual Windows 10 para VNC Viewer ----
 window.genWin10 = ()=>{
   const ver=($('#winVer')||{}).value||'10';
