@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NimbusPC — Seu computador na nuvem, de qualquer lugar</title>
+<meta name="description" content="PC Virtual na nuvem: contrate, gerencie e acesse sua máquina de qualquer lugar.">
+<link rel="stylesheet" href="assets/css/main.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%235b6cff'/><text x='50' y='66' font-size='52' text-anchor='middle' fill='white'>☁</text></svg>">
+</head>
+<body>
+<nav class="nav container"><div class="nav-inner">
+  <a class="logo" href="index.html"><span class="logo-mark">☁</span> NimbusPC</a>
+  <div class="links" id="links">
+    <a href="index.html">Início</a><a href="#planos">Planos</a><a href="#recursos">Recursos</a><a href="#faq">FAQ</a><a href="login.html">Login</a>
+  </div>
+  <div class="nav-cta">
+    <a class="btn btn-ghost btn-sm" href="login.html">Entrar</a>
+    <a class="btn btn-primary btn-sm" href="cadastro.html">Começar agora</a>
+    <button class="burger" onclick="document.getElementById('links').classList.toggle('open')">☰</button>
+  </div>
+</div></nav>
+
+<header class="hero container">
+  <span class="badge"><span class="dot"></span> Infraestrutura cloud de alta performance</span>
+  <h1>Seu computador na nuvem,<br><span class="grad">de qualquer lugar.</span></h1>
+  <p class="sub">Contrate um PC Virtual em segundos, acesse pelo navegador ou app remoto e gerencie CPU, RAM, armazenamento e assinatura em um painel simples e seguro.</p>
+  <div class="hero-actions">
+    <a class="btn btn-primary" href="cadastro.html">Começar agora →</a>
+    <a class="btn btn-ghost" href="#planos">Ver planos</a>
+  </div>
+  <div class="hero-stats">
+    <div class="glass stat"><b>99,9%</b><span class="muted">SLA de disponibilidade*</span></div>
+    <div class="glass stat"><b>NVMe</b><span class="muted">Armazenamento rápido</span></div>
+    <div class="glass stat"><b>Remoto</b><span class="muted">RDP / navegador</span></div>
+  </div>
+  <div class="glass terminal">
+    <div class="term-bar"><i></i><i></i><i></i></div>
+    <div class="term-body">
+      <div><span class="g">$</span> nimbuspc criar --plano pro --os windows-11</div>
+      <div>✔ Provisionando vCPU, RAM e disco NVMe…</div>
+      <div>✔ Rede segura + IP dedicado configurados…</div>
+      <div><span class="g">→</span> Painel disponível em /painel.html <b>(requer backend conectado)</b></div>
+    </div>
+  </div>
+  <p class="muted" style="font-size:13px">*Meta de infraestrutura. Nenhuma máquina é criada sem backend de virtualização conectado.</p>
+</header>
+
+<section id="recursos" class="container">
+  <div class="sec-head"><span class="badge">Recursos</span><h2>Infraestrutura pensada para <span class="grad">produtividade</span></h2><p class="muted">Tudo que você precisa para trabalhar, estudar ou jogar com um PC sempre disponível.</p></div>
+  <div class="grid cards4">
+    <div class="glass card reveal"><div class="icon">⚡</div><h3>Performance sob demanda</h3><p class="muted">vCPUs dedicadas, RAM garantida e disco NVMe. Escale o plano quando precisar.</p></div>
+    <div class="glass card reveal"><div class="icon">🌐</div><h3>Acesso de qualquer lugar</h3><p class="muted">Conecte via navegador (console web), RDP ou cliente remoto, no celular ou PC.</p></div>
+    <div class="glass card reveal"><div class="icon">🔒</div><h3>Segurança em camadas</h3><p class="muted">Sessões autenticadas, controle de acesso, rotas protegidas e validação de dados.</p></div>
+    <div class="glass card reveal"><div class="icon">📊</div><h3>Painel em tempo real</h3><p class="muted">Monitore CPU, RAM, disco, uptime, IP e status. Ligue, desligue e reinicie.</p></div>
+    <div class="glass card reveal"><div class="icon">💳</div><h3>Assinatura flexível</h3><p class="muted">Checkout com PIX e cartão, estrutura pronta para gateway real (Stripe/Mercado Pago).</p></div>
+    <div class="glass card reveal"><div class="icon">🎧</div><h3>Suporte + tickets</h3><p class="muted">Abra tickets no painel, acompanhe status e fale com suporte prioritário.</p></div>
+    <div class="glass card reveal"><div class="icon">🎮</div><h3>GPU opcional</h3><p class="muted">Plano Ultra com GPU para render, IA, edição e workloads acelerados.</p></div>
+    <div class="glass card reveal"><div class="icon">🧩</div><h3>Pronto p/ integração</h3><p class="muted">Código organizado em componentes, com camada <code>api/</code> para plugar backend real.</p></div>
+  </div>
+</section>
+
+<section id="planos" class="container">
+  <div class="sec-head"><span class="badge">Planos</span><h2>Escolha sua <span class="grad">máquina</span></h2><p class="muted">Preços mensais. Cancele quando quiser. Impostos conforme gateway.</p></div>
+  <div class="grid cards3">
+    <div class="glass card plan reveal"><h3>STARTER</h3><p class="muted">Para estudos e escritório</p><div class="price">R$ 49<small>/mês</small></div>
+      <ul><li>2 vCPU</li><li>4 GB RAM</li><li>50 GB SSD</li><li>Acesso remoto</li></ul>
+      <a class="btn btn-ghost" href="checkout.html?plano=starter">Contratar</a></div>
+    <div class="glass card plan featured reveal"><span class="tag">MAIS POPULAR</span><h3>PRO</h3><p class="muted">Para trabalho e dev</p><div class="price">R$ 99<small>/mês</small></div>
+      <ul><li>4 vCPU</li><li>8 GB RAM</li><li>100 GB NVMe</li><li>Acesso remoto</li><li>Suporte prioritário</li></ul>
+      <a class="btn btn-primary" href="checkout.html?plano=pro">Contratar</a></div>
+    <div class="glass card reveal plan"><h3>ULTRA</h3><p class="muted">Para creators e power users</p><div class="price">R$ 199<small>/mês</small></div>
+      <ul><li>8 vCPU</li><li>16 GB RAM</li><li>200 GB NVMe</li><li>GPU opcional</li><li>Suporte prioritário</li></ul>
+      <a class="btn btn-ghost" href="checkout.html?plano=ultra">Contratar</a></div>
+  </div>
+</section>
+
+<section class="container">
+  <div class="sec-head"><span class="badge">Depoimentos</span><h2>Quem usa, <span class="grad">recomenda</span></h2></div>
+  <div class="grid cards3">
+    <div class="glass card testi reveal"><div class="stars">★★★★★</div><p>“Trabalho de um notebook simples e acesso meu PC Pro para programar. Painel limpo e conexão estável.”</p><b>Camila R. — Desenvolvedora</b></div>
+    <div class="glass card testi reveal"><div class="stars">★★★★★</div><p>“Uso o Ultra para edição de vídeo. Escalar recursos sem trocar de máquina fez diferença.”</p><b>Diego M. — Editor</b></div>
+    <div class="glass card testi reveal"><div class="stars">★★★★☆</div><p>“Contratação clara e suporte rápido via tickets. Quero ver app mobile nativo em breve.”</p><b>Paula S. — Arquiteta</b></div>
+  </div>
+</section>
+
+<section id="faq" class="container" style="max-width:800px">
+  <div class="sec-head"><span class="badge">FAQ</span><h2>Perguntas frequentes</h2></div>
+  <details open><summary>Como acesso meu PC Virtual?</summary><p class="muted">Pelo botão “Acessar PC” no painel (console web quando o backend estiver conectado) ou via RDP com IP, usuário e senha fornecidos após provisionamento real.</p></details>
+  <details><summary>Uma máquina é criada automaticamente ao contratar?</summary><p class="muted">Não neste front-end. O provisionamento real só ocorre com backend de virtualização conectado. Até lá, o painel exibe <b>dados de demonstração</b> claramente sinalizados.</p></details>
+  <details><summary>Quais formas de pagamento?</summary><p class="muted">Estrutura pronta para PIX e cartão via gateway real (ex.: Stripe, Mercado Pago, Asaas). Nenhuma cobrança real é processada nesta versão demo.</p></details>
+  <details><summary>Posso trocar de plano?</summary><p class="muted">Sim. Upgrade/downgrade altera vCPU, RAM e disco no próximo ciclo, sujeito à disponibilidade do backend.</p></details>
+  <details><summary>Como funciona o suporte?</summary><p class="muted">Área de suporte no painel com abertura de tickets. Planos Pro/Ultra têm fila prioritária.</p></details>
+</section>
+
+<footer><div class="container foot">
+  <div><a class="logo" href="index.html"><span class="logo-mark">☁</span> NimbusPC</a><p class="muted" style="max-width:340px">PC Virtual na nuvem para trabalhar de qualquer lugar. Front-end demo — conecte backend, banco, auth e gateway para produção.</p></div>
+  <div><b>Produto</b><br><a class="muted" href="#planos">Planos</a><br><a class="muted" href="#recursos">Recursos</a><br><a class="muted" href="checkout.html?plano=pro">Checkout</a></div>
+  <div><b>Conta</b><br><a class="muted" href="login.html">Login</a><br><a class="muted" href="cadastro.html">Cadastro</a><br><a class="muted" href="painel.html">Painel</a><br><a class="muted" href="admin.html">Admin</a></div>
+  <div><b>Legal</b><br><span class="muted">Termos · Privacidade · SLA</span><br><span class="muted">© 2026 NimbusPC</span></div>
+</div></footer>
+<script src="assets/js/main.js"></script>
+</body></html>

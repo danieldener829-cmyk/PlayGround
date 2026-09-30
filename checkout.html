@@ -1,0 +1,48 @@
+<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Checkout — NimbusPC</title><link rel="stylesheet" href="assets/css/main.css"></head><body>
+<nav class="nav container"><div class="nav-inner"><a class="logo" href="index.html"><span class="logo-mark">☁</span> NimbusPC</a><div class="nav-cta"><a class="btn btn-ghost btn-sm" href="index.html#planos">← Planos</a></div></div></nav>
+<section class="container"><div class="sec-head"><span class="badge">Checkout seguro</span><h2>Finalize sua assinatura</h2></div>
+<div class="demo-note" style="max-width:900px;margin:0 auto 18px">💳 <b>Estrutura pronta para gateway real</b> (Stripe / Mercado Pago / Asaas). Nenhuma cobrança real é feita aqui — ao clicar em pagar, geramos apenas uma <b>intenção de pagamento demo</b>. Nenhuma VM é criada sem backend.</div>
+<div class="grid" style="grid-template-columns:1fr 1fr;gap:18px;max-width:900px;margin:0 auto" id="checkoutGrid">
+<div class="glass card"><h3>Resumo do plano</h3>
+<label>Plano</label><select id="plan" onchange="upd()"><option value="starter">STARTER — 2 vCPU / 4GB / 50GB SSD</option><option value="pro">PRO — 4 vCPU / 8GB / 100GB NVMe</option><option value="ultra">ULTRA — 8 vCPU / 16GB / 200GB NVMe + GPU opc.</option></select>
+<div style="display:flex;justify-content:space-between;margin-top:14px"><span class="muted">Mensalidade</span><b id="price">R$ 99</b></div>
+<div style="display:flex;justify-content:space-between"><span class="muted">Cupom <input id="coupon" placeholder="Ex: BEMVINDO10" style="width:140px;padding:6px 10px;font-size:13px"></span><b id="desc">—</b></div>
+<div style="display:flex;justify-content:space-between;border-top:1px solid var(--card-border);margin-top:10px;padding-top:10px"><span>Total hoje</span><b id="total" style="font-size:22px">R$ 99</b></div>
+<p class="muted" style="font-size:13px">Renovação em 30 dias. Nota fiscal via gateway em produção.</p>
+</div>
+<div class="glass card"><h3>Pagamento</h3>
+<div style="display:flex;gap:8px;margin-bottom:14px">
+<button class="btn btn-ghost btn-sm" id="tabPix" onclick="pay('pix')">PIX</button>
+<button class="btn btn-ghost btn-sm" id="tabCard" onclick="pay('card')">Cartão</button>
+</div>
+<div id="pixBox"><label>PIX — QR gerado pelo gateway em produção</label><div class="glass" style="padding:20px;text-align:center">▦▦▦<br><span class="muted" style="font-size:13px">QR demo — chave: pagamento@nimbuspc.com</span></div>
+<label style="margin-top:10px">Status</label><input value="Aguardando pagamento (demo)" disabled></div>
+<div id="cardBox" style="display:none"><div class="field"><label>Número do cartão (não enviado — demo)</label><input id="cc" inputmode="numeric" placeholder="4111 1111 1111 1111" maxlength="19"></div>
+<div class="grid" style="grid-template-columns:1fr 1fr"><div class="field"><label>Validade</label><input placeholder="MM/AA"></div><div class="field"><label>CVV</label><input placeholder="123" maxlength="4"></div></div>
+<div class="field"><label>Nome impresso</label><input placeholder="Seu nome"></div></div>
+<button class="btn btn-primary" style="width:100%;margin-top:12px" onclick="confirmPay()">Confirmar pagamento</button>
+<p id="msg" class="muted" style="font-size:13px"></p>
+</div>
+</div></section>
+<script src="assets/js/main.js"></script>
+<script>
+const PRICES={starter:49,pro:99,ultra:199};let method='pix';
+const q=new URLSearchParams(location.search).get('plano');if(q&&PRICES[q])document.getElementById('plan').value=q;
+function upd(){const p=document.getElementById('plan').value;let v=PRICES[p];
+  const c=document.getElementById('coupon').value.trim().toUpperCase();
+  let d='—';if(c==='BEMVINDO10'){v=Math.round(v*.9);d='-10% aplicado';}
+  document.getElementById('price').textContent='R$ '+PRICES[p];
+  document.getElementById('desc').textContent=d;document.getElementById('total').textContent='R$ '+v;}
+document.getElementById('coupon').addEventListener('input',upd);
+function pay(m){method=m;document.getElementById('pixBox').style.display=m==='pix'?'block':'none';document.getElementById('cardBox').style.display=m==='card'?'block':'none';}
+function confirmPay(){
+  const p=document.getElementById('plan').value;
+  document.getElementById('msg').textContent='Processando intenção de pagamento demo via '+(method==='pix'?'PIX':'cartão')+'… (integre POST /payments/checkout ao gateway real)';
+  setTimeout(()=>{localStorage.setItem('nimbus_sub',JSON.stringify({plan:p,renew:new Date(Date.now()+30*864e5).toISOString().slice(0,10),since:new Date().toISOString().slice(0,10)}));
+    document.getElementById('msg').innerHTML='✔ <b>Pagamento demo confirmado.</b> Nenhuma cobrança real. <a href="painel.html" style="color:#7dd3fc">Ir para o painel →</a>';},1200);
+}
+upd();pay('pix');
+if(matchMedia('(max-width:640px)').matches)document.getElementById('checkoutGrid').style.gridTemplateColumns='1fr';
+addEventListener('resize',()=>{document.getElementById('checkoutGrid').style.gridTemplateColumns=innerWidth<760?'1fr':'1fr 1fr'});
+</script></body></html>

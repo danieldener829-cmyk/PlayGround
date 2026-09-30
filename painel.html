@@ -1,0 +1,63 @@
+<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Painel — NimbusPC</title><link rel="stylesheet" href="assets/css/main.css"></head><body>
+<nav class="nav container"><div class="nav-inner">
+<a class="logo" href="index.html"><span class="logo-mark">☁</span> NimbusPC</a>
+<div class="nav-cta"><span class="muted" id="userName" style="font-size:14px"></span><button class="btn btn-ghost btn-sm" onclick="logout()">Sair</button></div>
+</div></nav>
+<div class="container layout">
+<aside class="glass side"><b style="font-size:13px" class="muted">MENU</b>
+<a href="painel.html" class="active">🖥️ Minha máquina</a><a href="#assinatura">💳 Assinatura</a><a href="#suporte">🎧 Suporte</a><a href="checkout.html?plano=pro">⬆️ Upgrade</a><a href="index.html">🌐 Site</a>
+</aside>
+<main>
+<div class="demo-note">🧪 <b>Dados de demonstração</b> — nenhuma máquina real conectada. Conecte o backend (<code>assets/js/api.js</code>) para provisionar e controlar VMs reais.</div>
+<div class="top"><div><h2 style="margin:0">Olá, <span id="hello">usuário</span> 👋</h2><span class="muted" style="font-size:14px">Gerencie seu PC Virtual abaixo.</span></div><span class="status on" id="stBadge">● Online (demo)</span></div>
+<div class="grid kpis">
+<div class="glass kpi"><small>CPU utilizada</small><b id="cpuV">32%</b><div class="bar"><i id="cpuB" style="width:32%"></i></div><canvas class="chart" id="cpuC"></canvas></div>
+<div class="glass kpi"><small>RAM utilizada</small><b id="ramV">5,1 / 8 GB</b><div class="bar"><i id="ramB" style="width:64%"></i></div><canvas class="chart" id="ramC"></canvas></div>
+<div class="glass kpi"><small>Armazenamento</small><b id="diskV">61 / 100 GB</b><div class="bar"><i id="diskB" style="width:61%"></i></div><canvas class="chart" id="diskC"></canvas></div>
+<div class="glass kpi"><small>Tempo de atividade</small><b id="upV">04:12:33</b><div class="muted" style="font-size:13px" id="sysInfo">IP 192.0.2.10 (demo)<br>Windows 11 Pro (demo)</div></div>
+</div>
+<div class="glass card" style="margin-top:18px"><h3 style="margin-top:0">Controles da máquina</h3>
+<div class="actions">
+<button class="btn btn-primary btn-sm" onclick="act('ligar')">▶ Ligar</button>
+<button class="btn btn-ghost btn-sm" onclick="act('desligar')">⏻ Desligar</button>
+<button class="btn btn-ghost btn-sm" onclick="act('reiniciar')">↻ Reiniciar</button>
+<button class="btn btn-ghost btn-sm" onclick="act('console')">🖥️ Console</button>
+<button class="btn btn-ghost btn-sm" onclick="act('acessar')">🔗 Acessar PC</button>
+</div><p class="muted" id="actMsg" style="font-size:14px">Ações em modo demo: apenas alteram o status visual. Com backend, chamam <code>POST /vms/:id/:action</code>.</p></div>
+<div class="grid" style="grid-template-columns:1fr 1fr;margin-top:18px" id="twoCol">
+<div class="glass card" id="assinatura"><h3>Assinatura</h3><p class="muted" style="font-size:14px">Plano <b id="subPlan">PRO</b> · Renovação <b id="subRen">—</b><br>Desde <span id="subSince">—</span> · <span class="status on" style="font-size:11px">Ativa (demo)</span></p><a class="btn btn-ghost btn-sm" href="checkout.html">Gerenciar pagamento</a></div>
+<div class="glass card" id="suporte"><h3>Suporte</h3><div class="field"><label>Abrir ticket (demo, salvo local)</label><input id="tSub" placeholder="Assunto"></div><div class="field"><textarea id="tMsg" rows="2" placeholder="Descreva o problema…"></textarea></div><button class="btn btn-primary btn-sm" onclick="ticket()">Enviar ticket</button><div id="tList" class="muted" style="font-size:13px;margin-top:10px"></div></div>
+</div>
+</main></div>
+<script src="assets/js/main.js"></script><script src="assets/js/api.js"></script>
+<script>
+const s=Session.require();if(!s)throw new Error('redirect');
+document.getElementById('hello').textContent=s.name;document.getElementById('userName').textContent=s.email;
+const sub=JSON.parse(localStorage.getItem('nimbus_sub')||'null');
+if(sub){document.getElementById('subPlan').textContent=sub.plan.toUpperCase();document.getElementById('subRen').textContent=sub.renew;document.getElementById('subSince').textContent=sub.since;}
+let online=true,up=4*3600+12*60+33;
+function act(a){
+  const m=document.getElementById('actMsg'),b=document.getElementById('stBadge');
+  if(a==='ligar'){online=true;b.className='status on';b.textContent='● Online (demo)';m.textContent='▶ Comando demo: máquina “ligada”. (Real: POST /vms/:id/ligar)';}
+  if(a==='desligar'){online=false;b.className='status off';b.textContent='● Offline (demo)';m.textContent='⏻ Comando demo: máquina “desligada”.';}
+  if(a==='reiniciar'){m.textContent='↻ Reiniciando (demo)… volta em segundos.';setTimeout(()=>m.textContent='✔ Online novamente (demo).',2000);}
+  if(a==='console'){m.innerHTML='🖥️ Console web disponível apenas com backend (ex.: noVNC/Guacamole). <b>Nada aberto — demo.</b>';}
+  if(a==='acessar'){m.innerHTML='🔗 Acesso RDP demo: <code>192.0.2.10</code> usuário <code>demo</code>. <b>Credenciais fictícias.</b>';}
+}
+// gráficos simples em canvas
+function spark(id,data,color){const c=document.getElementById(id),x=c.getContext('2d');c.width=c.offsetWidth*2||300;c.height=140;
+  x.clearRect(0,0,c.width,c.height);x.strokeStyle=color;x.lineWidth=3;x.beginPath();
+  data.forEach((v,i)=>{const px=i/(data.length-1)*c.width,py=c.height-(v/100)*c.height*.85-8;i?x.lineTo(px,py):x.moveTo(px,py)});x.stroke();}
+let cpu=[20,28,25,35,42,32,38,30],ram=[55,58,60,62,64,63,65,64],disk=[58,59,60,60,61,61,61,61];
+function draw(){spark('cpuC',cpu,'#22d3ee');spark('ramC',ram,'#a78bfa');spark('diskC',disk,'#5b6cff');}
+draw();
+setInterval(()=>{if(!online)return;const v=25+Math.random()*25;cpu.push(v);cpu.shift();ram.push(60+Math.random()*8);ram.shift();
+  document.getElementById('cpuV').textContent=Math.round(v)+'%';document.getElementById('cpuB').style.width=v+'%';
+  up++;const h=String(Math.floor(up/3600)).padStart(2,'0'),m=String(Math.floor(up%3600/60)).padStart(2,'0'),ss=String(up%60).padStart(2,'0');
+  document.getElementById('upV').textContent=`${h}:${m}:${ss}`;draw();},2000);
+function ticket(){const a=document.getElementById('tSub').value||'Sem assunto';const l=document.getElementById('tList');
+  l.innerHTML+=`<div style="border-top:1px solid var(--card-border);padding:8px 0">🎫 <b>${a}</b> — aberto agora (demo, status: pendente)</div>`;
+  document.getElementById('tSub').value='';document.getElementById('tMsg').value='';}
+if(innerWidth<760)document.getElementById('twoCol').style.gridTemplateColumns='1fr';
+</script></body></html>

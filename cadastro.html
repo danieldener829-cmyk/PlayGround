@@ -1,0 +1,23 @@
+<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Criar conta — NimbusPC</title><link rel="stylesheet" href="assets/css/main.css"></head><body>
+<nav class="nav container"><div class="nav-inner"><a class="logo" href="index.html"><span class="logo-mark">☁</span> NimbusPC</a><div class="nav-cta"><a class="btn btn-ghost btn-sm" href="index.html">← Voltar</a></div></div></nav>
+<section class="container"><div class="glass form">
+<div class="demo-note">📝 <b>Demonstração:</b> cadastro salvo apenas neste navegador. Em produção, validar e-mail, hash de senha e persistir no banco.</div>
+<h2>Criar conta</h2>
+<div class="field"><label>Nome completo</label><input id="name" placeholder="Seu nome"></div>
+<div class="field"><label>E-mail</label><input id="email" type="email" placeholder="voce@email.com"></div>
+<div class="field"><label>Senha (mín. 8 em produção)</label><input id="pass" type="password" placeholder="Crie uma senha forte"></div>
+<button class="btn btn-primary" style="width:100%" onclick="doReg()">Criar conta</button>
+<p class="muted" style="font-size:14px">Já tem conta? <a href="login.html" style="color:#7dd3fc">Entrar</a></p>
+</div></section>
+<script src="assets/js/main.js"></script><script>
+function doReg(){
+  const n=document.getElementById('name').value.trim(),e=document.getElementById('email').value.trim(),p=document.getElementById('pass').value;
+  if(n.length<2) return alert('Informe seu nome.');
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e)) return alert('E-mail inválido.');
+  if(p.length<4) return alert('Senha muito curta (demo: 4+; produção: 8+ com força).');
+  const u=JSON.parse(localStorage.getItem('nimbus_users')||'{}');u[e]={name:n};localStorage.setItem('nimbus_users',JSON.stringify(u));
+  Session.set({email:e,name:n,role:'cliente',token:'demo-token',loginAt:new Date().toISOString()});
+  location.href='checkout.html?plano=pro';
+}
+</script></body></html>

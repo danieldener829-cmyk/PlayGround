@@ -1,0 +1,26 @@
+<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Login — NimbusPC</title><link rel="stylesheet" href="assets/css/main.css"></head><body>
+<nav class="nav container"><div class="nav-inner"><a class="logo" href="index.html"><span class="logo-mark">☁</span> NimbusPC</a><div class="nav-cta"><a class="btn btn-ghost btn-sm" href="index.html">← Voltar</a></div></div></nav>
+<section class="container"><div class="glass form">
+<div class="demo-note">🔒 <b>Ambiente de demonstração:</b> login local (navegador). Conecte um backend real para autenticação segura.</div>
+<h2>Entrar</h2><p class="muted">Acesse seu painel e gerencie sua máquina.</p>
+<div class="field"><label>E-mail</label><input id="email" type="email" placeholder="voce@email.com" autocomplete="email"></div>
+<div class="field"><label>Senha</label><input id="pass" type="password" placeholder="••••••••" autocomplete="current-password"></div>
+<button class="btn btn-primary" style="width:100%" onclick="doLogin()">Entrar</button>
+<p class="muted" style="font-size:14px">Sem conta? <a href="cadastro.html" style="color:#7dd3fc">Criar conta</a> · <a href="recuperar.html" style="color:#7dd3fc">Esqueci a senha</a></p>
+<p class="muted" style="font-size:13px">Dica demo — admin: <code>admin@nimbuspc.com / admin123</code> · cliente: qualquer e-mail + senha 4+.</p>
+</div></section>
+<script src="assets/js/main.js"></script><script src="assets/js/api.js"></script>
+<script>
+function doLogin(){
+  const e=document.getElementById('email').value.trim(),p=document.getElementById('pass').value;
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e)) return alert('Informe um e-mail válido.');
+  if(p.length<4) return alert('Senha deve ter ao menos 4 caracteres.');
+  const role=(e.toLowerCase()==='admin@nimbuspc.com'&&p==='admin123')?'admin':'cliente';
+  const users=JSON.parse(localStorage.getItem('nimbus_users')||'{}');
+  const name=users[e]?.name||(role==='admin'?'Administrador':e.split('@')[0]);
+  Session.set({email:e,name,role,token:'demo-token',loginAt:new Date().toISOString()});
+  const next=new URLSearchParams(location.search).get('next');
+  location.href=next||(role==='admin'?'admin.html':'painel.html');
+}
+</script></body></html>

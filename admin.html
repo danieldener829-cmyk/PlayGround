@@ -1,0 +1,51 @@
+<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin — NimbusPC</title><link rel="stylesheet" href="assets/css/main.css"></head><body>
+<nav class="nav container"><div class="nav-inner">
+<a class="logo" href="index.html"><span class="logo-mark">☁</span> NimbusPC <span class="badge" style="margin-left:8px">ADMIN</span></a>
+<div class="nav-cta"><span class="muted" id="aMail" style="font-size:14px"></span><button class="btn btn-ghost btn-sm" onclick="logout()">Sair</button></div>
+</div></nav>
+<div class="container layout">
+<aside class="glass side"><b class="muted" style="font-size:13px">ADMINISTRAÇÃO</b>
+<a href="#v" class="active">🖥️ Máquinas</a><a href="#c">👥 Clientes</a><a href="#p">📦 Planos & preços</a><a href="#f">💰 Faturamento</a><a href="#t">🎫 Tickets</a><a href="#k">🏷️ Cupons</a><a href="painel.html">👤 Ver como cliente</a></aside>
+<main>
+<div class="demo-note">🛡️ <b>Rota administrativa protegida (demo):</b> exige <code>role=admin</code> na sessão. Em produção: JWT + RBAC no servidor, nunca confie só no front. Todos os dados abaixo são <b>demonstração local</b>.</div>
+<div class="top"><h2 style="margin:0">Painel administrativo</h2><span class="muted">Faturamento (demo): <b style="color:#fff">R$ 12.480</b> · Online: <b style="color:#4ade80">18</b> · Offline: <b style="color:#fca5a5">4</b></span></div>
+<div class="grid kpis"><div class="glass kpi"><small>Clientes</small><b>132</b></div><div class="glass kpi"><small>Máquinas</small><b>22</b></div><div class="glass kpi"><small>MRR demo</small><b>R$ 12,4k</b></div><div class="glass kpi"><small>Tickets abertos</small><b>5</b></div></div>
+
+<div class="glass card" id="v" style="margin-top:18px"><h3>Criar / gerenciar PCs Virtuais</h3>
+<div class="grid" style="grid-template-columns:1fr 1fr 1fr 1fr" id="vmForm">
+<div class="field"><label>Cliente (e-mail)</label><input id="vmClient" placeholder="cliente@email.com"></div>
+<div class="field"><label>Plano</label><select id="vmPlan"><option>STARTER</option><option selected>PRO</option><option>ULTRA</option></select></div>
+<div class="field"><label>vCPU / RAM / Disco</label><input id="vmSpec" value="4 / 8GB / 100GB NVMe"></div>
+<div class="field"><label>&nbsp;</label><button class="btn btn-primary btn-sm" onclick="addVM()">+ Criar PC (demo)</button></div>
+</div>
+<div class="table-wrap"><table><thead><tr><th>Máquina</th><th>Cliente</th><th>Recursos</th><th>Status</th><th>CPU/RAM (demo)</th><th>Ações</th></tr></thead><tbody id="vmBody"></tbody></table></div>
+<p class="muted" style="font-size:13px">Em produção: criar = provisionar no hipervisor + salvar no banco. Aqui apenas adiciona linha demo.</p></div>
+
+<div class="grid" style="grid-template-columns:1fr 1fr;margin-top:18px" id="cols2">
+<div class="glass card" id="c"><h3>Clientes</h3><div class="table-wrap"><table><thead><tr><th>Nome</th><th>Status</th><th>Ação</th></tr></thead><tbody id="clBody"></tbody></table></div></div>
+<div class="glass card" id="p"><h3>Planos & preços</h3><div id="planEdit"></div><button class="btn btn-ghost btn-sm" onclick="savePlans()">Salvar preços (demo)</button></div>
+</div>
+<div class="grid" style="grid-template-columns:1fr 1fr 1fr;margin-top:18px" id="cols3">
+<div class="glass card" id="f"><h3>Pagamentos</h3><p class="muted" style="font-size:13px">✔ Ana — PRO R$99 (pago)<br>⏳ Bruno — ULTRA R$199 (pendente)<br>✔ Carla — STARTER R$49 (pago)</p></div>
+<div class="glass card" id="t"><h3>Tickets</h3><div id="tkBody" class="muted" style="font-size:13px">🎫 #101 RDP lento — <button class="btn btn-ghost btn-sm" onclick="this.parentElement.innerHTML='✔ #101 resolvido (demo)'">Resolver</button><br>🎫 #102 Upgrade PRO→ULTRA — <button class="btn btn-ghost btn-sm" onclick="this.parentElement.innerHTML='✔ #102 resolvido (demo)'">Resolver</button></div></div>
+<div class="glass card" id="k"><h3>Cupons</h3><div class="field"><label>Novo cupom</label><input id="cp" placeholder="Ex: NATAL20"></div><button class="btn btn-primary btn-sm" onclick="document.getElementById('cpList').innerHTML+='<div>🏷️ '+document.getElementById('cp').value+' — ativo (demo)</div>'">Criar cupom</button><div id="cpList" class="muted" style="font-size:13px;margin-top:8px"><div>🏷️ BEMVINDO10 — ativo (demo)</div></div></div>
+</div>
+</main></div>
+<script src="assets/js/main.js"></script>
+<script>
+const s=Session.require('admin');if(!s)throw new Error('redirect');
+document.getElementById('aMail').textContent=s.email;
+let vms=[{id:'vm-01',c:'ana@email.com',r:'4 vCPU · 8GB · 100GB',on:true,cpu:34,ram:62},{id:'vm-02',c:'bruno@email.com',r:'8 vCPU · 16GB · 200GB',on:true,cpu:71,ram:55},{id:'vm-03',c:'carla@email.com',r:'2 vCPU · 4GB · 50GB',on:false,cpu:0,ram:0}];
+let cls=[{n:'Ana',susp:false},{n:'Bruno',susp:false},{n:'Carla',susp:false}];
+let plans=[{n:'STARTER',p:49},{n:'PRO',p:99},{n:'ULTRA',p:199}];
+function renderVM(){document.getElementById('vmBody').innerHTML=vms.map((v,i)=>`<tr><td><b>${v.id}</b></td><td>${v.c}</td><td>${v.r} <button class="btn btn-ghost btn-sm" onclick="editRes(${i})">Editar</button></td><td><span class="status ${v.on?'on':'off'}">${v.on?'● Online':'● Offline'}</span></td><td>${v.cpu}% / ${v.ram}%</td><td><button class="btn btn-ghost btn-sm" onclick="vms[${i}].on=!vms[${i}].on;renderVM()">On/Off</button> <button class="btn btn-ghost btn-sm" onclick="vms.splice(${i},1);renderVM()">Excluir</button></td></tr>`).join('');}
+function renderCl(){document.getElementById('clBody').innerHTML=cls.map((c,i)=>`<tr><td>${c.n}</td><td>${c.susp?'⛔ Suspenso':'✔ Ativo'}</td><td><button class="btn btn-ghost btn-sm" onclick="cls[${i}].susp=!cls[${i}].susp;renderCl()">${c.susp?'Reativar':'Suspender'}</button></td></tr>`).join('');}
+function renderPlans(){document.getElementById('planEdit').innerHTML=plans.map((p,i)=>`<div class="field"><label>${p.n} (R$/mês)</label><input type="number" value="${p.p}" oninput="plans[${i}].p=this.value"></div>`).join('');}
+function addVM(){const c=document.getElementById('vmClient').value||'novo@email.com',p=document.getElementById('vmPlan').value,r=document.getElementById('vmSpec').value;
+  vms.push({id:'vm-'+String(vms.length+1).padStart(2,'0'),c,r:c?r:r,on:false,cpu:0,ram:0});renderVM();alert('PC demo criado (nenhum recurso real provisionado).');}
+function editRes(i){const n=prompt('Novos recursos (ex.: 8 vCPU · 16GB · 200GB):',vms[i].r);if(n)vms[i].r=n,renderVM();}
+function savePlans(){alert('Preços demo salvos: '+plans.map(p=>p.n+' R$'+p.p).join(', ')+'. Em produção: PUT /plans com permissão admin.');}
+renderVM();renderCl();renderPlans();
+['cols2','cols3','vmForm'].forEach(id=>{const f=()=>document.getElementById(id).style.gridTemplateColumns=innerWidth<760?'1fr':'';f();addEventListener('resize',f)});
+</script></body></html>
