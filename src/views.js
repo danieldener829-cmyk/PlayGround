@@ -145,7 +145,7 @@ function vDashboard(){
     <div class="relative">${cover?`<img src="${cover}" class="h-40 w-full object-cover"/>`:`<div class="h-40 w-full grid place-items-center text-4xl bg-gradient-to-br from-violet-900 to-cyan-900">⚡</div>`}
      <span class="absolute top-3 right-3 text-[11px] font-bold px-2 py-1 rounded-full ${p.published?'bg-emerald-500':'bg-white/20'}">${p.published?'● Publicado':'○ Rascunho'}</span></div>
     <div class="p-4"><div class="font-bold truncate">${p.business}</div><div class="text-xs text-white/50">${p.niche||''} • atualizado ${fmtDate(p.updatedAt)}</div>
-    ${p.published?`<a href="#/site/${p.slug}" class="block text-xs text-emerald-300 truncate mt-1 font-bold">👁 Abrir: ${p.url||p.slug}</a>`:`<div class="text-xs text-white/40 mt-1">não publicado</div>`}
+    ${p.published?`<a href="#/site/${p.slug}" class="block text-xs text-emerald-300 truncate mt-1 font-bold">👁 Abrir agora (neste navegador)</a><div class="text-[11px] text-white/35 truncate">🔗 ${p.slug}.sitegenius.com.br — ativa com o DNS</div>`:`<div class="text-xs text-white/40 mt-1">não publicado</div>`}
     <div class="grid grid-cols-3 gap-2 mt-3">
       <a href="#/editor/${p.id}" class="grad-btn text-center text-xs font-bold py-2 rounded-lg">Editar</a>
       ${p.published?`<a href="#/site/${p.slug}" class="glass text-center text-xs font-bold py-2 rounded-lg">👁 Abrir</a>`:`<button onclick="window.__publish('${p.id}')" class="glass text-xs font-bold py-2 rounded-lg">🚀 Publicar</button>`}

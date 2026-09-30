@@ -63,20 +63,29 @@ window.__publish = (id)=>{
     const taken = getProjects().some(p=>p.id!==proj.id && p.slug===slug);
     if(taken) slug = slug + '-' + Math.random().toString(36).slice(2,5);
     body().innerHTML=`<div class="text-4xl animate-bounce">⚙️</div><h3 class="font-bold mt-2">Publicando...</h3><div id="pubSteps" class="text-left text-sm mt-4 space-y-2 text-white/70"></div>`;
-    const steps=['▸ Gerando build otimizado...','▸ Enviando para CDN global...','▸ Ativando SSL gratuito...','▸ Configurando '+ (dom||slug+'.sitegenius.com.br') +'...'];
+    const steps=['▸ Gerando build otimizado...','▸ Salvando site nesta hospedagem...','▸ Gerando link de acesso imediato...','▸ Reservando '+ (dom||slug+'.sitegenius.com.br') +' (ativa com o DNS)...'];
     for(const s of steps){ const d=document.createElement('div'); d.textContent=s; const box=body().querySelector('#pubSteps'); if(!box) return; box.appendChild(d); await new Promise(r=>setTimeout(r,650)); d.textContent='✓ '+s.slice(2); d.classList.add('text-emerald-300'); }
     proj.slug=slug; proj.domain=dom; proj.published=true; proj.publishedAt=Date.now();
     proj.url='https://'+(dom||slug+'.sitegenius.com.br');
     proj.publicUrl=workingLink(slug);
+    // Link estático real servido por esta hospedagem (funciona em qualquer navegador)
+    proj.staticUrl=location.origin + location.pathname.replace(/\/$/,'') + '/s/' + slug + '.html';
     proj.updatedAt=Date.now(); saveProject(proj);
-    body().innerHTML=`<div class="text-5xl">🎉</div><h3 class="font-extrabold text-xl mt-2">No ar!</h3>
-    <div class="mt-3 rounded-xl px-4 py-3 text-sm font-bold break-all" style="background:rgba(16,185,129,.15);border:1px solid rgba(16,185,129,.4)">✅ ${proj.url}</div>
+    body().innerHTML=`<div class="text-5xl">🎉</div><h3 class="font-extrabold text-xl mt-2">Publicado!</h3>
+    <div class="mt-3 rounded-xl p-4 text-left" style="background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.4)">
+      <div class="text-[11px] font-bold text-emerald-300">✅ LINK QUE FUNCIONA AGORA</div>
+      <div class="text-sm font-bold break-all mt-1">${proj.publicUrl}</div>
+      <div class="text-[11px] text-white/50 mt-1">Abre neste navegador em qualquer aba. Use o botão abaixo.</div>
+    </div>
     <a href="#/site/${slug}" class="block mt-3 grad-btn rounded-xl px-4 py-3.5 text-sm font-extrabold">👁 ABRIR MEU SITE AGORA</a>
     <div class="grid grid-cols-2 gap-2 mt-3 text-xs font-bold">
-      <button onclick="window.__copyWork('${proj.id}')" class="glass py-2.5 rounded-lg">📋 Copiar link que funciona</button>
+      <button onclick="window.__copyWork('${proj.id}')" class="glass py-2.5 rounded-lg">📋 Copiar link</button>
       <button onclick="window.__edExportFrom('${proj.id}')" class="glass py-2.5 rounded-lg">⬇ Baixar HTML</button>
     </div>
-    <button onclick="window.__hostHelp()" class="w-full mt-2 text-xs text-cyan-300 font-bold py-2">❓ O link https:// não abre? Entenda a hospedagem →</button>
+    <div class="mt-3 rounded-xl p-3 text-left text-[11px] text-white/50" style="background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.3)">
+      ⏳ Endereço reservado: <b class="text-white/80">${proj.url}</b><br/>Ele ativa sozinho quando o domínio <b>sitegenius.com.br</b> for registrado e o DNS wildcard apontar para esta hospedagem (ver HOSPEDAGEM.md). Enquanto isso, <b>não cole esse https:// no navegador</b> — dá erro de DNS.
+    </div>
+    <button onclick="window.__hostHelp()" class="w-full mt-2 text-xs text-cyan-300 font-bold py-2">❓ Como coloco no ar com link público? →</button>
     <button onclick="window.__pubClose();window.location.hash='#/dashboard'" class="text-xs text-white/50 mt-1">voltar ao dashboard</button>`;
     toast('Site publicado 🚀');
     if(document.getElementById('edCanvas')) paintCanvas();

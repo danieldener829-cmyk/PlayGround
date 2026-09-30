@@ -1,0 +1,4 @@
+# Arquivos estáticos dos sites têm prioridade — nunca cair no fallback da SPA
+/s/* /s/:splat 200
+# SPA (hash routing cai sempre no index)
+/* /index.html 200

@@ -3,7 +3,14 @@
   publish = "dist"
   command = "npm run build"
 
-# DNS necessário no provedor do domínio:
-#   @    A/CNAME -> balanceador da Netlify (ou use o DNS da Netlify)
-#   *    CNAME   -> <seu-site>.netlify.app   (wildcard = todos os <slug>.sitegenius.com.br)
-# SSL: automático e gratuito (Let's Encrypt, cobre o wildcard).
+# Arquivos de /s/* são os sites publicados — servir direto, sem fallback
+[[redirects]]
+  from = "/s/*"
+  to = "/s/:splat"
+  status = 200
+
+# SPA: qualquer outra rota cai no index (o roteamento é por hash #/...)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
