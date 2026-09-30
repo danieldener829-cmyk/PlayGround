@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Gerador de Gmails Simulado + Senhas Fortes</title>
+<meta name="description" content="Gerador simulado de e-mails estilo Gmail e senhas fortes. Para testes e estudos — não cria contas reais no Google." />
+<style>
+  :root{
+    --bg:#0f172a; --card:#1e293b; --card2:#273449; --accent:#22c55e;
+    --accent2:#3b82f6; --text:#f1f5f9; --muted:#94a3b8; --border:#334155;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,sans-serif;background:radial-gradient(1200px 600px at 20% -10%,#1e40af33,transparent),radial-gradient(900px 500px at 90% 10%,#22c55e22,transparent),var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column}
+  header{padding:28px 20px 10px;text-align:center}
+  header .badge{display:inline-block;background:#22c55e1f;border:1px solid #22c55e55;color:#86efac;padding:6px 12px;border-radius:999px;font-size:13px;margin-bottom:12px}
+  h1{margin:0 0 8px;font-size:clamp(26px,4vw,42px);letter-spacing:-.02em}
+  h1 span{color:var(--accent)}
+  p.sub{margin:0 auto;max-width:640px;color:var(--muted);font-size:15px;line-height:1.5}
+  main{width:100%;max-width:980px;margin:20px auto 40px;padding:0 16px;display:grid;grid-template-columns:1.15fr .85fr;gap:16px}
+  @media(max-width:820px){main{grid-template-columns:1fr}}
+  .card{background:linear-gradient(180deg,var(--card),#16213a);border:1px solid var(--border);border-radius:18px;padding:20px;box-shadow:0 20px 60px #0008}
+  .card h2{margin:0 0 12px;font-size:18px}
+  .field label{display:block;font-size:13px;color:var(--muted);margin:12px 0 6px}
+  .field input[type=text],.field input[type=number],.field select{width:100%;background:#0b1226;border:1px solid var(--border);color:var(--text);border-radius:12px;padding:12px 14px;font-size:15px;outline:none}
+  .field input:focus{border-color:var(--accent2)}
+  .row{display:flex;gap:10px;flex-wrap:wrap}
+  .row>*{flex:1;min-width:140px}
+  .checks{display:flex;gap:14px;flex-wrap:wrap;margin-top:12px;font-size:14px;color:#cbd5e1}
+  .checks label{display:flex;gap:8px;align-items:center;cursor:pointer}
+  .output{margin-top:16px;background:#0b1226;border:1px dashed #3b82f655;border-radius:14px;padding:14px}
+  .output .lbl{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+  .output .val{font-size:clamp(16px,2.6vw,20px);font-weight:700;word-break:break-all;margin:6px 0 10px}
+  .output .val.password{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:#a5f3fc}
+  .output .val.email{color:#bbf7d0}
+  .btn{appearance:none;border:0;border-radius:12px;padding:12px 16px;font-size:15px;font-weight:700;cursor:pointer;transition:.15s}
+  .btn-primary{background:linear-gradient(135deg,var(--accent),#16a34a);color:#052e16;width:100%;margin-top:14px}
+  .btn-primary:hover{filter:brightness(1.08)}
+  .btn-ghost{background:#0b1226;border:1px solid var(--border);color:var(--text)}
+  .btn-ghost:hover{border-color:var(--accent2)}
+  .btn-small{padding:8px 12px;font-size:13px}
+  .actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+  .strength{height:8px;background:#0b1226;border-radius:999px;overflow:hidden;margin-top:10px;border:1px solid var(--border)}
+  .strength>div{height:100%;width:0%;background:linear-gradient(90deg,#ef4444,#f59e0b,#22c55e);transition:width .3s}
+  .meta{font-size:13px;color:var(--muted);margin-top:8px}
+  ul.history{list-style:none;margin:12px 0 0;padding:0;max-height:320px;overflow:auto;display:flex;flex-direction:column;gap:8px}
+  ul.history li{background:#0b1226;border:1px solid var(--border);border-radius:12px;padding:10px 12px;font-size:13px;display:flex;justify-content:space-between;gap:10px;align-items:center}
+  ul.history code{word-break:break-all;color:#e2e8f0}
+  footer{padding:18px;text-align:center;color:var(--muted);font-size:13px;line-height:1.6}
+  footer strong{color:#facc15}
+  .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:#052e16;border:1px solid #22c55e;color:#bbf7d0;padding:10px 16px;border-radius:999px;opacity:0;transition:.25s;pointer-events:none;font-size:14px}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+<header>
+  <div class="badge">100% local • sem envio de dados • funciona offline</div>
+  <h1>Gerador de <span>Gmails</span> Simulado</h1>
+  <p class="sub">Crie e-mails fictícios estilo <b>nome123@gmail.com</b> para testes, mocks e estudos + senha forte funcional com 1 clique. <b>Não cria contas reais no Google.</b></p>
+</header>
+
+<main>
+  <section class="card" aria-label="Gerador">
+    <h2>⚙️ Configurar e gerar</h2>
+    <div class="field">
+      <label for="baseName">Nome base (opcional)</label>
+      <input id="baseName" type="text" placeholder="ex: maria.silva" autocomplete="off" maxlength="30" />
+    </div>
+    <div class="row">
+      <div class="field">
+        <label for="style">Estilo do e-mail</label>
+        <select id="style">
+          <option value="ponto">nome.sobrenome + número</option>
+          <option value="underline">nome_sobrenome + número</option>
+          <option value="simples">nome + número</option>
+          <option value="aleatorio">totalmente aleatório</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="passLen">Tamanho da senha: <span id="passLenVal">16</span></label>
+        <input id="passLen" type="number" min="8" max="64" value="16" />
+      </div>
+    </div>
+    <div class="checks">
+      <label><input type="checkbox" id="optUpper" checked /> Maiúsculas</label>
+      <label><input type="checkbox" id="optLower" checked /> Minúsculas</label>
+      <label><input type="checkbox" id="optDigits" checked /> Números</label>
+      <label><input type="checkbox" id="optSymbols" checked /> Símbolos</label>
+    </div>
+
+    <button class="btn btn-primary" id="btnGenerate">🎲 Gerar Gmail + Senha</button>
+
+    <div class="output">
+      <div class="lbl">E-mail gerado (simulado)</div>
+      <div class="val email" id="emailOut">clique em gerar…</div>
+      <div class="actions">
+        <button class="btn btn-ghost btn-small" id="btnCopyEmail">📋 Copiar e-mail</button>
+        <button class="btn btn-ghost btn-small" id="btnNewEmail">↻ Só novo e-mail</button>
+      </div>
+    </div>
+
+    <div class="output">
+      <div class="lbl">Senha funcional</div>
+      <div class="val password" id="passOut">••••••••••••••••</div>
+      <div class="strength"><div id="strengthBar"></div></div>
+      <div class="meta" id="strengthText">Força: — • Entropia: — bits</div>
+      <div class="actions">
+        <button class="btn btn-ghost btn-small" id="btnCopyPass">📋 Copiar senha</button>
+        <button class="btn btn-ghost btn-small" id="btnNewPass">↻ Só nova senha</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="card" aria-label="Histórico">
+    <h2>📜 Histórico desta sessão</h2>
+    <p class="meta" style="margin:0">Salvo só no seu navegador. Nada é enviado para servidores. <span id="count">0 itens</span></p>
+    <div class="actions">
+      <button class="btn btn-ghost btn-small" id="btnExport">⬇ Exportar .txt</button>
+      <button class="btn btn-ghost btn-small" id="btnClear">🗑 Limpar</button>
+    </div>
+    <ul class="history" id="history"></ul>
+    <div class="card" style="margin-top:14px;background:#451a0355;border-color:#f59e0b55">
+      <b>⚠️ Aviso importante</b>
+      <p class="meta">Este site gera <b>endereços fictícios</b> para testes de layout, formulários e demonstrações. Ele <b>não registra, valida nem cria contas reais @gmail.com</b>. Para uma conta real, cadastre-se em <b>accounts.google.com</b>.</p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  Feito com HTML + CSS + JS puros • <strong>Gerador simulado — sem afiliação com o Google</strong><br />
+  Dica: pressione <b>Enter</b> no campo de nome para gerar rapidamente.
+</footer>
+
+<div class="toast" id="toast">Copiado!</div>
+
+<script>
+(function(){
+  const $ = id => document.getElementById(id);
+  const first = ["ana","bruno","camila","diego","elisa","fabio","giulia","helena","igor","julia","kaique","larissa","marcos","natalia","otavio","paula","rafael","sabrina","thiago","vanessa","vinicius","yasmin","lucas","beatriz","gabriel","fernanda","matheus","aline","pedro","sofia"];
+  const last = ["silva","santos","oliveira","souza","costa","pereira","almeida","carvalho","ferreira","rocha","dias","mendes","barbosa","cardoso","teixeira","moreira","correia","pinto","ribeiro","azevedo","campos","freitas","moraes","nunes","vieira"];
+  const rand = n => Math.floor(crypto.getRandomValues(new Uint32Array(1))[0] / 4294967296 * n);
+  const pick = a => a[rand(a.length)];
+  const digits = n => Array.from({length:n},()=>rand(10)).join('');
+
+  function slug(s){
+    return (s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9._-]+/g,'').replace(/^[._-]+|[._-]+$/g,'').slice(0,30);
+  }
+  function genEmail(){
+    const base = slug($('baseName').value);
+    const style = $('style').value;
+    let local='';
+    if(style==='aleatorio' || (!base && Math.random()<0.35)){
+      local = pick(first)+'.'+pick(last)+digits(2+rand(3));
+    } else if(base){
+      const sep = style==='underline' ? '_' : style==='simples' ? '' : '.';
+      const extra = style==='simples' ? digits(3+rand(3)) : sep ? sep+digits(2+rand(3)) : digits(2+rand(2));
+      // se base já tem separador, mantém
+      local = style==='simples' ? base.replace(/[._-]/g,'')+extra : base+extra;
+      if(!/\d/.test(local)) local += digits(2);
+    } else {
+      if(style==='underline') local = pick(first)+'_'+pick(last)+digits(2+rand(3));
+      else if(style==='simples') local = pick(first)+digits(3+rand(3));
+      else local = pick(first)+'.'+pick(last)+digits(2+rand(3));
+    }
+    local = slug(local).replace(/^[._-]+/,'') || ('user'+digits(4));
+    if(local.length<6) local += digits(3);
+    return local + '@gmail.com';
+  }
+  function genPass(){
+    const len = Math.min(64, Math.max(8, parseInt($('passLen').value||'16',10)));
+    $('passLen').value = len; $('passLenVal').textContent = len;
+    let sets='';
+    if($('optLower').checked) sets+='abcdefghijkmnopqrstuvwxyz';
+    if($('optUpper').checked) sets+='ABCDEFGHJKLMNPQRSTUVWXYZ';
+    if($('optDigits').checked) sets+='23456789';
+    if($('optSymbols').checked) sets+='!@#$%^&*()-_=+[]{};:,.?';
+    if(!sets) { $('optLower').checked=true; sets='abcdefghijkmnopqrstuvwxyz'; }
+    const buf = crypto.getRandomValues(new Uint32Array(len));
+    let out='';
+    for(let i=0;i<len;i++) out += sets[buf[i]%sets.length];
+    return {pass:out, pool:sets.length, len};
+  }
+  function strength(p, pool){
+    const entropy = Math.round(p.length * Math.log2(pool||64));
+    let pct = Math.min(100, Math.round(entropy/128*100));
+    let label = entropy<50?'Fraca':entropy<80?'Boa':entropy<100?'Forte':'Excelente';
+    return {entropy, pct, label};
+  }
+  const hist=[];
+  function render(item){
+    $('emailOut').textContent = item.email;
+    $('passOut').textContent = item.pass;
+    const s = strength(item.pass, item.pool);
+    $('strengthBar').style.width = s.pct+'%';
+    $('strengthText').textContent = 'Força: '+s.label+' • Entropia: '+s.entropy+' bits • '+item.pass.length+' caracteres';
+    $('count').textContent = hist.length + (hist.length===1?' item':' itens');
+  }
+  function addHistory(email, pass){
+    hist.unshift({email, pass, at:new Date().toLocaleTimeString('pt-BR')});
+    if(hist.length>50) hist.pop();
+    const li=document.createElement('li');
+    li.innerHTML='';
+    const code=document.createElement('code');
+    code.textContent = email+'  •  '+pass;
+    const btn=document.createElement('button');
+    btn.className='btn btn-ghost btn-small'; btn.textContent='Copiar';
+    btn.onclick=()=>{navigator.clipboard.writeText(email+' / '+pass).then(()=>toast('Item copiado!'));};
+    li.appendChild(code); li.appendChild(btn);
+    $('history').prepend(li);
+    $('count').textContent = hist.length + (hist.length===1?' item':' itens');
+  }
+  let toastT;
+  function toast(msg){
+    const t=$('toast'); t.textContent=msg; t.classList.add('show');
+    clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('show'),1600);
+  }
+  async function copyText(txt, msg){
+    try{ await navigator.clipboard.writeText(txt); toast(msg); }
+    catch(e){
+      const ta=document.createElement('textarea'); ta.value=txt; document.body.appendChild(ta);
+      ta.select(); document.execCommand('copy'); ta.remove(); toast(msg);
+    }
+  }
+  function generate(both=true, only=null){
+    let email = $('emailOut').textContent, pass = $('passOut').textContent, pool=64;
+    if(both || only==='email') email = genEmail();
+    if(both || only==='pass'){ const r=genPass(); pass=r.pass; pool=r.pool; }
+    else { pool = 64; }
+    // se gerou só um lado na primeira vez, garante o outro
+    if(email.includes('clique')) email = genEmail();
+    if(pass.includes('•')){ const r=genPass(); pass=r.pass; pool=r.pool; }
+    const item={email, pass, pool};
+    render(item); addHistory(email, pass);
+  }
+  $('btnGenerate').onclick=()=>generate(true);
+  $('btnNewEmail').onclick=()=>generate(false,'email');
+  $('btnNewPass').onclick=()=>generate(false,'pass');
+  $('btnCopyEmail').onclick=()=>copyText($('emailOut').textContent,'E-mail copiado!');
+  $('btnCopyPass').onclick=()=>copyText($('passOut').textContent,'Senha copiada!');
+  $('btnClear').onclick=()=>{hist.length=0;$('history').innerHTML='';$('count').textContent='0 itens';toast('Histórico limpo');};
+  $('btnExport').onclick=()=>{
+    if(!hist.length) return toast('Nada para exportar');
+    const txt = hist.map((h,i)=>(hist.length-i)+'. '+h.email+' / '+h.pass+' ('+h.at+')').join('\n');
+    const blob=new Blob(['GERADOR SIMULADO - '+new Date().toLocaleString('pt-BR')+'\nAviso: e-mails fictícios, não são contas reais.\n\n'+txt],{type:'text/plain'});
+    const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='gmails-simulados.txt'; a.click();
+    setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+  };
+  $('baseName').addEventListener('keydown',e=>{if(e.key==='Enter')generate(true);});
+  $('passLen').addEventListener('input',()=>{$('passLenVal').textContent=$('passLen').value;});
+  // gera um exemplo inicial para screenshot/captura ficar com conteúdo renderizado
+  generate(true);
+})();
+</script>
+</body>
+</html>
