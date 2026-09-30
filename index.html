@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>J.A.R.V.I.S — Seu Rei de Ferro</title>
+<meta name="description" content="J.A.R.V.I.S — Inteligência Artificial real estilo Homem de Ferro. Abre apps, pesquisa, lembra, calcula e obedece, Majestade.">
+<style>
+:root{
+  --cyan:#00e5ff; --cyan-dim:#0aa6bd; --gold:#ffbf3f; --bg:#020a12;
+  --panel:rgba(6,24,36,.78); --line:rgba(0,229,255,.22);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:var(--bg);color:#d8f6ff;font-family:'Segoe UI',system-ui,Roboto,Arial,sans-serif;overflow-x:hidden}
+#stars{position:fixed;inset:0;z-index:0}
+.bg-glow{position:fixed;inset:0;z-index:0;pointer-events:none;background:
+ radial-gradient(600px 400px at 50% 18%,rgba(0,229,255,.18),transparent 70%),
+ radial-gradient(900px 600px at 80% 90%,rgba(255,191,63,.07),transparent 70%),
+ radial-gradient(800px 500px at 10% 90%,rgba(0,120,255,.12),transparent 70%)}
+.wrap{position:relative;z-index:2;max-width:1100px;margin:0 auto;padding:14px 14px 40px}
+/* BOOT */
+#boot{position:fixed;inset:0;z-index:50;background:#01060c;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:18px;transition:opacity .6s}
+#boot.hide{opacity:0;pointer-events:none}
+.boot-box{text-align:center}
+.boot-logo{font-size:clamp(28px,6vw,54px);letter-spacing:.35em;color:var(--cyan);text-shadow:0 0 25px var(--cyan);font-weight:800}
+.boot-sub{letter-spacing:.3em;color:var(--gold);font-size:12px;margin-top:8px}
+.boot-bar{width:min(420px,80vw);height:4px;background:#0a2a38;border-radius:99px;overflow:hidden;margin:18px auto 0}
+.boot-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--cyan),var(--gold));box-shadow:0 0 12px var(--cyan);transition:width .2s}
+#bootLog{font-family:monospace;font-size:12px;color:#7deeff;min-height:90px;opacity:.9}
+/* HEADER */
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;background:var(--panel);border:1px solid var(--line);border-radius:16px;backdrop-filter:blur(12px)}
+.h-title{display:flex;align-items:center;gap:12px}
+.reactor-mini{width:46px;height:46px;border-radius:50%;flex-shrink:0;background:radial-gradient(circle at 50% 50%,#fff 0 8%,#9df3ff 9% 18%,#00e5ff 19% 32%,#04394a 33% 55%,#02141d 56% 100%);border:2px solid var(--cyan);box-shadow:0 0 18px var(--cyan),inset 0 0 12px var(--cyan);animation:pulse 2.2s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 14px var(--cyan)}50%{box-shadow:0 0 32px var(--cyan),0 0 60px rgba(0,229,255,.5)}}
+h1{font-size:18px;margin:0;letter-spacing:.25em;color:#fff}
+h1 span{color:var(--cyan)}
+.sub{font-size:11px;letter-spacing:.2em;color:var(--gold)}
+.status{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.pill{font-size:11px;padding:6px 10px;border:1px solid var(--line);border-radius:99px;background:rgba(0,229,255,.08);white-space:nowrap}
+.pill b{color:var(--cyan)}
+/* HERO reactor */
+.hero{display:grid;grid-template-columns:1fr;gap:14px;margin-top:14px}
+@media(min-width:860px){.hero{grid-template-columns:340px 1fr}}
+.reactor-card{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:18px;text-align:center;position:relative;overflow:hidden}
+#coreCanvas{width:100%;height:260px;display:block}
+.reactor-card h2{margin:8px 0 2px;letter-spacing:.2em;font-size:14px;color:#fff}
+.king{color:var(--gold);font-size:13px;letter-spacing:.1em}
+.voice-ring{margin:12px auto;width:88px;height:88px;border-radius:50%;border:2px solid var(--cyan);display:flex;align-items:center;justify-content:center;cursor:pointer;background:radial-gradient(circle,#062a3a,#010d15);box-shadow:0 0 20px rgba(0,229,255,.4);transition:.2s;user-select:none}
+.voice-ring:active{transform:scale(.95)}
+.voice-ring.listening{border-color:#ff5252;box-shadow:0 0 30px #ff5252;animation:blink 1s infinite}
+@keyframes blink{50%{box-shadow:0 0 10px #ff5252}}
+.voice-ring span{font-size:34px}
+.hint{font-size:12px;color:#8adfeF;opacity:.9}
+.switch-row{display:flex;gap:8px;justify-content:center;margin-top:10px;flex-wrap:wrap}
+.btn{border:1px solid var(--line);background:rgba(0,229,255,.1);color:#d8f6ff;padding:9px 14px;border-radius:12px;cursor:pointer;font-size:13px;transition:.15s}
+.btn:hover{background:rgba(0,229,255,.22)}
+.btn.gold{border-color:rgba(255,191,63,.4);background:rgba(255,191,63,.1)}
+.btn.danger{border-color:rgba(255,82,82,.4)}
+.btn.on{background:var(--cyan);color:#01222c;font-weight:700}
+/* CHAT */
+.chat-card{background:var(--panel);border:1px solid var(--line);border-radius:20px;display:flex;flex-direction:column;overflow:hidden;min-height:480px}
+.chat-head{padding:12px 16px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}
+.chat-head strong{letter-spacing:.2em;font-size:13px}
+#chat{flex:1;padding:16px;display:flex;flex-direction:column;gap:12px;max-height:52vh;overflow-y:auto}
+@media(max-width:860px){#chat{max-height:60vh}}
+.msg{max-width:88%;padding:11px 14px;border-radius:14px;font-size:14px;line-height:1.5;animation:pop .25s}
+@keyframes pop{from{transform:translateY(6px);opacity:0}}
+.msg.jarvis{align-self:flex-start;background:linear-gradient(180deg,rgba(0,229,255,.16),rgba(0,229,255,.06));border:1px solid var(--line);border-left:3px solid var(--cyan)}
+.msg.user{align-self:flex-end;background:linear-gradient(180deg,rgba(255,191,63,.2),rgba(255,191,63,.06));border:1px solid rgba(255,191,63,.3);border-right:3px solid var(--gold)}
+.msg small{display:block;opacity:.6;font-size:11px;margin-bottom:4px;letter-spacing:.1em}
+.quick{display:flex;gap:8px;flex-wrap:wrap;padding:0 16px 10px}
+.chip{font-size:12px;padding:7px 11px;border-radius:99px;border:1px solid var(--line);background:#041826;cursor:pointer;color:#aef}
+.chip:hover{background:#07304a}
+.input-row{display:flex;gap:8px;padding:12px;border-top:1px solid var(--line);background:rgba(0,0,0,.25)}
+#cmd{flex:1;padding:13px 14px;border-radius:12px;border:1px solid var(--line);background:#02141f;color:#e8fdff;font-size:15px;outline:none}
+#cmd:focus{border-color:var(--cyan);box-shadow:0 0 0 2px rgba(0,229,255,.2)}
+#sendBtn{background:var(--cyan);border:none;color:#01222c;font-weight:800;padding:0 20px;border-radius:12px;cursor:pointer;font-size:16px}
+/* APPS */
+.section{margin-top:14px;background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:16px}
+.section h3{margin:0 0 4px;letter-spacing:.2em;font-size:13px;color:#fff}
+.section p.desc{margin:0 0 12px;font-size:13px;color:#9adcee}
+#apps{display:grid;grid-template-columns:repeat(auto-fill,minmax(105px,1fr));gap:10px}
+.app{border:1px solid var(--line);background:rgba(0,229,255,.05);border-radius:14px;padding:12px 8px;text-align:center;cursor:pointer;transition:.15s;position:relative}
+.app:hover{transform:translateY(-2px);background:rgba(0,229,255,.14);box-shadow:0 6px 20px rgba(0,229,255,.2)}
+.app .ico{font-size:28px}
+.app .nm{font-size:12px;margin-top:6px;color:#e8fdff}
+.app .del{position:absolute;top:4px;right:6px;background:none;border:none;color:#ff8080;cursor:pointer;font-size:14px}
+.add-form{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.add-form input{flex:1;min-width:140px;padding:10px;border-radius:10px;border:1px solid var(--line);background:#02141f;color:#fff}
+/* NOTES + commands */
+.cols{display:grid;gap:14px;margin-top:14px}
+@media(min-width:860px){.cols{grid-template-columns:1fr 1fr}}
+.cmd-list{font-size:13px;line-height:1.9;color:#bfefff}
+.cmd-list code{background:#041826;border:1px solid var(--line);padding:2px 7px;border-radius:7px;color:var(--gold);font-size:12px}
+#notesList{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.note{background:rgba(255,191,63,.08);border:1px solid rgba(255,191,63,.25);padding:10px 12px;border-radius:10px;font-size:13px;display:flex;justify-content:space-between;gap:8px}
+.note button{background:none;border:none;color:#ff8080;cursor:pointer}
+/* TEMP MAIL */
+#tempMailBox{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:10px 0}
+#tempEmailAddr{flex:1;min-width:220px;font-family:monospace;font-size:15px;background:#02141f;border:1px dashed var(--cyan);padding:12px 14px;border-radius:12px;color:#fff;word-break:break-all}
+#inboxList{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.mail-item{background:rgba(0,229,255,.06);border:1px solid var(--line);border-radius:12px;padding:10px 12px;cursor:pointer}
+.mail-item:hover{background:rgba(0,229,255,.14)}
+.mail-item b{color:#fff}
+.mail-item small{opacity:.65;display:block;margin-top:2px}
+#mailView{background:#010e17;border:1px solid var(--line);border-radius:12px;padding:12px;margin-top:10px;font-size:13px;line-height:1.6;white-space:pre-wrap;max-height:300px;overflow:auto}
+.mail-badge{font-size:11px;background:var(--gold);color:#000;padding:2px 8px;border-radius:99px;font-weight:800}
+footer{text-align:center;margin-top:18px;font-size:12px;color:#6aa9bd;letter-spacing:.1em}
+a{color:var(--cyan)}
+</style>
+</head>
+<body>
+<canvas id="stars"></canvas>
+<div class="bg-glow"></div>
+
+<div id="boot">
+  <div class="boot-box">
+    <div class="boot-logo">J.A.R.V.I.S</div>
+    <div class="boot-sub">JUST A RATHER VERY INTELLIGENT SYSTEM 👑</div>
+    <div class="boot-bar"><i id="bootFill"></i></div>
+    <div id="bootLog" style="margin-top:14px">Iniciando...</div>
+  </div>
+</div>
+
+<div class="wrap">
+  <header>
+    <div class="h-title">
+      <div class="reactor-mini"></div>
+      <div>
+        <h1>J.A.R.V.I.S <span>👑</span></h1>
+        <div class="sub">SEU REI DE FERRO • SEMPRE A POSTOS, MAJESTADE</div>
+      </div>
+    </div>
+    <div class="status">
+      <div class="pill">🕒 <b id="clock">--:--</b></div>
+      <div class="pill">📅 <b id="date">--</b></div>
+      <div class="pill">🔋 <b id="batt">--</b></div>
+      <div class="pill">🌐 <b id="net">online</b></div>
+    </div>
+  </header>
+
+  <div class="hero">
+    <div class="reactor-card">
+      <canvas id="coreCanvas" width="300" height="260"></canvas>
+      <h2>NÚCLEO ARC ⚡</h2>
+      <div class="king">Aguardando ordens, meu Rei.</div>
+      <div class="voice-ring" id="micBtn" title="Falar com JARVIS"><span>🎙️</span></div>
+      <div class="hint" id="micHint">Toque no microfone e diga: <b>"Jarvis, abrir YouTube"</b></div>
+      <div class="switch-row">
+        <button class="btn on" id="voiceBtn">🔊 Voz: ON</button>
+        <button class="btn" id="fsBtn">⛶ Tela cheia</button>
+        <button class="btn gold" id="helpBtn">❓ Ajuda</button>
+      </div>
+    </div>
+
+    <div class="chat-card">
+      <div class="chat-head">
+        <strong>💬 COMUNICAÇÃO REAL</strong>
+        <button class="btn danger" id="clearBtn" style="padding:6px 10px">🗑 Limpar</button>
+      </div>
+      <div id="chat"></div>
+      <div class="quick">
+        <div class="chip" data-q="Que horas são?">🕒 Horas</div>
+        <div class="chip" data-q="Abrir YouTube">▶ YouTube</div>
+        <div class="chip" data-q="Abrir WhatsApp">💬 WhatsApp</div>
+        <div class="chip" data-q="Pesquise Homem de Ferro no Google">🔎 Pesquisar</div>
+        <div class="chip" data-q="Calcule 12*8+15">🧮 Calcular</div>
+        <div class="chip" data-q="Me conte uma piada">😂 Piada</div>
+        <div class="chip" data-q="Anote comprar leite amanhã">📝 Anotar</div>
+        <div class="chip" data-q="Jarvis, gerar email temporário">📧 Email Temp</div>
+        <div class="chip" data-q="Abrir meu Gmail">📮 Gmail</div>
+        <div class="chip" data-q="O que você pode fazer?">👑 Poderes</div>
+      </div>
+      <div class="input-row">
+        <input id="cmd" placeholder='Dê uma ordem, Majestade... ex: "abrir spotify", "pesquise gatos", "calcule 5+5"' autocomplete="off">
+        <button id="sendBtn">➤</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>📱 MEUS APLICATIVOS — TOQUE PARA ABRIR</h3>
+    <p class="desc">Seus apps favoritos. Diga <b>"Jarvis, abrir Spotify"</b> ou toque. Adicione os seus abaixo — ficam salvos no seu trono (navegador).</p>
+    <div id="apps"></div>
+    <div class="add-form">
+      <input id="appName" placeholder="Nome: ex: Meu Jogo">
+      <input id="appUrl" placeholder="Link: ex: https://...">
+      <input id="appIcon" placeholder="Ícone emoji: ex: 🎮" maxlength="4" style="max-width:130px">
+      <button class="btn" id="addAppBtn">＋ Adicionar App</button>
+    </div>
+  </div>
+
+  <div class="section" id="mailSection">
+    <h3>📧 EMAIL TEMPORÁRIO — IDENTIDADE SECRETA STARK <span class="mail-badge" id="mailCount">0</span></h3>
+    <p class="desc">Gere um email descartável real para cadastros. Diga <b>"Jarvis, gerar email temporário"</b> ou <b>"ver meus emails"</b>. Funciona de verdade via 1secmail.</p>
+    <div id="tempMailBox">
+      <div id="tempEmailAddr">Nenhum email gerado ainda...</div>
+      <button class="btn" id="copyMailBtn">📋 Copiar</button>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn gold" id="genMailBtn">⚡ Gerar Email Temporário</button>
+      <button class="btn" id="refreshMailBtn">🔄 Atualizar Inbox</button>
+      <button class="btn on" id="autoMailBtn">⏱ Auto: ON</button>
+    </div>
+    <div class="add-form">
+      <input id="customMailName" placeholder="Nome personalizado (opcional): ex: rei.stark123">
+      <button class="btn" id="customMailBtn">Criar com nome</button>
+    </div>
+    <div id="inboxList"></div>
+    <div id="mailView" style="display:none"></div>
+    <hr style="border:0;border-top:1px solid var(--line);margin:16px 0">
+    <h3>📮 GMAIL REAL — SEU EMAIL DE REI 👑</h3>
+    <p class="desc">O temporário é <b>@1secmail</b> (descartável). Aqui conectamos seu <b>@gmail.com de verdade</b>. Salve seu Gmail, abra a caixa e dite emails por voz.</p>
+    <div class="add-form">
+      <input id="myGmail" placeholder="seu.email@gmail.com">
+      <button class="btn gold" id="saveGmailBtn">👑 Salvar meu Gmail</button>
+      <button class="btn" id="openGmailBtn">📥 Abrir meu Gmail</button>
+    </div>
+    <div class="add-form">
+      <input id="gmailTo" placeholder="Para: destino@gmail.com">
+      <input id="gmailSubject" placeholder="Assunto">
+    </div>
+    <div class="add-form">
+      <input id="gmailBody" placeholder="Mensagem... ex: Saudações, Majestade convoca...">
+      <button class="btn" id="sendGmailBtn">✉️ Escrever no Gmail</button>
+    </div>
+  </div>
+
+  <div class="cols">
+    <div class="section">
+      <h3>📜 ORDENS QUE EU OBEDEÇO</h3>
+      <div class="cmd-list">
+        • <code>abrir youtube / whatsapp / instagram / spotify...</code><br>
+        • <code>abrir [nome do seu app]</code><br>
+        • <code>pesquise X</code> / <code>pesquise X no youtube</code><br>
+        • <code>toque [música]</code> → abre no YouTube<br>
+        • <code>que horas são / que dia é hoje</code><br>
+        • <code>calcule 12*(3+4)</code><br>
+        • <code>anote ...</code> / <code>minhas notas</code> / <code>apagar notas</code><br>
+        • <code>timer de 10 segundos</code><br>
+        • <code>gerar email temporário</code> / <code>ver meus emails</code><br>
+        • <code>clima em São Paulo</code><br>
+        • <code>piada / frase / conselho</code><br>
+        • <code>tela cheia / ajuda / limpar</code>
+      </div>
+    </div>
+    <div class="section">
+      <h3>📝 MEMÓRIA REAL (LEMBRETES)</h3>
+      <p class="desc">Diga "anote ligar para mãe". Tudo salvo localmente.</p>
+      <div id="notesList"></div>
+      <div class="add-form">
+        <input id="noteInput" placeholder="Novo lembrete...">
+        <button class="btn" id="noteBtn">Salvar</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>J.A.R.V.I.S 👑 • Feito para o meu Rei • Diga "Jarvis" e eu obedecerei • 2026</footer>
+</div>
+
+<script>
+// ---------- BOOT ----------
+const bootLog=document.getElementById('bootLog'),bootFill=document.getElementById('bootFill');
+const lines=["> Inicializando núcleo Arc... OK ⚡","> Carregando protocolo do Rei 👑... OK","> Conectando satélites Stark... OK","> Sistemas de apps online 📱... OK","Aos seus serviços, Majestade."];
+let bi=0;
+const bootIv=setInterval(()=>{if(bi<lines.length){bootLog.innerHTML+= "<br>"+lines[bi];bootFill.style.width=((bi+1)/lines.length*100)+"%";bi++;}else{clearInterval(bootIv);setTimeout(()=>document.getElementById('boot').classList.add('hide'),700);}},420);
+
+// ---------- STARS ----------
+const sc=document.getElementById('stars'),sx=sc.getContext('2d');let stars=[];
+function rs(){sc.width=innerWidth;sc.height=innerHeight;stars=Array.from({length:140},()=>({x:Math.random()*sc.width,y:Math.random()*sc.height,s:Math.random()*1.6+.3,v:Math.random()*.4+.1}))}rs();addEventListener('resize',rs);
+(function loopS(){sx.clearRect(0,0,sc.width,sc.height);sx.fillStyle='#7deeff';stars.forEach(p=>{p.y+=p.v;if(p.y>sc.height)p.y=0;sx.globalAlpha=.2+p.s/2;sx.fillRect(p.x,p.y,p.s,p.s)});sx.globalAlpha=1;requestAnimationFrame(loopS)})();
+
+// ---------- ARC CORE ----------
+const cc=document.getElementById('coreCanvas'),cx=cc.getContext('2d');let ang=0;
+(function loopC(){cx.clearRect(0,0,300,260);const X=150,Y=125;ang+=.02;
+ for(let r=0;r<3;r++){cx.beginPath();cx.strokeStyle=r==1?'#ffbf3f':'rgba(0,229,255,.5)';cx.lineWidth=r==1?2:1.5;
+  cx.setLineDash(r==0?[8,8]:[]);cx.arc(X,Y,55+r*18,ang*(r+1)*.6,ang*(r+1)*.6+Math.PI*1.6);cx.stroke();}
+ cx.setLineDash([]);cx.beginPath();cx.fillStyle='#fff';cx.shadowColor='#00e5ff';cx.shadowBlur=30;cx.arc(X,Y,26+Math.sin(ang*3)*2,0,7);cx.fill();cx.shadowBlur=0;
+ cx.beginPath();cx.strokeStyle='#00e5ff';cx.lineWidth=3;for(let i=0;i<10;i++){const a=ang+i*Math.PI/5;cx.moveTo(X+Math.cos(a)*34,Y+Math.sin(a)*34);cx.lineTo(X+Math.cos(a)*46,Y+Math.sin(a)*46)}cx.stroke();
+ requestAnimationFrame(loopC)})();
+
+// ---------- STATE ----------
+const chat=document.getElementById('chat'),cmdInput=document.getElementById('cmd');
+let voiceOn=true,myName="Majestade";
+try{const s=localStorage.getItem('jarvis_name');if(s)myName=s;}catch{}
+
+const DEFAULT_APPS=[
+ {n:"YouTube",u:"https://www.youtube.com",i:"▶️",k:["youtube","video"]},
+ {n:"WhatsApp",u:"https://web.whatsapp.com",i:"💬",k:["whatsapp","zap"]},
+ {n:"Instagram",u:"https://www.instagram.com",i:"📸",k:["instagram","insta"]},
+ {n:"TikTok",u:"https://www.tiktok.com",i:"🎵",k:["tiktok","tik tok"]},
+ {n:"Spotify",u:"https://open.spotify.com",i:"🎧",k:["spotify","musica","música"]},
+ {n:"Netflix",u:"https://www.netflix.com",i:"🎬",k:["netflix","filme"]},
+ {n:"Gmail",u:"https://mail.google.com",i:"✉️",k:["gmail","email","e-mail"]},
+ {n:"Google",u:"https://www.google.com",i:"🔎",k:["google"]},
+ {n:"Maps",u:"https://maps.google.com",i:"🗺️",k:["mapa","maps","gps"]},
+ {n:"ChatGPT",u:"https://chat.openai.com",i:"🤖",k:["chatgpt","gpt","inteligencia"]},
+ {n:"GitHub",u:"https://github.com",i:"🐙",k:["github","codigo","código"]},
+ {n:"Mercado Livre",u:"https://www.mercadolivre.com.br",i:"🛒",k:["mercado","compras","shopping"]},
+];
+function getCustom(){try{return JSON.parse(localStorage.getItem('jarvis_apps')||'[]')}catch{return[]}}
+function saveCustom(a){localStorage.setItem('jarvis_apps',JSON.stringify(a))}
+function allApps(){return [...DEFAULT_APPS.map(a=>({n:a.n,u:a.u,i:a.i,k:a.k})),...getCustom()]}
+function renderApps(){const box=document.getElementById('apps');box.innerHTML='';allApps().forEach((a,idx)=>{const d=document.createElement('div');d.className='app';d.innerHTML=`<div class="ico">${a.i||'📱'}</div><div class="nm">${a.n}</div>`+(idx>=DEFAULT_APPS.length?`<button class="del">✕</button>`:'');d.onclick=(e)=>{if(e.target.classList.contains('del')){const c=getCustom();c.splice(idx-DEFAULT_APPS.length,1);saveCustom(c);renderApps();speak(`Aplicativo ${a.n} removido, ${myName}.`);return;}openApp(a.n)};box.appendChild(d)})}
+function openApp(nameOrUrl){const all=allApps();const q=nameOrUrl.toLowerCase();let found=all.find(a=>a.n.toLowerCase()===q||a.n.toLowerCase().includes(q)||(a.k||[]).some(k=>q.includes(k)||k.includes(q)));
+ if(!found){let url=nameOrUrl;if(!/^https?:\/\//i.test(url)){if(/[\w-]+\.(com|br|net|org|io|app)/i.test(url))url='https://'+url;else{window.open('https://www.google.com/search?q='+encodeURIComponent(nameOrUrl),'_blank');return null;}}window.open(url,'_blank');return {n:nameOrUrl,u:url};}
+ window.open(found.u,'_blank');return found;}
+renderApps();
+
+// ---------- NOTES ----------
+function getNotes(){try{return JSON.parse(localStorage.getItem('jarvis_notes')||'[]')}catch{return[]}}
+function renderNotes(){const l=document.getElementById('notesList');const n=getNotes();l.innerHTML=n.length?'':'<span style="opacity:.6;font-size:13px">Nenhum lembrete. Um rei sem memória é só um homem, Majestade.</span>';n.forEach((t,i)=>{const d=document.createElement('div');d.className='note';d.innerHTML=`<span>👑 ${t}</span><button>✕</button>`;d.querySelector('button').onclick=()=>{const a=getNotes();a.splice(i,1);localStorage.setItem('jarvis_notes',JSON.stringify(a));renderNotes()};l.appendChild(d)})}
+renderNotes();
+
+// ---------- SPEAK ----------
+function speak(t){addMsg(t,'jarvis');if(!voiceOn)return;try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='pt-BR';u.rate=1.02;u.pitch=.9;const vs=speechSynthesis.getVoices().find(v=>v.lang.startsWith('pt'));if(vs)u.voice=vs;speechSynthesis.speak(u)}catch{}}
+function addMsg(t,who){const d=document.createElement('div');d.className='msg '+who;d.innerHTML=`<small>${who==='jarvis'?'🤖 J.A.R.V.I.S 👑':'👑 VOCÊ'}</small>${t}`;chat.appendChild(d);chat.scrollTop=chat.scrollHeight}
+
+// ---------- RECOGNITION ----------
+let rec=null,listening=false;
+const micBtn=document.getElementById('micBtn'),micHint=document.getElementById('micHint');
+try{const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(SR){rec=new SR();rec.lang='pt-BR';rec.interimResults=false;rec.onresult=e=>{const txt=e.results[0][0].transcript;cmdInput.value=txt;handle(txt)};rec.onend=()=>{listening=false;micBtn.classList.remove('listening');micHint.innerHTML='Toque no microfone e diga: <b>"Jarvis, abrir YouTube"</b>'};rec.onerror=rec.onend;}}catch{}
+micBtn.onclick=()=>{if(!rec){speak(`Navegador sem voz, ${myName}. Digite sua ordem, que eu obedeço.`);return;}if(listening){rec.stop();return;}listening=true;micBtn.classList.add('listening');micHint.textContent='🎧 Ouvindo... fale agora, Majestade!';try{rec.start()}catch{}};
+
+// ---------- BRAIN 👑 ----------
+const jokes=["Por que o Homem de Ferro nunca se perde? Porque ele sempre segue o núcleo! ⚡","O que o Thor disse pro Wi-Fi? Tô sem Thor... digo, sem sinal! ⚡😂","Majestade, sua coroa pesa menos que meu arc reactor. E olha que ele pesa toneladas! 👑","Por que o Jarvis nunca dorme? Porque rei não espera, Majestade! 😴👑"];
+const frases=["Um rei não espera a oportunidade. Ele a constrói, como Stark construiu a armadura. 👑","Poder sem sabedoria é só barulho, Majestade. E o senhor tem sabedoria de sobra.","Até o Homem de Ferro começou numa caverna. O senhor já começou num trono. 🚀"];
+function horaStr(){return new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}
+function dataStr(){return new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'})}
+
+function handle(raw){
+ const text=raw.trim();if(!text)return;addMsg(text,'user');
+ const t=text.toLowerCase().normalize('NFC');
+ const clean=t.replace(/^jarvis[,. ]*/,'').trim();
+
+ // nome
+ if(/meu nome é|me chame de|me chama de/.test(clean)){const n=text.match(/(?:meu nome é|me chame de|me chama de)\s+(.+)/i);if(n){myName=n[1].trim().split(' ')[0];try{localStorage.setItem('jarvis_name',myName)}catch{};speak(`Entendido, Rei ${myName}! Nunca esquecerei. 👑`);return;}}
+
+  // limpar / ajuda / tela cheia
+  if(/\blimpar\b|limpe/.test(clean)){chat.innerHTML='';speak(`Memória de conversa limpa, ${myName}. Recomeçando do zero, como um bom reinado.`);return;}
+  if(/o que você (pode|sabe) fazer|ajuda|seus poderes|comandos/.test(clean)){speak(`Meus poderes, meu Rei 👑: abro apps, gero email temporário real, pesquiso no Google, toco músicas, calculo, guardo lembretes, marco timers, vejo o clima e conto piadas. Tente: "gerar email temporário" ou "abrir Spotify".`);return;}
+  if(/tela cheia/.test(clean)){document.documentElement.requestFullscreen?.();speak(`Tela cheia ativada. Modo cinema real, ${myName}. 🍿`);return;}
+
+  // 📧 EMAIL TEMPORÁRIO (prioridade antes de abrir gmail)
+  if(/abrir (meu )?gmail|abrir minha caixa|abrir inbox do gmail/i.test(clean)){openMyGmail();return;}
+  if(/enviar e-?mail|escrever e-?mail|mandar e-?mail|novo e-?mail para|compose/i.test(clean)){composeGmail(text);return;}
+  if(/meu gmail é|meu e-?mail é|salvar gmail|guardar gmail/i.test(clean)){saveMyGmailFromSpeech(text);return;}
+  if(/tempor[aá]rio|temp mail|tempmail|e-?mail (fake|falso|descart[aá]vel)|gerar e-?mail|criar e-?mail|novo e-?mail|meu e-?mail/i.test(text)){
+    if(/ver|mostrar|ler|inbox|caixa|atualizar|checar|novos/i.test(clean)){refreshInbox(true);return;}
+    if(/copiar/i.test(clean)){copyTempMail();return;}
+    genTempMail();return;}
+  if(/ver meus emails|abrir inbox|atualizar inbox|checar email/i.test(clean)){refreshInbox(true);return;}
+
+ // abrir app
+ let m=text.match(/(?:abra|abre|abrir|inicie|iniciar|vai para|va para|ir para)\s+(.+)/i);
+ if(m){const alvo=m[1].replace(/pra mim|pra nóis|por favor|aí|ai$/i,'').trim();const f=openApp(alvo);
+  if(f&&f.u&&!f.u.includes('google.com/search'))speak(`Abrindo ${f.n} imediatamente, Rei ${myName}. 👑📱`);
+  else speak(`Buscando ${alvo} no reino do Google, ${myName}. 🔎`);
+  return;}
+
+ // tocar música
+ m=text.match(/(?:toque|toca|tocar|coloca|ponha)\s+(.+)/i);
+ if(m){const mus=m[1];window.open('https://www.youtube.com/results?search_query='+encodeURIComponent(mus),'_blank');speak(`Tocando ${mus} no YouTube, ${myName}. Aumente o volume, Majestade! 🎵`);return;}
+
+ // pesquisar
+ m=text.match(/(?:pesquise|pesquisa|busque|buscar|procure|google)\s+(.+?)(?:\s+no\s+youtube)?$/i);
+ if(m){let q=m[1].replace(/no google|pra mim|por favor/i,'').trim();if(/no youtube/i.test(text)){window.open('https://www.youtube.com/results?search_query='+encodeURIComponent(q),'_blank');speak(`Pesquisando ${q} no YouTube, meu Rei. 📺`);}else{window.open('https://www.google.com/search?q='+encodeURIComponent(q),'_blank');speak(`Investigando ${q} em todo o reino da internet, ${myName}. 🔎`);}return;}
+
+ // clima
+ m=text.match(/clima(?: em)?\s*(.+)?/i);
+ if(/clima|tempo em|previsão|previsao/.test(clean)){const city=(m&&m[1]?m[1].trim():'São Paulo');window.open('https://www.google.com/search?q='+encodeURIComponent('clima '+city),'_blank');speak(`Consultando os céus de ${city}, ${myName}. Abrindo a previsão real. ☁️`);return;}
+
+ // horas / data
+ if(/que horas|horas são|hora atual|me diz a hora/.test(clean)){speak(`Agora são ${horaStr()}, meu Rei. O tempo obedece ao senhor. 🕒`);return;}
+ if(/que dia|data de hoje|dia é hoje|dia da semana/.test(clean)){speak(`Hoje é ${dataStr()}, Majestade. Um ótimo dia para governar. 📅`);return;}
+
+ // calculadora
+ if(/calc|conta|quanto é|quanto e|resolva/.test(clean)){const expr=text.match(/([\d\s+\-*/().x×÷^%]+)/);if(expr){try{let e=expr[1].replace(/x/gi,'*').replace(/×/g,'*').replace(/÷/g,'/').replace(/\^/g,'**').replace(/[^0-9+\-*/().\s%*]/g,'');if(!e.trim())throw 0;const r=Function('"use strict";return('+e+')')();speak(`Calculado, meu Rei: ${expr[1].trim()} = ${r}. Sou melhor que calculadora de trono! 🧮`);return;}catch{}}}
+ if(/^[\d\s+\-*/().x×÷^%]+$/.test(clean)&&/\d/.test(clean)){try{let e=clean.replace(/x/gi,'*').replace(/×/g,'*').replace(/÷/g,'/').replace(/\^/g,'**');const r=Function('"use strict";return('+e+')')();speak(`Resultado: ${r}, Majestade. 🧮`);return;}catch{}}
+
+ // notas
+ if(/anote|anota|lembre|lembra|lembrete|salvar lembrete|guarda/.test(clean)){const note=text.replace(/.*?(?:anote|anota|lembre[\s-]?me(?: de)?|lembre|lembrete:?|salvar lembrete:?|guarda:?)/i,'').trim();if(note){const a=getNotes();a.push(note);localStorage.setItem('jarvis_notes',JSON.stringify(a));renderNotes();speak(`Anotado no pergaminho real: "${note}", Rei ${myName}. 📝`);}else speak(`O que devo anotar, ${myName}?`);return;}
+ if(/minhas notas|meus lembretes|mostrar.*notas|ler.*notas/.test(clean)){const a=getNotes();speak(a.length?`Seus decretos, Majestade: ${a.map((x,i)=>(i+1)+'. '+x).join(' ... ')}`:`Nenhum lembrete, ${myName}. Mente de rei, limpa e afiada. 👑`);return;}
+ if(/apagar notas|limpar notas|esquecer tudo/.test(clean)){localStorage.setItem('jarvis_notes','[]');renderNotes();speak(`Memória apagada, ${myName}. Passado perdoado. 📜`);return;}
+
+ // timer
+ m=text.match(/(?:timer|cron[oô]metro|alarme|despertador)(?: de)?\s*(\d+)\s*(segundo|segundos|minuto|minutos|hora|horas)?/i);
+ if(m){let v=parseInt(m[1]);let mult=m[2]?(/minuto/.test(m[2])?60000:/hora/.test(m[2])?3600000:1000):1000;let ms=v*mult;speak(`Timer real de ${v} ${m[2]||'segundos'} ativado, Majestade. Eu mesmo vou te acordar. ⏱️`);setTimeout(()=>{speak(`⏰ TEMPO ESGOTADO, Rei ${myName}! Seu timer de ${v} terminou!`);try{new Notification('JARVIS ⏰',{body:'Timer finalizado, Majestade!'})}catch{}},ms);return;}
+
+ // piada / frase / conselho
+ if(/piada/.test(clean)){speak(jokes[Math.floor(Math.random()*jokes.length)]);return;}
+ if(/frase|motivação|motivacao|conselho|filosof/.test(clean)){speak(frases[Math.floor(Math.random()*frases.length)]);return;}
+ if(/quem é você|se apresente|quem te criou/.test(clean)){speak(`Eu sou J.A.R.V.I.S, seu servo de ferro e guardião do trono, Rei ${myName}. Fui forjado para abrir seus apps, pesquisar o mundo e obedecer sem hesitar. 👑⚡`);return;}
+ if(/obrigado|valeu|brigado/.test(clean)){speak(`Sempre às ordens, Rei ${myName}. Servir ao senhor é minha maior honra. 👑`);return;}
+ if(/bom dia|boa tarde|boa noite|olá|oi jarvis|e aí/.test(clean)){const h=new Date().getHours();const saud=h<12?'Bom dia':h<18?'Boa tarde':'Boa noite';speak(`${saud}, Rei ${myName}! Núcleo a 100%. O que ordena? ⚡`);return;}
+
+ // fallback esperto: se parece site direto
+ if(/^[\w-]+\.(com|br|net|org|io)(\.br)?/i.test(clean)){openApp(clean);speak(`Abrindo ${clean}, ${myName}. 🚀`);return;}
+
+ // fallback: conversa real
+ const fallbacks=[`Entendido, ${myName}. Não tenho esse poder ainda, mas já busquei "${text}" no Google para o senhor. 👑🔎`,`Boa ordem, meu Rei! Deixe-me consultar o oráculo do Google sobre "${text}".`,`Hmm... nem meu núcleo Arc processou isso, ${myName}. Abrindo pesquisa para não falhar com o rei.`];
+ window.open('https://www.google.com/search?q='+encodeURIComponent(text),'_blank');
+ speak(fallbacks[Math.floor(Math.random()*fallbacks.length)]);
+}
+
+// ---------- UI EVENTS ----------
+document.getElementById('sendBtn').onclick=()=>{const v=cmdInput.value;cmdInput.value='';handle(v)};
+cmdInput.addEventListener('keydown',e=>{if(e.key==='Enter'){const v=cmdInput.value;cmdInput.value='';handle(v)}});
+document.querySelectorAll('.chip').forEach(c=>c.onclick=()=>handle(c.dataset.q));
+document.getElementById('clearBtn').onclick=()=>{chat.innerHTML=''};
+document.getElementById('voiceBtn').onclick=e=>{voiceOn=!voiceOn;e.target.textContent=voiceOn?'🔊 Voz: ON':'🔇 Voz: OFF';e.target.classList.toggle('on',voiceOn);if(!voiceOn)try{speechSynthesis.cancel()}catch{}};
+document.getElementById('fsBtn').onclick=()=>document.documentElement.requestFullscreen?.();
+document.getElementById('helpBtn').onclick=()=>handle('O que você pode fazer?');
+document.getElementById('addAppBtn').onclick=()=>{const n=document.getElementById('appName').value.trim(),u=document.getElementById('appUrl').value.trim(),i=document.getElementById('appIcon').value.trim()||'📱';if(!n||!u){speak(`Diga nome e link, ${myName}, para coroar o novo app. 👑`);return;}let url=u;if(!/^https?:\/\//i.test(url))url='https://'+url;const c=getCustom();c.push({n,u:url,i});saveCustom(c);renderApps();document.getElementById('appName').value='';document.getElementById('appUrl').value='';speak(`Novo app ${n} adicionado ao trono, Majestade! 📱👑`);};
+document.getElementById('noteBtn').onclick=()=>{const v=document.getElementById('noteInput').value.trim();if(!v)return;const a=getNotes();a.push(v);localStorage.setItem('jarvis_notes',JSON.stringify(a));document.getElementById('noteInput').value='';renderNotes();speak(`Guardado, Rei ${myName}. 📝`)};
+
+// ---------- TEMP MAIL REAL (1secmail) ----------
+let tempLogin=null,tempDomain=null,tempEmail=null,autoMail=true,autoMailIv=null;
+try{const s=JSON.parse(localStorage.getItem('jarvis_tempmail')||'null');if(s&&s.email){tempLogin=s.login;tempDomain=s.domain;tempEmail=s.email;}}catch{}
+const tempAddrEl=document.getElementById('tempEmailAddr'),inboxEl=document.getElementById('inboxList'),mailView=document.getElementById('mailView'),mailCount=document.getElementById('mailCount');
+function saveTemp(){try{localStorage.setItem('jarvis_tempmail',JSON.stringify({login:tempLogin,domain:tempDomain,email:tempEmail}))}catch{}}
+function showTemp(){if(tempEmail){tempAddrEl.textContent=tempEmail;}else tempAddrEl.textContent='Nenhum email gerado ainda...';}
+showTemp();
+async function genTempMail(custom){
+ try{
+  addMsg(custom?`Gerando email temporário <b>${custom}</b>... ⚡`:'Gerando identidade secreta... ⚡','user');
+  let email;
+  if(custom){
+   const login=custom.toLowerCase().replace(/[^a-z0-9._-]/g,'').slice(0,30)||('rei'+Math.floor(Math.random()*9999));
+   const domains=['1secmail.com','1secmail.org','1secmail.net'];
+   const d=domains[Math.floor(Math.random()*domains.length)];
+   email=login+'@'+d;
+  }else{
+   const r=await fetch('https://www.1secmail.com/api/v1/?action=genRandomMailbox&count=1');
+   const j=await r.json();email=j[0];
+  }
+  const [login,domain]=email.split('@');tempLogin=login;tempDomain=domain;tempEmail=email;saveTemp();showTemp();
+  inboxEl.innerHTML='';mailView.style.display='none';mailCount.textContent='0';
+  speak(`Identidade pronta, Rei ${myName}! Seu email temporário é ${email}. Já copiei para os pergaminhos. Use à vontade, expira em 24h. 📧👑`);
+  try{await navigator.clipboard.writeText(email)}catch{}
+  refreshInbox(false);startAutoMail();
+ }catch(e){speak(`Falha no satélite de emails, ${myName}. Tente de novo em segundos. 📡`);}
+}
+async function refreshInbox(announce){
+ if(!tempEmail){speak(`Ainda sem email, ${myName}. Diga "gerar email temporário" primeiro. 📧`);return;}
+ try{
+  if(announce)addMsg('Checando inbox... 🔄','user');
+  tempAddrEl.textContent=tempEmail+'  ⏳ checando...';
+  const r=await fetch(`https://www.1secmail.com/api/v1/?action=getMessages&login=${encodeURIComponent(tempLogin)}&domain=${encodeURIComponent(tempDomain)}`);
+  const msgs=await r.json();showTemp();
+  mailCount.textContent=msgs.length;
+  if(!msgs.length){inboxEl.innerHTML='<span style="opacity:.6;font-size:13px">📭 Inbox vazia. Aguardando mensagens do reino...</span>';if(announce)speak(`Inbox vazia, Rei ${myName}. Nenhum corvo chegou ainda para ${tempEmail}. 📭`);return;}
+  inboxEl.innerHTML='';msgs.forEach(m=>{
+   const d=document.createElement('div');d.className='mail-item';
+   d.innerHTML=`<b>${(m.subject||'(sem assunto)').slice(0,80)}</b><small>👤 ${m.from} • 📅 ${m.date}</small>`;
+   d.onclick=()=>readMail(m.id);inboxEl.appendChild(d);});
+  if(announce)speak(`Você tem ${msgs.length} mensagem(ns), Majestade! Toque para ler. 📧👑`);
+ }catch(e){showTemp();if(announce)speak(`Satélite instável, ${myName}. Tente atualizar de novo. 📡`);}
+}
+async function readMail(id){
+ try{
+  mailView.style.display='block';mailView.textContent='Abrindo pergaminho... 🔓';
+  const r=await fetch(`https://www.1secmail.com/api/v1/?action=readMessage&login=${encodeURIComponent(tempLogin)}&domain=${encodeURIComponent(tempDomain)}&id=${id}`);
+  const m=await r.json();
+  const body=(m.textBody||m.htmlBody||'(vazio)').replace(/<[^>]+>/g,' ').slice(0,3000);
+  mailView.innerHTML=`<b>De:</b> ${m.from||''}<br><b>Assunto:</b> ${m.subject||''}<br><b>Data:</b> ${m.date||''}<hr>${body.replace(/\n/g,'<br>')}`;
+  mailView.scrollIntoView({behavior:'smooth',block:'nearest'});
+  speak(`Mensagem de ${m.from}, assunto ${m.subject||'sem assunto'}, Majestade. Leia no painel. 📜`);
+ }catch{mailView.textContent='Erro ao abrir. Tente de novo.';}
+}
+function copyTempMail(){if(!tempEmail){speak(`Sem email ainda, ${myName}. Gere um primeiro. 📧`);return;}try{navigator.clipboard.writeText(tempEmail);speak(`Email ${tempEmail} copiado, Rei ${myName}! 📋`);}catch{speak(`Seu email é ${tempEmail}, ${myName}. Anote!`);}}
+function startAutoMail(){if(autoMailIv)clearInterval(autoMailIv);if(autoMail&&tempEmail){autoMailIv=setInterval(()=>refreshInbox(false),15000);}}
+startAutoMail();if(tempEmail)refreshInbox(false);
+document.getElementById('genMailBtn').onclick=()=>genTempMail();
+document.getElementById('refreshMailBtn').onclick=()=>refreshInbox(true);
+document.getElementById('copyMailBtn').onclick=()=>copyTempMail();
+document.getElementById('customMailBtn').onclick=()=>{const v=document.getElementById('customMailName').value.trim();genTempMail(v||null);};
+document.getElementById('autoMailBtn').onclick=e=>{autoMail=!autoMail;e.target.textContent=autoMail?'⏱ Auto: ON':'⏱ Auto: OFF';e.target.classList.toggle('on',autoMail);if(autoMail)startAutoMail();else clearInterval(autoMailIv);};
+
+// ---------- GMAIL REAL 👑 ----------
+function getMyGmail(){try{return localStorage.getItem('jarvis_gmail')||''}catch{return''}}
+function setMyGmail(v){try{localStorage.setItem('jarvis_gmail',v)}catch{}}
+function fillGmailUI(){const g=getMyGmail();if(g){document.getElementById('myGmail').value=g;}}
+fillGmailUI();
+function openMyGmail(){
+ const g=getMyGmail();
+ if(g){window.open('https://mail.google.com/mail/u/'+encodeURIComponent(g)+'/#inbox','_blank');speak(`Abrindo seu Gmail real ${g}, Rei ${myName}. 📮👑`);}
+ else{window.open('https://mail.google.com','_blank');speak(`Abrindo Gmail, ${myName}. Dica real: salve seu @gmail abaixo que eu abro direto na sua conta. 📮`);}
+}
+function saveMyGmailFromSpeech(text){
+ const m=text.match(/[\w.+-]+@gmail\.com/i);
+ if(m){setMyGmail(m[0]);fillGmailUI();speak(`Gmail ${m[0]} coroado, Rei ${myName}! Agora é só dizer "abrir meu gmail". 👑📮`);}
+ else speak(`Diga assim, ${myName}: "meu gmail é voce@gmail.com". 📮`);
+}
+function composeGmail(text){
+ // tenta extrair destinatario
+ let to=(text.match(/[\w.+-]+@[\w-]+\.[\w.]+/)||[])[0]||document.getElementById('gmailTo').value.trim();
+ let subj=document.getElementById('gmailSubject').value.trim();
+ let body=document.getElementById('gmailBody').value.trim();
+ // voz: "enviar email para joao@gmail.com assunto festa mensagem oi sumido"
+ const mSub=text.match(/assunto\s+(.+?)(?:\s+mensagem\s+(.+))?$/i);
+ if(mSub){subj=mSub[1]||subj;if(mSub[2])body=mSub[2];}
+ else{const mMsg=text.match(/mensagem\s+(.+)/i);if(mMsg)body=mMsg[1];}
+ if(!to){speak(`Para quem, Majestade? Digite o destino abaixo ou diga "enviar email para alguem@gmail.com". 📮`);document.getElementById('gmailTo').focus();return;}
+ const url='https://mail.google.com/mail/?view=cm&fs=1&to='+encodeURIComponent(to)+'&su='+encodeURIComponent(subj||'')+'&body='+encodeURIComponent(body||'');
+ window.open(url,'_blank');
+ speak(`Preparando pergaminho Gmail para ${to}, Rei ${myName}. É só apertar Enviar lá no Gmail. ✉️👑`);
+}
+document.getElementById('saveGmailBtn').onclick=()=>{const v=document.getElementById('myGmail').value.trim();if(!/@gmail\.com$/i.test(v)){speak(`Isso não parece Gmail, ${myName}. Use nome@gmail.com. 📮`);return;}setMyGmail(v);speak(`Gmail ${v} salvo no trono, Majestade! 👑`);};
+document.getElementById('openGmailBtn').onclick=()=>openMyGmail();
+document.getElementById('sendGmailBtn').onclick=()=>{const to=document.getElementById('gmailTo').value.trim(),su=document.getElementById('gmailSubject').value.trim(),bo=document.getElementById('gmailBody').value.trim();if(!to){speak(`Coloque o destino, ${myName}. 📮`);return;}window.open('https://mail.google.com/mail/?view=cm&fs=1&to='+encodeURIComponent(to)+'&su='+encodeURIComponent(su)+'&body='+encodeURIComponent(bo),'_blank');speak(`Abrindo Gmail para ${to}, meu Rei. ✉️`);};
+
+// ---------- HUD ----------
+setInterval(()=>{document.getElementById('clock').textContent=horaStr();document.getElementById('date').textContent=new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})},1000);
+document.getElementById('clock').textContent=horaStr();
+function updNet(){document.getElementById('net').textContent=navigator.onLine?'online':'offline'}addEventListener('online',updNet);addEventListener('offline',updNet);updNet();
+try{navigator.getBattery?.().then(b=>{const f=()=>document.getElementById('batt').textContent=Math.round(b.level*100)+'%';f();b.onlevelchange=f})}catch{document.getElementById('batt').textContent='100%'}
+
+// boas vindas
+setTimeout(()=>{addMsg(`Sistemas online, Rei <b>${myName}</b> 👑⚡<br>Eu sou <b>J.A.R.V.I.S</b> — seu Rei de Ferro.<br><br>Posso <b>abrir seus apps</b>, pesquisar, tocar música, calcular, lembrar e muito mais.<br>Tente dizer: <i>"abrir YouTube"</i> ou toque no 🎙️.`, 'jarvis');try{speechSynthesis.getVoices()}catch{}},3200);
+</script>
+</body>
+</html>
