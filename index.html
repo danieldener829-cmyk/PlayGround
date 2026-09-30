@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>SiteFinder AI — Encontrar → Contato → Site → Vender</title>
+<meta name="description" content="Encontre empresas de qualquer cidade do Brasil, gere sites profissionais e venda.">
+<meta name="theme-color" content="#070b16">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔎</text></svg>">
+</head>
+<body>
+<div class="bg-orbs"><span class="orb o1"></span><span class="orb o2"></span><span class="orb o3"></span></div>
+
+<header class="topbar glass">
+  <div class="brand" data-nav="search">
+    <div class="logo">🔎</div>
+    <div>
+      <strong>SiteFinder <span class="grad-text">AI</span></strong>
+      <small id="flowHint">🔎 ENCONTRAR → 📞 CONTATO → 🌐 SITE → 💰 VENDER</small>
+    </div>
+  </div>
+  <div class="top-actions">
+    <span id="dataBadge" class="badge live" title="Fonte de dados">OSM GRÁTIS</span>
+    <button class="icon-btn" data-nav="config" aria-label="Configurações">⚙️</button>
+  </div>
+</header>
+
+<main id="app">
+
+  <!-- ============ SEARCH ============ -->
+  <section id="view-search" class="view active">
+    <div class="hero-card glass">
+      <div class="pill">⚡ Ferramenta para vender sites locais</div>
+      <h1>Encontre empresas de <span class="grad-text">qualquer cidade</span> do Brasil</h1>
+      <p class="muted">Pesquise → pegue o contato → gere um site → chame no WhatsApp.</p>
+    </div>
+
+    <div class="card glass">
+      <label class="label">O que você procura?</label>
+      <div id="catGrid" class="cat-grid"></div>
+      <div class="row2">
+        <input id="qWhat" class="input" placeholder="Ex: Barbearias" autocomplete="off">
+      </div>
+      <label class="label" style="margin-top:14px">Em qual cidade?</label>
+      <input id="qCity" class="input" placeholder="Ex: Praia Grande - SP" value="Praia Grande - SP" autocomplete="off">
+      <button id="btnSearch" class="btn-primary">🔍 ENCONTRAR EMPRESAS</button>
+      <p class="micro muted" id="srcNote">Fonte gratuita ativa (OpenStreetMap) — <b>somente dados públicos reais</b>.</p>
+    </div>
+
+    <div class="card glass">
+      <strong>⚡ Atalhos rápidos</strong>
+      <div class="quick-row" id="quickRow"></div>
+    </div>
+
+    <div class="steps">
+      <div class="step glass"><span>🔎</span><b>Encontrar</b><small>Busque por cidade</small></div>
+      <div class="step glass"><span>📞</span><b>Contato</b><small>Telefone real</small></div>
+      <div class="step glass"><span>🌐</span><b>Criar site</b><small>Gerador IA</small></div>
+      <div class="step glass"><span>💬</span><b>Vender</b><small>WhatsApp pronto</small></div>
+    </div>
+  </section>
+
+  <!-- ============ RESULTS ============ -->
+  <section id="view-results" class="view">
+    <div class="results-head">
+      <button class="btn-ghost" data-nav="search">← Nova busca</button>
+      <span id="resCount" class="badge">0 empresas</span>
+    </div>
+    <h2 id="resTitle">Resultados</h2>
+    <p class="muted small" id="resSub"></p>
+    <div id="demoAlert" class="alert warn hidden"></div>
+    <div id="realAlert" class="alert ok hidden">✅ Dados de fonte pública (OpenStreetMap / Google Places).</div>
+    <div id="cards" class="cards"></div>
+    <div id="emptyRes" class="card glass hidden" style="text-align:center">
+      <p>😕 Nenhuma empresa encontrada.<br><span class="muted">Tente outra categoria ou cidade — ou ative a chave do Google em ⚙️ para resultados mais completos. Nenhum dado fictício é exibido.</span></p>
+    </div>
+  </section>
+
+  <!-- ============ BUILDER / EDITOR ============ -->
+  <section id="view-builder" class="view">
+    <div class="results-head">
+      <button class="btn-ghost" data-nav="results">← Resultados</button>
+      <span class="badge" id="builderBiz">—</span>
+    </div>
+    <div class="builder-tabs">
+      <button class="btab active" data-btab="preview">👁️ Preview</button>
+      <button class="btab" data-btab="edit">✏️ Editar</button>
+      <button class="btab" data-btab="style">🎨 Design</button>
+    </div>
+    <div id="btab-preview" class="btab-pane active">
+      <div class="preview-shell">
+        <div class="preview-bar"><span></span><span></span><span></span><em id="pvUrl">meusite.sitefinder</em></div>
+        <div id="sitePreview" class="site-preview"></div>
+      </div>
+      <div class="builder-actions">
+        <button id="btnTalk" class="btn-whats">💬 FALAR COM EMPRESA</button>
+        <div class="row2">
+          <button id="btnSaveSite" class="btn-secondary">💾 Salvar site</button>
+          <button id="btnExport" class="btn-secondary">⬇️ Exportar HTML</button>
+        </div>
+        <button id="btnCopyLink" class="btn-ghost">🔗 Copiar mensagem de venda</button>
+      </div>
+    </div>
+    <div id="btab-edit" class="btab-pane">
+      <div class="card glass">
+        <h3>✏️ Conteúdo</h3>
+        <label class="label">Nome da empresa</label><input id="eName" class="input">
+        <label class="label">Slogan / headline</label><input id="eTagline" class="input">
+        <label class="label">Sobre</label><textarea id="eAbout" class="input" rows="3"></textarea>
+        <label class="label">WhatsApp (celular com DDD — fixo não funciona)</label><input id="eWhats" class="input" placeholder="13999990000">
+        <p class="micro" id="waHint"></p>
+        <label class="label">Telefone exibido</label><input id="ePhone" class="input">
+        <label class="label">Endereço</label><input id="eAddr" class="input">
+        <label class="label">Horário</label><input id="eHours" class="input">
+        <label class="label">Instagram (url ou @)</label><input id="eInsta" class="input">
+        <label class="label">Serviços (um por linha: Nome | Preço opcional)</label>
+        <textarea id="eServices" class="input" rows="5"></textarea>
+        <p class="micro muted">⚠️ Não invente preços ou serviços. Linhas vazias viram campos “a combinar”.</p>
+      </div>
+    </div>
+    <div id="btab-style" class="btab-pane">
+      <div class="card glass">
+        <h3>🎨 Design</h3>
+        <label class="label">Tema do negócio</label>
+        <select id="eTheme" class="input"></select>
+        <div class="row2">
+          <div><label class="label">Cor principal</label><input id="eColor" type="color" class="input color"></div>
+          <div><label class="label">Fundo</label><input id="eBg" type="color" class="input color"></div>
+        </div>
+        <label class="label">Fonte</label>
+        <select id="eFont" class="input">
+          <option value="Inter">Inter (moderna)</option>
+          <option value="Sora">Sora (tech)</option>
+          <option value="Georgia">Georgia (elegante)</option>
+          <option value="Impact">Impact (esportiva)</option>
+        </select>
+        <label class="label">Logo (emoji ou letra)</label><input id="eLogo" class="input" maxlength="4">
+        <label class="label">Foto de capa (URL)</label><input id="eCover" class="input" placeholder="https://...">
+        <div class="cover-picks" id="coverPicks"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SITES SALVOS ============ -->
+  <section id="view-sites" class="view">
+    <h2>🌐 Meus sites</h2>
+    <p class="muted small">Demonstrações geradas para apresentar aos clientes.</p>
+    <div id="sitesList" class="cards"></div>
+  </section>
+
+  <!-- ============ LEADS ============ -->
+  <section id="view-leads" class="view">
+    <h2>💼 Meus Leads</h2>
+    <div class="card glass">
+      <input id="leadSearch" class="input" placeholder="🔎 Pesquisar leads...">
+      <div id="statusFilters" class="chips"></div>
+    </div>
+    <div id="leadsList" class="cards"></div>
+  </section>
+
+  <!-- ============ CONFIG ============ -->
+  <section id="view-config" class="view">
+    <h2>⚙️ Configurações & APIs</h2>
+    <div class="card glass">
+      <h3>🔑 Fontes de dados (100% reais)</h3>
+      <p class="muted small">O app <b>nunca exibe dados fictícios</b>. A busca usa OpenStreetMap/Overpass (grátis, sem chave) e, se cadastrada, a chave do Google Places (telefones, avaliações e horários mais completos). <b>O app nunca inventa contatos.</b></p>
+      <label class="label">Google Places API Key <small class="muted">(Text Search — dados mais completos)</small></label>
+      <input id="kGoogle" class="input" placeholder="AIza..." type="password">
+      <label class="label">Serper.dev API Key <small class="muted">(opcional — enriquece Instagram/site)</small></label>
+      <input id="kSerper" class="input" placeholder="..." type="password">
+      <label class="label">Usar OpenStreetMap / Overpass <small class="muted">(grátis, sem chave)</small></label>
+      <select id="kOsm" class="input"><option value="on">Ativado ✅</option><option value="off">Desativado</option></select>
+      <div class="row2">
+        <button id="btnSaveKeys" class="btn-primary">💾 Salvar</button>
+        <button id="btnTestApi" class="btn-secondary">🧪 Testar busca real</button>
+      </div>
+      <p class="micro" id="cfgStatus"></p>
+    </div>
+    <div class="card glass">
+      <h3>💬 Mensagem padrão de venda</h3>
+      <textarea id="kMsg" class="input" rows="4"></textarea>
+      <button id="btnSaveMsg" class="btn-secondary">💾 Salvar mensagem</button>
+      <p class="micro muted">Use {EMPRESA} para o nome da empresa.</p>
+    </div>
+    <div class="card glass danger">
+      <h3>🗑️ Zona de perigo</h3>
+      <button id="btnWipe" class="btn-ghost">Apagar leads e sites locais</button>
+    </div>
+    <div class="card glass">
+      <h3>ℹ️ Regra principal</h3>
+      <p class="small">A plataforma <b>NÃO inventa contatos</b>. Telefone, WhatsApp, Instagram e endereço só aparecem quando retornados pela fonte de dados. Campos ausentes ficam ocultos no card e viram campos editáveis no gerador de site.</p>
+    </div>
+  </section>
+
+</main>
+
+<!-- BOTTOM NAV -->
+<nav class="tabbar glass">
+  <button data-nav="search" class="tab active">🔎<small>Buscar</small></button>
+  <button data-nav="results" class="tab">📋<small>Empresas</small></button>
+  <button data-nav="builder" class="tab">🌐<small>Site</small></button>
+  <button data-nav="sites" class="tab">🗂️<small>Salvos</small></button>
+  <button data-nav="leads" class="tab">💼<small>Leads</small></button>
+</nav>
+
+<!-- CONTACT MODAL -->
+<div id="modalContact" class="modal hidden">
+  <div class="sheet glass">
+    <h3>📇 Contato público</h3>
+    <div id="contactBody"></div>
+    <button class="btn-primary" id="btnCloseContact">Fechar</button>
+  </div>
+</div>
+
+<!-- TALK MODAL -->
+<div id="modalTalk" class="modal hidden">
+  <div class="sheet glass">
+    <h3>💬 Falar com empresa</h3>
+    <p class="muted small">Revise a mensagem antes de enviar. Nada é enviado automaticamente.</p>
+    <textarea id="talkMsg" class="input" rows="5"></textarea>
+    <div class="row2">
+      <button id="btnSendWa" class="btn-whats">📲 Abrir WhatsApp</button>
+      <button id="btnCloseTalk" class="btn-ghost">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast hidden"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
