@@ -143,8 +143,11 @@ textarea{resize:vertical;min-height:60px}
   <button class="btn small ghost" id="btnUndo" title="Desfazer (Ctrl+Z)">↩</button>
   <button class="btn small ghost" id="btnRedo" title="Refazer (Ctrl+Y)">↪</button>
   <button class="btn small" id="btnSave">💾 Salvar</button>
+  <button class="btn small ghost" id="btnExpProj" title="Baixar projeto como .json (clipes + mídias por URL)">📤 Projeto</button>
+  <button class="btn small ghost" id="btnImpProj" title="Abrir projeto .json">📥 Abrir</button>
   <button class="btn small" id="btnHelp">⌨️ Atalhos</button>
   <button class="btn small" id="btnDemo">✨ Mídia demo</button>
+  <button class="btn small primary" id="btnAd" style="border-color:transparent">🪄 Anúncio por prompt</button>
   <button class="btn primary" id="btnExport">⬆ Exportar 4K</button>
 </header>
 
@@ -184,7 +187,9 @@ textarea{resize:vertical;min-height:60px}
           <button class="btn small" data-demo-audio="https://cdn.pixabay.com/download/audio/2022/10/25/audio_模糊.mp3">Lo-fi (remoto)</button>
           <button class="btn small" id="btnBeep">🎹 Gerar batida eletrônica</button>
         </div><p class="hint">Dica: importe seu MP3 arrastando. Use “Extrair áudio” num clipe de vídeo para separar a voz.</p>
-        <div class="row"><button class="btn small" id="btnExtract">🎤 Extrair áudio do clipe</button><button class="btn small" id="btnTTS">🔊 Narrar texto (TTS)</button></div></div>
+        <div class="row"><button class="btn small" id="btnExtract">🎤 Extrair áudio do clipe</button><button class="btn small" id="btnTTS">🔊 Narrar texto (TTS)</button></div>
+        <div class="row" style="margin-top:8px"><button class="btn small primary" id="btnRec">🎙️ Gravar narração (microfone)</button></div>
+        <p class="hint" id="recHint" hidden>🔴 Gravando… <b id="recTime">0.0s</b> — clique de novo para parar e jogar na timeline (essa voz <b>sai no vídeo exportado</b>).</p></div>
         <div class="card"><h4>Efeitos de áudio</h4><div class="chips">
           <div class="chip" data-afx="none"><b>Original</b><span>sem efeito</span></div>
           <div class="chip" data-afx="radio"><b>📻 Rádio</b><span>voz viral</span></div>
@@ -230,6 +235,7 @@ textarea{resize:vertical;min-height:60px}
     <button class="btn small primary" id="btnSplit" title="Dividir no playhead (S)">✂️ Dividir</button>
     <button class="btn small" id="btnDup">⧉ Duplicar</button>
     <button class="btn small danger" id="btnDel" title="Delete">🗑 Excluir</button>
+    <button class="btn small danger ghost" id="btnRipple" title="Excluir e unir o espaço (ripple delete)">🗑↤ Unir</button>
     <span style="width:1px;height:22px;background:var(--line)"></span>
     <span class="vs">🔍 <input type="range" id="zoom" min="12" max="160" value="46" style="width:110px"></span>
     <button class="btn small ghost" id="btnMag" title="Magnetismo">🧲 ON</button>
@@ -242,6 +248,29 @@ textarea{resize:vertical;min-height:60px}
     <div class="playhead" id="playheadEl"></div>
   </div></div>
 </footer>
+
+<div class="modal-bk" id="adBk"><div class="modal" style="width:min(600px,94vw)">
+  <h3>🪄 Criar anúncio por prompt</h3>
+  <p>Descreva o produto/oferta e a IA local monta o vídeo na timeline: fundo + headline + benefícios + preço + CTA + narração. Depois é só exportar.</p>
+  <label class="f">Prompt do anúncio</label>
+  <textarea id="adPrompt" style="min-height:90px" placeholder="Ex: Tênis Air Runner vermelho, R$ 299 por R$ 199, 20% OFF só hoje, entrega grátis, estilo urgente para TikTok vertical 15s">Tênis Air Runner, de R$ 299 por R$ 199, 20% OFF só hoje com entrega grátis. Estilo urgente para TikTok vertical.</textarea>
+  <div class="grid2">
+    <div><label class="f">Estilo</label><select id="adStyle"><option value="auto">🤖 Auto (pelo prompt)</option><option value="urgente">🔥 Oferta urgente</option><option value="luxo">👑 Luxo / premium</option><option value="neon">⚡ Tech neon</option><option value="minimal">✨ Minimal limpo</option></select></div>
+    <div><label class="f">Duração</label><select id="adDur"><option value="10">10s (stories)</option><option value="15" selected>15s (TikTok/Reels)</option><option value="30">30s (YouTube)</option></select></div>
+  </div>
+  <div class="grid2">
+    <div><label class="f">Formato</label><select id="adFmt"><option value="auto">Auto</option><option value="9:16">9:16 vertical</option><option value="1:1">1:1 quadrado</option><option value="16:9">16:9 horizontal</option></select></div>
+    <div><label class="f">Voz</label><select id="adVoice"><option value="on" selected>🔊 Com narração TTS</option><option value="off">🔇 Sem narração</option></select></div>
+  </div>
+  <label class="f" style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="adClear" checked style="width:auto"> Limpar timeline e começar do zero</label>
+  <div class="card" id="adPreviewCard" hidden style="margin-top:10px"><h4>📋 Roteiro detectado</h4><div class="compare" id="adScriptPrev"></div></div>
+  <div class="row" style="margin-top:10px"><button class="btn primary" id="btnGenAd">✨ Gerar anúncio na timeline</button><button class="btn" id="btnCloseAd">Fechar</button><button class="btn small ghost" id="btnSpeakAd">🔊 Ouvir narração</button></div>
+  <div class="row" style="margin-top:8px">
+    <button class="btn small" data-adex="Hamburgueria Sabor & Brasa, combo duplo R$ 34,90, entrega em 30min, cupom FOME10, urgente vertical 15s">🍔 Exemplo lanche</button>
+    <button class="btn small" data-adex="Curso de inglês online, de R$ 497 por R$ 97, vagas limitadas, estilo luxo 30s">🎓 Exemplo curso</button>
+    <button class="btn small" data-adex="Loja de roupas fitness feminina, legging premium, frete grátis, estilo neon TikTok">👟 Exemplo fitness</button>
+  </div>
+</div></div>
 
 <div class="modal-bk" id="exportBk"><div class="modal">
   <h3>⬆ Exportar vídeo — sem marca d'água 🎉</h3>
@@ -257,7 +286,7 @@ textarea{resize:vertical;min-height:60px}
 
 <div class="modal-bk" id="helpBk"><div class="modal">
   <h3>⌨️ Atalhos pro</h3>
-  <p><span class="kbd">Espaço</span> play/pause • <span class="kbd">S</span> dividir • <span class="kbd">Del</span> excluir • <span class="kbd">← →</span> ±1s • <span class="kbd">Shift+←→</span> ±0.1s • <span class="kbd">Ctrl+Z</span>/<span class="kbd">Ctrl+Y</span> desfazer/refazer • <span class="kbd">D</span> duplicar • <span class="kbd">M</span> mutar • <span class="kbd">Home</span>/<span class="kbd">End</span> início/fim</p>
+  <p><span class="kbd">Espaço</span> play/pause • <span class="kbd">S</span> dividir • <span class="kbd">Del</span> excluir • <span class="kbd">← →</span> ±1s • <span class="kbd">Shift+←→</span> ±0.1s • <span class="kbd">Ctrl+Z</span>/<span class="kbd">Ctrl+Y</span> desfazer/refazer • <span class="kbd">D</span> duplicar • <span class="kbd">M</span> mutar • <span class="kbd">C</span> magnetismo • <span class="kbd">Home</span>/<span class="kbd">End</span> início/fim • duplo-clique renomeia o clipe • clique no vazio desseleciona</p>
   <div class="row"><button class="btn" onclick="document.getElementById('helpBk').classList.remove('open')">Fechar</button></div>
 </div></div>
 
@@ -299,7 +328,15 @@ function redo(){if(!H.r.length)return toast('Nada a refazer');H.u.push(JSON.stri
 
 /* ---------- CANVAS / PREVIEW ---------- */
 const cv=$('#preview'),ctx=cv.getContext('2d');
-function syncAspect(){const[w,h]=ASPECTS[S.aspect];cv.width=w;cv.height=h;$('#resPill').textContent=w+'×'+h;$$('#aspectSeg button').forEach(b=>b.classList.toggle('on',b.dataset.ar===S.aspect));}
+function fitPreview(){
+  const st=cv.parentElement;if(!st)return;
+  const r=st.getBoundingClientRect();if(r.width<10||r.height<10)return;
+  const ar=cv.width/Math.max(1,cv.height);
+  let w=r.width,h=w/ar;
+  if(h>r.height){h=r.height;w=h*ar;}
+  cv.style.width=Math.floor(w)+'px';cv.style.height=Math.floor(h)+'px';
+}
+function syncAspect(){const[w,h]=ASPECTS[S.aspect];cv.width=w;cv.height=h;$('#resPill').textContent=w+'×'+h;$$('#aspectSeg button').forEach(b=>b.classList.toggle('on',b.dataset.ar===S.aspect));fitPreview();}
 $('#aspectSeg').onclick=e=>{const b=e.target.closest('button');if(!b)return;snap();S.aspect=b.dataset.ar;syncAspect();toast('Formato '+S.aspect+(S.aspect==='9:16'?' — ideal p/ Reels/TikTok 📱':''));};
 
 /* element cache per clip */
@@ -415,8 +452,8 @@ function pause(){S.playing=false;$('#btnPlay').textContent='▶';}
 $('#btnPlay').onclick=()=>S.playing?pause():play();
 $('#btnStart').onclick=()=>{S.playhead=0;};
 $('#btnEnd').onclick=()=>{S.playhead=maxEnd()-0.05;};
-$('#btnMute').onclick=e=>{S.muted=!S.muted;e.target.textContent=S.muted?'🔇':'🔊';};
-$('#masterVol').oninput=e=>S.master=e.target.value/100;
+$('#btnMute').onclick=e=>{S.muted=!S.muted;e.target.textContent=S.muted?'🔇':'🔊';if(S.muted)stopSpeak();};
+$('#masterVol').oninput=e=>{S.master=e.target.value/100;if(S.master<=0.01)stopSpeak();};
 $('#btnFull').onclick=()=>cv.requestFullscreen&&cv.requestFullscreen();
 function updateTransport(){$('#timeLabel').textContent=fmt(S.playhead)+' / '+fmt(maxEnd());$('#durLabel').textContent='Duração: '+maxEnd().toFixed(1)+'s • Arraste bordas p/ aparar • Arraste p/ mover';}
 
@@ -507,6 +544,8 @@ function renderTracks(){
     row.innerHTML=`<div class="track-head"><b>${tr.kind==='video'?'🎬':tr.kind==='overlay'?'🖼️':tr.kind==='text'?'🔤':'🎵'} ${tr.name}</b>
       <div class="tacts"><button data-k="muted" class="${tr.muted?'off':''}">${tr.muted?'🔇':'🔊'}</button><button data-k="locked" class="${tr.locked?'off':''}">${tr.locked?'🔒':'🔓'}</button></div></div><div class="track-lane" data-track="${tr.id}"></div>`;
     row.querySelectorAll('.tacts button').forEach(b=>b.onclick=()=>{tr[b.dataset.k]=!tr[b.dataset.k];renderTracks();});
+    const laneEl=row.querySelector('.track-lane');
+    laneEl.onpointerdown=e=>{if(e.target===laneEl&&S.sel){S.sel=null;renderTracks();renderInspector();}};
     tracksEl.appendChild(row);
   });
   S.clips.forEach(c=>{
@@ -519,6 +558,7 @@ function renderTracks(){
     d.innerHTML=`<div class="h l"></div><span style="overflow:hidden;text-overflow:ellipsis">✂️ ${c.name.slice(0,26)}${c.speed!==1?' • '+c.speed+'x':''}</span><div class="h r"></div>`;
     if(c.trackId==='a1'){const wv=document.createElement('canvas');wv.className='wave';d.appendChild(wv);drawMiniWave(wv,c);}
     d.onpointerdown=e=>startDrag(e,c,d);
+    d.ondblclick=e=>{e.stopPropagation();const n=prompt('Renomear clipe:',c.name);if(n&&n.trim()){snap();c.name=n.trim().slice(0,40);renderAll();}};
     lane.appendChild(d);
   });
   layoutTimeline();
@@ -543,7 +583,11 @@ function layoutTimeline(){
 }
 function positionPlayhead(){playEl.style.left=(92+t2x(S.playhead))+'px';}
 $('#ruler').onpointerdown=e=>{
-  const r=$('#ruler').getBoundingClientRect();const seek=x=>{S.playhead=clamp(x2t(x),0,maxEnd());};
+  const r=$('#ruler').getBoundingClientRect();
+  const seek=x=>{let t=clamp(x2t(x),0,maxEnd());
+    if(S.magnet){const edges=S.clips.flatMap(k=>[k.start,k.start+k.duration]);
+      for(const ed of edges){if(Math.abs(t-ed)*zoom<8){t=ed;break;}}}
+    S.playhead=t;};
   seek(e.clientX-r.left);
   const mv=ev=>seek(ev.clientX-r.left);
   window.addEventListener('pointermove',mv);window.addEventListener('pointerup',()=>window.removeEventListener('pointermove',mv),{once:true});
@@ -588,9 +632,45 @@ function splitSel(){
   c.duration=cut;S.clips.push(b);S.sel=b.id;renderAll();toast('✂️ Clipe dividido');
 }
 $('#btnDel').onclick=()=>{const c=clipById(S.sel);if(!c)return toast('Nada selecionado');snap();S.clips=S.clips.filter(k=>k.id!==c.id);dropEl(c.id);S.sel=null;renderAll();};
+$('#btnRipple').onclick=()=>{const c=clipById(S.sel);if(!c)return toast('Selecione um clipe para unir o espaço');
+  snap();const gap=c.duration,end=c.start+c.duration;
+  S.clips=S.clips.filter(k=>k.id!==c.id);dropEl(c.id);
+  S.clips.forEach(k=>{if(k.trackId===c.trackId&&k.start>=end-0.001)k.start=Math.max(0,k.start-gap);});
+  S.sel=null;renderAll();toast('🗑↤ Espaço unido na trilha');};
 $('#btnDup').onclick=()=>{const c=clipById(S.sel);if(!c)return toast('Selecione um clipe');snap();const n=mkClip({...JSON.parse(JSON.stringify(c)),id:uid(),start:c.start+c.duration+0.2,name:c.name+' cópia'});S.clips.push(n);S.sel=n.id;renderAll();};
 $('#btnUndo').onclick=undo;$('#btnRedo').onclick=redo;
 $('#btnSave').onclick=()=>{localStorage.setItem('cutpro-proj',JSON.stringify({name:$('#projName').value,clips:S.clips,aspect:S.aspect}));toast('💾 Projeto salvo localmente');};
+/* projeto portátil: exporta clipes + mídias por URL (blob: locais não sobrevivem ao reload) */
+function portableMedia(m){return m.url&&(m.url.startsWith('http')||m.url.startsWith('data:'));}
+$('#btnExpProj').onclick=()=>{
+  const media=S.media.filter(portableMedia).map(m=>({id:m.id,name:m.name,type:m.type,url:m.url,duration:m.duration||0,w:m.w||0,h:m.h||0}));
+  const skipped=S.media.length-media.length;
+  const data={app:'cutpro',v:1,name:$('#projName').value,aspect:S.aspect,clips:S.clips,media};
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(data)],{type:'application/json'}));
+  a.download=($('#projName').value||'cutpro-projeto').replace(/[^\w\- ]+/g,'')+'.cutpro.json';a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),5000);
+  toast(skipped?`📤 Projeto exportado (${media.length} mídias; ${skipped} local(is) ignorada(s) — reimporte o arquivo)`:'📤 Projeto exportado com '+media.length+' mídia(s)');
+};
+$('#btnImpProj').onclick=()=>$('#importJson').click();
+$('#importJson').onchange=e=>{
+  const f=e.target.files[0];e.target.value='';if(!f)return;
+  const r=new FileReader();
+  r.onload=()=>{try{
+    const d=JSON.parse(r.result);if(d.app!=='cutpro'&&!d.clips)throw new Error('formato');
+    snap();[...elCache.keys()].forEach(id=>dropEl(id));
+    S.media=[];S.clips=[];S.sel=null;S.playhead=0;
+    (d.media||[]).forEach(m=>{if(m.url&&(m.url.startsWith('http')||m.url.startsWith('data:')))S.media.push({id:m.id||uid(),name:m.name||'Mídia',type:m.type||'video',url:m.url,duration:m.duration||0,w:m.w||0,h:m.h||0});});
+    S.clips=(d.clips||[]).filter(c=>c.trackId!=='t1'||c.text).map(c=>mkClip(c));
+    // descarta clipes cuja mídia não veio junto (ex.: blob local)
+    const before=S.clips.length;
+    S.clips=S.clips.filter(c=>c.trackId==='t1'||mediaById(c.mediaId));
+    S.aspect=ASPECTS[d.aspect]?d.aspect:'16:9';$('#projName').value=d.name||'Projeto importado';
+    syncAspect();renderAll();
+    const dropped=before-S.clips.length;
+    toast(`📥 Projeto “${$('#projName').value}” carregado (${S.clips.length} clipes)`+(dropped?` — ${dropped} clipe(s) sem mídia local, reimporte os arquivos`:''));
+  }catch(err){toast('❌ Arquivo de projeto inválido');}};
+  r.readAsText(f);
+};
 $('#btnHelp').onclick=()=>$('#helpBk').classList.add('open');
 window.addEventListener('keydown',e=>{
   if(/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName))return;
@@ -604,6 +684,7 @@ window.addEventListener('keydown',e=>{
   else if((e.ctrlKey||e.metaKey)&&e.key==='y'){e.preventDefault();redo();}
   else if(e.key==='d'||e.key==='D')$('#btnDup').click();
   else if(e.key==='m'||e.key==='M')$('#btnMute').click();
+  else if(e.key==='c'||e.key==='C')$('#btnMag').click();
 });
 
 /* ---------- TEXT / FILTER / EXTRA PANES ---------- */
@@ -651,7 +732,37 @@ $('#btnBg').onclick=()=>{const c=clipById(S.sel);if(!c)return toast('Selecione u
 $('#btnDenoise').onclick=()=>{const c=clipById(S.sel);if(!c)return toast('Selecione um clipe');snap();c.denoise=!c.denoise;renderInspector();toast('🔇 Redução de ruído '+(c.denoise?'ON':'OFF'));};
 $$('[data-afx]').forEach(ch=>ch.onclick=()=>{const c=clipById(S.sel);if(!c)return toast('Selecione um clipe de áudio/vídeo');snap();c.afx=ch.dataset.afx;renderInspector();toast('🎵 Efeito: '+ch.dataset.afx);});
 $('#btnExtract').onclick=()=>{const c=clipById(S.sel);if(!c||!c.mediaId)return toast('Selecione um clipe de vídeo');snap();S.clips.push(mkClip({trackId:'a1',mediaId:c.mediaId,name:'Áudio de '+c.name,start:c.start,duration:c.duration,offset:c.offset,speed:c.speed||1,volume:100}));renderAll();toast('🎤 Áudio extraído para A1');};
-$('#btnTTS').onclick=()=>{const t=($('#txtIn').value||'Olá! Este é o CutPro, melhor que CapCut!').slice(0,200);try{speechSynthesis.cancel();speechSynthesis.speak(new SpeechSynthesisUtterance(t));toast('🔊 Narrando… (áudio TTS demo)');}catch(e){toast('TTS indisponível');}};
+$('#btnTTS').onclick=()=>{const t=($('#txtIn').value||'Olá! Este é o CutPro, melhor que CapCut!').slice(0,200);speak(t);toast('🔊 Narrando… (prévia TTS — não sai no export; use 🎙️ Gravar narração)');};
+/* narração por microfone → vira clipe em A1 e SAI no vídeo exportado */
+let recState=null;
+$('#btnRec').onclick=async()=>{
+  if(recState){stopRec(true);return;}
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia)return toast('❌ Microfone indisponível neste navegador');
+  try{
+    const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+    const mr=new MediaRecorder(stream);
+    const chunks=[];mr.ondataavailable=e=>e.data.size&&chunks.push(e.data);
+    const t0=performance.now();
+    $('#recHint').hidden=false;$('#btnRec').textContent='⏹ Parar e inserir na timeline';
+    const tick=setInterval(()=>{const el=$('#recTime');if(el)el.textContent=((performance.now()-t0)/1000).toFixed(1)+'s';},100);
+    recState={mr,stream,chunks,t0,tick};
+    mr.onstop=()=>{
+      clearInterval(tick);$('#recHint').hidden=true;$('#btnRec').textContent='🎙️ Gravar narração (microfone)';
+      stream.getTracks().forEach(t=>t.stop());
+      const dur=(performance.now()-t0)/1000;
+      if(!chunks.length||dur<0.4){toast('⚠️ Gravação muito curta, tente de novo');recState=null;return;}
+      const blob=new Blob(chunks,{type:mr.mimeType||'audio/webm'});
+      const url=URL.createObjectURL(blob);
+      snap();
+      const m={id:uid(),name:'Narração '+(dur.toFixed(1))+'s',type:'audio',url,duration:Math.max(0.5,dur)};S.media.push(m);
+      S.clips.push(mkClip({trackId:'a1',mediaId:m.id,name:m.name,start:S.playhead,duration:m.duration,offset:0,volume:100}));
+      recState=null;renderAll();
+      toast('🎙️ Narração inserida em A1 — ela sai no vídeo exportado ✅');
+    };
+    mr.start();
+  }catch(e){toast('❌ Permissão do microfone negada');}
+};
+function stopRec(save){if(!recState)return;try{if(save)recState.mr.stop();else{recState.mr.onstop=null;recState.stream.getTracks().forEach(t=>t.stop());clearInterval(recState.tick);$('#recHint').hidden=true;$('#btnRec').textContent='🎙️ Gravar narração (microfone)';recState=null;}}catch(e){recState=null;}}
 $('#btnBeep').onclick=async()=>{
   try{const sr=44100,dur=8,buf=new (window.AudioContext||window.webkitAudioContext)().createBuffer(1,sr*dur,sr),d=buf.getChannelData(0);
     for(let i=0;i<d.length;i++){const t=i/sr,b=Math.floor(t*2)%4;const f=[55,65.4,82.4,98][b];d[i]=Math.sin(2*Math.PI*f*t)*0.35*Math.exp(-((t%0.5)/0.4))+(Math.sin(2*Math.PI*220*t)>0?0.05:0);}
@@ -725,12 +836,145 @@ function renderInspector(){
     $('#iBg').onchange=e=>{snap();c.bg=e.target.value;};$('#iPX').oninput=e=>c.posX=+e.target.value;$('#iPY').oninput=e=>c.posY=+e.target.value;}
 }
 
+/* ---------- ANÚNCIO POR PROMPT (IA local, sem servidor) ---------- */
+let lastAdScript='';
+$('#btnAd').onclick=()=>{$('#adBk').classList.add('open');updateAdPreview();};
+$('#btnCloseAd').onclick=()=>{stopSpeak();$('#adBk').classList.remove('open');};
+$$('[data-adex]').forEach(b=>b.onclick=()=>{$('#adPrompt').value=b.dataset.adex;updateAdPreview();});
+['#adPrompt','#adStyle','#adDur','#adFmt'].forEach(s=>$(s).addEventListener('input',updateAdPreview));
+$('#btnSpeakAd').onclick=()=>{const p=parseAdPrompt($('#adPrompt').value,$('#adStyle').value,$('#adDur').value,$('#adFmt').value);toggleSpeak(p.script);};
+$('#btnGenAd').onclick=()=>{
+  const plan=parseAdPrompt($('#adPrompt').value,$('#adStyle').value,$('#adDur').value,$('#adFmt').value);
+  buildAd(plan);
+  $('#adBk').classList.remove('open');
+};
+function speak(t){try{
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(t);u.lang='pt-BR';u.rate=1.05;
+  u.volume=S.muted?0:clamp(S.master,0,1);
+  u.onend=u.onerror=()=>{const b=$('#btnSpeakAd');if(b)b.textContent='🔊 Ouvir narração';};
+  speechSynthesis.speak(u);
+  const b=$('#btnSpeakAd');if(b)b.textContent='⏹ Parar voz';
+}catch(e){toast('TTS indisponível');}}
+function stopSpeak(){try{if(speechSynthesis.speaking||speechSynthesis.pending)speechSynthesis.cancel();}catch(e){}const b=$('#btnSpeakAd');if(b)b.textContent='🔊 Ouvir narração';}
+function toggleSpeak(t){try{if(speechSynthesis.speaking||speechSynthesis.pending){stopSpeak();return;}}catch(e){}speak(t);}
+function parseAdPrompt(raw,styleSel,durSel,fmtSel){
+  raw=(raw||'').trim()||'Meu produto incrível';
+  const low=raw.toLowerCase();
+  const priceM=raw.match(/R\$\s?[\d\.,]+(\s?por\s?R\$\s?[\d\.,]+)?/i)||raw.match(/R\$\s?[\d\.,]+/);
+  const price=priceM?priceM[0]:'';
+  const oldM=raw.match(/de\s?(R\$\s?[\d\.,]+)/i);
+  const discM=raw.match(/(\d+\s?%\s?(off|desconto)?)/i);
+  const discount=discM?discM[0]:'';
+  let style=styleSel==='auto'?'urgente':styleSel;
+  if(styleSel==='auto'){
+    if(/luxo|premium|elegan|curso|advocacia|imobili|carro/.test(low))style='luxo';
+    else if(/tech|neon|fitness|game|app|tiktok/.test(low))style='neon';
+    else if(/minimal|limpo|clinica|spa|beleza/.test(low))style='minimal';
+    else style='urgente';
+  }
+  let aspect=S.aspect;
+  const fWanted=fmtSel==='auto'?( /vertical|tiktok|reels|stories|9:16/.test(low)?'9:16':/quadrado|feed|1:1/.test(low)?'1:1':S.aspect ):fmtSel;
+  aspect=fWanted;
+  const D=parseInt(durSel||'15',10)||15;
+  // produto: primeira frase curta antes de vírgula/R$/preço
+  let product=raw.split(/[,.\n]/)[0].slice(0,48).trim();
+  // bullets: divide por vírgula, remove preço/estilo/formato
+  let bullets=raw.split(/[,;\n]/).map(s=>s.trim()).filter(Boolean)
+    .filter(s=>!/vertical|tiktok|reels|estilo|segundos|\d+s\b|urgente|luxo|neon|minimal/i.test(s))
+    .slice(1,4);
+  if(!bullets.length)bullets=['Entrega rápida','Qualidade garantida','Oferta por tempo limitado'];
+  let cta='COMPRE AGORA 👇';
+  if(/clique|toque|arrasta|link/.test(low))cta='CLIQUE NO LINK 👇';
+  if(/baixe|download|app/.test(low))cta='BAIXE AGORA 📲';
+  if(/agende|whatsapp|chame/.test(low))cta='CHAME NO WHATSAPP 📲';
+  if(/cupom/i.test(raw)){const c=raw.match(/cupom\s?([A-Za-z0-9]+)/i);if(c)cta='USE O CUPOM '+c[1].toUpperCase()+' 🎟️';}
+  const hook=`🔥 ${product.toUpperCase()}!`;
+  const script=`Atenção! ${product}. ${bullets.join('. ')}. ${price?('Apenas '+price+'.'):''} ${discount?('Com '+discount+' de desconto!'):''} ${cta}. Oferta por tempo limitado!`;
+  lastAdScript=script;
+  return{raw,product,price,oldPrice:oldM?oldM[1]:'',discount,bullets,cta,hook,style,aspect,D,script};
+}
+function updateAdPreview(){
+  try{const p=parseAdPrompt($('#adPrompt').value,$('#adStyle').value,$('#adDur').value,$('#adFmt').value);
+    $('#adPreviewCard').hidden=false;
+    $('#adScriptPrev').innerHTML=`🎯 <b>${p.product}</b> • estilo <b>${p.style}</b> • ${p.D}s • ${p.aspect}<br>💰 ${p.price||'sem preço'} ${p.discount?'• 🏷️ '+p.discount:''}<br>📢 ${p.cta}<br><br>🎙️ “${p.script}”`;
+  }catch(e){}
+}
+function gradURL(style,W,H,seed){
+  const c=document.createElement('canvas');c.width=W;c.height=H;const g=c.getContext('2d');
+  const P={urgente:[['#ff2d55','#ff8a00'],['#b3123f','#ff5e3a']],luxo:[['#0a0a0f','#3a2f10'],['#111','#6b5518']],neon:[['#12033a','#00e0b0'],['#1e1b4b','#6c5bff']],minimal:[['#1c2333','#334155'],['#0f172a','#475569']]}[style]||[['#231a5e','#00e0b0']];
+  const pal=P[seed%P.length];
+  const gr=g.createLinearGradient(0,0,W,H);gr.addColorStop(0,pal[0]);gr.addColorStop(1,pal[1]);
+  g.fillStyle=gr;g.fillRect(0,0,W,H);
+  // brilho / vinheta
+  const rg=g.createRadialGradient(W/2,H*0.35,50,W/2,H/2,Math.max(W,H)*0.8);
+  rg.addColorStop(0,'rgba(255,255,255,.22)');rg.addColorStop(1,'rgba(0,0,0,.45)');
+  g.fillStyle=rg;g.fillRect(0,0,W,H);
+  g.fillStyle='rgba(255,255,255,.06)';
+  for(let i=0;i<5;i++){g.beginPath();g.arc((seed*197+i*283)%W,(i*331+seed*97)%H,30+((i*53)%70),0,7);g.fill();}
+  return c.toDataURL('image/png');
+}
+function buildAd(p){
+  snap();
+  if($('#adClear').checked){[...elCache.keys()].forEach(id=>dropEl(id));S.clips=[];}
+  S.aspect=p.aspect;syncAspect();
+  const[W,H]=ASPECTS[p.aspect];
+  const D=p.D;
+  // fundo: usa mídia do usuário se existir, senão gera 2 fundos em gradiente
+  const userBg=S.media.find(m=>m.type==='video'||m.type==='image');
+  let bgId;
+  if(userBg){bgId=userBg.id;}
+  else{
+    const mk=(seed)=>{const m={id:uid(),name:'Fundo anúncio '+(seed+1)+' ('+p.style+')',type:'image',url:gradURL(p.style,W,H,seed),duration:D,w:W,h:H};S.media.push(m);return m.id;};
+    bgId=mk(1);
+  }
+  const ST={
+    urgente:{font:'Arial Black',head:'#FFE45E',sub:'#ffffff',ctaBg:'#ffffff',ctaTx:'#E11D48',badge:'#FFE45E'},
+    luxo:{font:'Georgia',head:'#F5D67B',sub:'#F8F5EC',ctaBg:'#F5D67B',ctaTx:'#111111',badge:'#F5D67B'},
+    neon:{font:'Impact',head:'#00FFC8',sub:'#ffffff',ctaBg:'#00FFC8',ctaTx:'#0b0e14',badge:'#00FFC8'},
+    minimal:{font:'Inter',head:'#ffffff',sub:'#E2E8F0',ctaBg:'#ffffff',ctaTx:'#0F172A',badge:'#ffffff'}
+  }[p.style];
+  const t=(o)=>Object.assign(DEF_T(),o||{});
+  // V1: fundo full
+  S.clips.push(mkClip({trackId:'v1',mediaId:bgId,name:'BG anúncio',start:0,duration:D,offset:0,anim:'zoom-in',trans:'fade',f:{...DEF_F(),con:112,sat:130}}));
+  // V2: selo de desconto / preço como overlay PIP (usa segundo fundo gerado p/ dinamismo)
+  if(p.discount||p.price){
+    let overlayId=bgId;
+    if(bgId===userBg?.id){const m={id:uid(),name:'Selo oferta',type:'image',url:gradURL(p.style,640,360,7),duration:D,w:640,h:360};S.media.push(m);overlayId=m.id;}
+    S.clips.push(mkClip({trackId:'v2',mediaId:overlayId,name:'Selo oferta',start:Math.max(0,D-6),duration:Math.min(6,D),offset:0,anim:'none',t:t({scale:0.32,x:W*0.3,y:-H*0.3,op:92})}));
+  }
+  const midY=p.aspect==='9:16'?38:44;
+  // T1: hook 0-3s
+  S.clips.push(mkClip({trackId:'t1',name:'Hook',start:0,duration:Math.min(3,D*0.25),text:p.hook,font:ST.font,size:p.aspect==='9:16'?64:76,color:ST.head,bg:'rgba(0,0,0,.55)',anim:'fade',trans:'fade',posX:50,posY:midY-14,bold:true,outline:true}));
+  // bullets no meio
+  const bCount=Math.min(3,p.bullets.length);
+  const bStart=D*0.25,bLen=(D*0.45)/Math.max(1,bCount);
+  p.bullets.slice(0,3).forEach((b,i)=>{
+    S.clips.push(mkClip({trackId:'t1',name:'Benefício '+(i+1),start:bStart+i*bLen,duration:bLen-0.15,text:'✅ '+b.toUpperCase().slice(0,60),font:ST.font,size:p.aspect==='9:16'?44:52,color:ST.sub,bg:'rgba(0,0,0,.55)',anim:'fade',trans:'slide',posX:50,posY:midY+i*8,bold:true,outline:true}));
+  });
+  // preço em destaque
+  if(p.price){
+    S.clips.push(mkClip({trackId:'t1',name:'Preço',start:D*0.62,duration:D*0.2,text:(p.oldPrice?('❌ '+p.oldPrice+'  →  '):'')+'💰 '+p.price+(p.discount?'\n🏷️ '+p.discount:'') ,font:ST.font,size:p.aspect==='9:16'?56:68,color:ST.badge,bg:'#000000',anim:'zoom-in',trans:'zoom',posX:50,posY:midY+10,bold:true,outline:true}));
+  }
+  // CTA final (últimos ~30%)
+  const ctaStart=D*0.72;
+  S.clips.push(mkClip({trackId:'t1',name:'CTA',start:ctaStart,duration:D-ctaStart,text:p.cta+'\n'+(p.style==='luxo'?'VAGAS LIMITADAS ✦':'SÓ HOJE ⏰'),font:ST.font,size:p.aspect==='9:16'?58:72,color:ST.ctaTx,bg:ST.ctaBg,anim:'fade',trans:'zoom',posX:50,posY:p.aspect==='9:16'?78:80,bold:true,outline:false}));
+  S.clips.push(mkClip({trackId:'t1',name:'Marca',start:0,duration:Math.min(2.5,D),text:p.product.toUpperCase().slice(0,30),font:'Inter',size:30,color:'#ffffff',bg:'rgba(0,0,0,.45)',anim:'none',posX:50,posY:8,bold:true,outline:false}));
+  $('#projName').value=('Anúncio — '+p.product).slice(0,40);
+  S.playhead=0;S.sel=null;
+  renderAll();
+  toast('🪄 Anúncio gerado: '+p.product+' ('+p.D+'s '+p.aspect+')');
+  if($('#adVoice').value==='on'){stopSpeak();setTimeout(()=>speak(p.script),600);setTimeout(()=>toast('💡 A voz TTS é só prévia — grave com 🎙️ na aba Áudio para ela sair no vídeo'),2500);}
+  else toast('💡 Dica: Edite textos na timeline e exporte sem marca d\'água');
+}
+
 /* ---------- EXPORT ---------- */
 $('#btnExport').onclick=()=>$('#exportBk').classList.add('open');
 $('#btnCloseExport').onclick=()=>$('#exportBk').classList.remove('open');
 $('#btnDoExport').onclick=doExport;
 async function doExport(){
   if(!S.clips.length)return toast('Nada para exportar');
+  stopSpeak();pause();
   const[ew,eh]=$('#expRes').value.split('x').map(Number);
   const fmtSel=$('#expFmt').value;
   const mime=fmtSel==='auto'
@@ -798,8 +1042,8 @@ $('#tabs').onclick=e=>{const b=e.target.closest('button');if(!b)return;
 /* ---------- INIT ---------- */
 function renderAll(){renderMedia();renderTracks();renderInspector();updateTransport();positionPlayhead();}
 syncAspect();renderAll();requestAnimationFrame(frame);
-window.addEventListener('resize',layoutTimeline);
-setTimeout(layoutTimeline,300);
+window.addEventListener('resize',()=>{layoutTimeline();fitPreview();});
+setTimeout(()=>{layoutTimeline();fitPreview();},300);
 // restore autosave
 try{const s=JSON.parse(localStorage.getItem('cutpro-proj')||'null');if(s&&s.clips&&s.clips.length&&!S.clips.length){// não sobrescreve vazio agressivamente
 }}catch{}
