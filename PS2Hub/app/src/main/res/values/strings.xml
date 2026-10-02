@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">PS2 HUB</string>
+    <string name="search_hint">Buscar jogo, gênero, ano, dev… (ex: ação, 2005)</string>
+    <string name="my_games">Meus Jogos</string>
+    <string name="favorites">Favoritos</string>
+    <string name="catalog">Catálogo</string>
+    <string name="admin">Admin</string>
+</resources>

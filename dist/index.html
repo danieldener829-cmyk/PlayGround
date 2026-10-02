@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PS2 HUB — Biblioteca de jogos PlayStation 2</title>
+<style>
+  :root { --bg:#0a0e1a; --surface:#141b2e; --surface2:#1c2540; --neon:#00d4ff; --blue:#2d9cdb; --text:#fff; --muted:#9aa4bf; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { background:var(--bg); color:var(--text); font-family:'Segoe UI',system-ui,-apple-system,sans-serif; }
+  header { padding:28px 20px 10px; text-align:center; }
+  .logo { font-size:40px; font-weight:900; letter-spacing:6px; color:var(--neon); text-shadow:0 0 24px rgba(0,212,255,.45); }
+  .tagline { color:var(--muted); margin-top:6px; font-size:14px; }
+  .notice { max-width:760px; margin:14px auto 0; background:var(--surface); border:1px solid var(--surface2); border-radius:12px; padding:12px 16px; font-size:13px; color:var(--muted); }
+  .notice b { color:var(--neon); }
+  .search { max-width:640px; margin:18px auto 4px; padding:0 16px; }
+  .search input { width:100%; padding:14px 18px; border-radius:14px; border:1px solid var(--surface2); background:var(--surface); color:#fff; font-size:15px; outline:none; }
+  .search input:focus { border-color:var(--neon); }
+  .chips { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; padding:12px 16px; }
+  .chip { padding:8px 16px; border-radius:999px; background:var(--surface); border:1px solid var(--surface2); font-size:13px; cursor:pointer; }
+  .chip.active { background:var(--neon); color:#04222b; border-color:var(--neon); font-weight:700; }
+  section { max-width:1100px; margin:0 auto; padding:10px 16px 30px; }
+  h2 { font-size:19px; margin:14px 0 12px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:14px; }
+  .card { border-radius:12px; overflow:hidden; background:var(--surface); box-shadow:0 6px 18px rgba(0,0,0,.45); }
+  .cover { aspect-ratio:3/4; display:flex; align-items:center; justify-content:center; position:relative; }
+  .cover span { font-size:34px; font-weight:900; color:rgba(255,255,255,.92); }
+  .meta { padding:10px 12px; }
+  .meta .t { font-size:13px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .meta .s { font-size:11px; color:var(--muted); margin-top:3px; }
+  .actions { display:flex; gap:12px; justify-content:center; padding:4px 16px 26px; flex-wrap:wrap; }
+  .btn { padding:12px 26px; border-radius:12px; border:none; font-size:15px; font-weight:700; cursor:pointer; }
+  .btn.primary { background:var(--neon); color:#04222b; }
+  .btn.ghost { background:var(--surface2); color:#fff; }
+  footer { text-align:center; color:var(--muted); font-size:12px; padding:0 16px 34px; }
+  .hidden { display:none !important; }
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">PS2 HUB</div>
+  <div class="tagline">Sua biblioteca de jogos PlayStation 2 — catálogo, favoritos e coleção pessoal</div>
+  <div class="notice"><b>Prévia web do projeto Android.</b> O app completo (Kotlin + Compose + Room) está em <b>PS2Hub/</b> e abre direto no Android Studio. Esta página demonstra o catálogo. Nenhuma ROM/ISO incluída — apenas metadados e capas procedurais.</div>
+</header>
+<div class="search"><input id="q" type="search" placeholder="Buscar jogo, gênero, ano, dev… (ex: ação, 2005)"></div>
+<div class="chips" id="chips"></div>
+<section>
+  <h2>Destaques</h2>
+  <div class="grid" id="featured"></div>
+  <h2>Catálogo</h2>
+  <div class="grid" id="grid"></div>
+</section>
+<div class="actions">
+  <button class="btn primary" onclick="document.getElementById('grid').scrollIntoView()">Meus Jogos</button>
+  <button class="btn ghost" onclick="document.getElementById('q').focus()">Favoritos</button>
+</div>
+<footer>Código-fonte, telas, navegação, importação de arquivos e área admin: veja PS2Hub/README.md</footer>
+<script>
+var GAMES=[
+["Shadow of the Colossus","Aventura","2005","Team Ico"],["God of War","Ação","2005","Santa Monica"],["God of War II","Ação","2007","Santa Monica"],
+["GTA: San Andreas","Mundo Aberto","2004","Rockstar North"],["GTA: Vice City","Mundo Aberto","2002","Rockstar North"],
+["Metal Gear Solid 3","Stealth","2004","Konami"],["Final Fantasy X","RPG","2001","SquareSoft"],["Final Fantasy XII","RPG","2006","Square Enix"],
+["Resident Evil 4","Terror","2005","Capcom"],["Silent Hill 2","Terror","2001","Team Silent"],
+["NFS: Most Wanted","Corrida","2005","EA Black Box"],["Gran Turismo 4","Corrida","2004","Polyphony"],["PES 2006","Esporte","2005","Konami"],
+["Kingdom Hearts II","RPG","2005","Square Enix"],["Devil May Cry 3","Ação","2005","Capcom"],["Tekken 5","Luta","2004","Namco"],
+["DBZ: Budokai Tenkaichi 3","Luta","2007","Spike"],["Black","Tiro","2006","Criterion"],["Okami","Aventura","2006","Clover"],["Persona 4","RPG","2008","Atlus"]];
+var PALETTES=[["#0f2027","#2c5364"],["#41295a","#2f0743"],["#134e5e","#71b280"],["#232526","#414345"],["#000428","#004e92"],["#42275b","#734b6d"]];
+var activeGenre="Todas";
+function pal(t){var h=0;for(var i=0;i<t.length;i++)h=(h*31+t.charCodeAt(i))|0;return PALETTES[Math.abs(h)%PALETTES.length];}
+function card(g){var p=pal(g[0]);var d=document.createElement("div");d.className="card";d.dataset.search=(g[0]+" "+g[1]+" "+g[2]+" "+g[3]).toLowerCase();d.dataset.genre=g[1];
+d.innerHTML='<div class="cover" style="background:linear-gradient(135deg,'+p[0]+','+p[1]+')"><span>'+g[0].slice(0,2).toUpperCase()+'</span></div><div class="meta"><div class="t">'+g[0]+'</div><div class="s">'+g[2]+' • '+g[1]+'</div></div>';return d;}
+function render(){
+  var grid=document.getElementById("grid");grid.innerHTML="";
+  var feat=document.getElementById("featured");feat.innerHTML="";
+  GAMES.slice(0,5).forEach(function(g){feat.appendChild(card(g));});
+  GAMES.forEach(function(g){grid.appendChild(card(g));});
+  applyFilter();
+}
+function renderChips(){
+  var genres=["Todas"];GAMES.forEach(function(g){if(genres.indexOf(g[1])<0)genres.push(g[1]);});
+  var box=document.getElementById("chips");box.innerHTML="";
+  genres.forEach(function(gn){
+    var c=document.createElement("div");c.className="chip"+(gn===activeGenre?" active":"");c.textContent=gn;
+    c.onclick=function(){activeGenre=gn;renderChips();applyFilter();};box.appendChild(c);
+  });
+}
+function applyFilter(){
+  var q=document.getElementById("q").value.toLowerCase().trim();
+  document.querySelectorAll("#grid .card").forEach(function(el){
+    var ok=(!q||el.dataset.search.indexOf(q)>=0)&&(activeGenre==="Todas"||el.dataset.genre===activeGenre);
+    el.classList.toggle("hidden",!ok);
+  });
+}
+document.getElementById("q").addEventListener("input",applyFilter);
+renderChips();render();
+</script>
+</body>
+</html>
