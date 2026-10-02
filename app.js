@@ -171,6 +171,17 @@ function v86LoadLib(){
 function v86Progress(pct){ const w=document.getElementById('v86_progress'); const b=document.getElementById('v86_progress_bar'); if(!w||!b) return; if(pct==null){ w.hidden=true; b.style.width='0%'; return; } w.hidden=false; b.style.width=Math.max(2,Math.round(pct))+'%'; }
 function v86SerialPrint(t){ const el=document.getElementById('v86_serial'); if(!el) return; el.textContent+=t; if(el.textContent.length>20000) el.textContent=el.textContent.slice(-20000); el.scrollTop=el.scrollHeight; }
 function v86SetStatus(t){ const el=document.getElementById('v86_status'); if(el) el.textContent=t; }
+function v86SetPc(state, label){
+  const box=document.getElementById('vmBox');
+  const st=document.getElementById('pcState');
+  const title=document.getElementById('pcTitle');
+  const ov=document.getElementById('pcOverlay');
+  if(box){ box.classList.toggle('is-on', state==='on'); box.classList.toggle('is-paused', state==='paused'); }
+  if(st) st.textContent=(label||state||'OFF').toUpperCase().slice(0,12);
+  if(title && window._v86_profile) title.textContent='NuvemPC — '+window._v86_profile+' • '+(label||state);
+  else if(title && state==='off') title.textContent='NuvemPC — desligado';
+  if(ov) ov.hidden=(state==='on'||state==='paused');
+}
 window.v86Scale = v=>{ const c=document.querySelector('#v86_screen canvas'); const l=document.getElementById('vmScaleVal'); if(l) l.textContent=v+'%'; if(c) c.style.width=v+'%'; try{localStorage.setItem('nuvemos_scale',v);}catch(e){} };
 window.v86SendKeys = kind=>{
   const e=window._v86; if(!e){toast('Ligue a VM primeiro');return;}
@@ -203,6 +214,8 @@ window.v86Boot = async ()=>{
     document.getElementById('v86_screen').innerHTML='';
     document.getElementById('v86_serial').textContent='';
     const profile=document.getElementById('vmProfile').value;
+    window._v86_profile=profile;
+    v86SetPc('booting','BOOT');
     const mem=(parseInt(document.getElementById('vmMem').value,10)||128)*1024*1024;
     const base={ wasm_path:V86_CDN.wasm, memory_size:mem, vga_memory_size:8*1024*1024,
       screen_container:document.getElementById('v86_screen_container'),
@@ -220,15 +233,15 @@ window.v86Boot = async ()=>{
     window._v86_timer=setInterval(()=>{ const s=Math.floor((Date.now()-t0)/1000); const t=document.getElementById('v86_time'); if(t&&window._v86_running)t.textContent=s+'s ligado'; },1000);
     emu.add_listener('serial0-output-byte', b=>{ v86SerialPrint(String.fromCharCode(b)); });
     emu.add_listener('download-progress', e=>{ if(e&&e.total){ const p=e.loaded/e.total*100; v86Progress(p); v86SetStatus(`Baixando imagem real… ${Math.round(p)}%`); } });
-    emu.add_listener('emulator-ready', ()=>{ v86Progress(null); v86SetStatus(profile+' real rodando. Clique na tela para usar o teclado.'); window._bootMs=Date.now()-(window._bootT0||Date.now()); bumpStat('boots',1); try{ const sv=localStorage.getItem('nuvemos_scale'); if(sv) window.v86Scale(sv); }catch(e){} try{localStorage.setItem('nuvemos_last_vm',profile);}catch(e){} syncUrl(); toast('VM real ligada em '+Math.round((window._bootMs||0)/100)/10+'s!'); });
+    emu.add_listener('emulator-ready', ()=>{ v86Progress(null); v86SetPc('on','ON'); v86SetStatus(profile+' real rodando. Clique na tela para usar o teclado.'); window._bootMs=Date.now()-(window._bootT0||Date.now()); bumpStat('boots',1); try{ const sv=localStorage.getItem('nuvemos_scale'); if(sv) window.v86Scale(sv); }catch(e){} try{localStorage.setItem('nuvemos_last_vm',profile);}catch(e){} syncUrl(); toast('VM real ligada em '+Math.round((window._bootMs||0)/100)/10+'s!'); });
     emu.add_listener('screen-set-mode', m=>{});
     if(emu.get_statistics){ setInterval(async()=>{ try{ const st=await emu.get_statistics(); const el=document.getElementById('v86_speed'); if(el&&st&&st.cpu) el.textContent=Math.round(st.cpu.mips||0)+' mIPS'; }catch(e){} },2000); }
   }catch(err){ v86SetStatus('Erro: '+err.message+'. Use o Lab externo abaixo como alternativa.'); toast('Falha na VM integrada — tente o Lab externo'); }
   finally{ btn.disabled=false; }
 };
-window.v86Pause = ()=>{ const e=window._v86; if(!e) return; if(window._v86_running){ e.stop(); window._v86_running=false; document.getElementById('vmPause').textContent='Continuar'; v86SetStatus('Pausada.'); } else { e.run(); window._v86_running=true; document.getElementById('vmPause').textContent='Pausar'; v86SetStatus('Rodando.'); } };
-window.v86Reset = ()=>{ if(window._v86){ window._v86.restart(); window._v86_running=true; v86SetStatus('Reiniciada — boot real novamente.'); } };
-window.v86Stop = ()=>{ if(window._v86){ try{window._v86.stop();}catch(e){} window._v86=null; } window._v86_running=false; document.getElementById('vmPause').disabled=true; document.getElementById('v86_screen').innerHTML=''; v86SetStatus('Desligada.'); clearInterval(window._v86_timer); };
+window.v86Pause = ()=>{ const e=window._v86; if(!e) return; if(window._v86_running){ e.stop(); window._v86_running=false; document.getElementById('vmPause').textContent='Continuar'; v86SetPc('paused','PAUSED'); v86SetStatus('Pausada.'); } else { e.run(); window._v86_running=true; document.getElementById('vmPause').textContent='Pausar'; v86SetPc('on','ON'); v86SetStatus('Rodando.'); } };
+window.v86Reset = ()=>{ if(window._v86){ window._v86.restart(); window._v86_running=true; v86SetPc('booting','BOOT'); v86SetStatus('Reiniciada — boot real novamente.'); } };
+window.v86Stop = ()=>{ if(window._v86){ try{window._v86.stop();}catch(e){} window._v86=null; } window._v86_running=false; window._v86_profile=''; document.getElementById('vmPause').disabled=true; document.getElementById('v86_screen').innerHTML=''; v86SetPc('off','OFF'); v86SetStatus('Desligada.'); clearInterval(window._v86_timer); const t=document.getElementById('v86_time'); if(t) t.textContent='⏱ 0s'; };
 window.v86CtrlAltDel = ()=>{ if(window._v86) window._v86.keyboard_send_scancodes([0x1D,0x38,0x53]); };
 window.v86Fullscreen = ()=>{ const el=document.getElementById('v86_screen_container'); if(el.requestFullscreen) el.requestFullscreen(); };
 window.v86Screenshot = ()=>{ try{ const c=document.querySelector('#v86_screen_container canvas'); if(!c){toast('Sem tela para capturar');return;} const a=document.createElement('a'); a.download='v86-screenshot.png'; a.href=c.toDataURL('image/png'); a.click(); toast('Screenshot baixado'); }catch(e){ toast('Falha no screenshot'); } };
@@ -252,6 +265,8 @@ const PAL_ACTIONS = [
   {t:'Abrir guia Win10 + VNC Viewer', run:()=>document.getElementById('win10vnc').scrollIntoView({behavior:'smooth'})},
   {t:'Ver planos de PC virtual (FiveM no celular)', run:()=>document.getElementById('cloudpc').scrollIntoView({behavior:'smooth'})},
   {t:'Pedir PC virtual no WhatsApp', run:()=>orderCloud('Personalizado', null, null)},
+  {t:'Roblox oficial — baixar (PC)', run:()=>window.open('https://www.roblox.com/download','_blank')},
+  {t:'Roblox — copiar comando winget', run:()=>copyRoblox()},
   {t:'Gerar comando Windows 10 Docker', run:()=>{document.getElementById('win10vnc').scrollIntoView({behavior:'smooth'});genWin10();}},
   {t:'Alternar tema claro/escuro', run:()=>document.getElementById('themeBtn').click()},
   {t:'Ir para Máquina', run:()=>document.getElementById('maquina').scrollIntoView({behavior:'smooth'})},
@@ -266,6 +281,7 @@ function openPal(){ $('#palette').hidden=false; $('#paletteInput').value=''; pal
 function closePal(){ $('#palette').hidden=true; }
 window.genCompose = ()=>{ const img=$('#genImg').value; const port=$('#genPort').value||3000; const p1=img.includes('ttyd')?'7681:7681':port+':3000'; $('#genOut').textContent=`docker run -d --name nuvemos -p ${p1} ${img}`; };
 window.copyGen = ()=>copyText($('#genOut').textContent);
+window.copyRoblox = ()=>copyText(($('#robloxWinget')||{}).textContent||'winget install -e --id RobloxCorporation.Roblox');
 // ---- Loja PC virtual (landing estilo vídeo: preços demo editáveis) ----
 const WHATS_NUMBER = '5500000000000'; // <-- TROQUE pelo seu WhatsApp (DDI+DDD+número)
 window.calcCloud = ()=>{

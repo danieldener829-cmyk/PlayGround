@@ -132,13 +132,26 @@ footer{border-top:1px solid var(--line);padding:22px 0 30px;background:var(--car
 .backend-form input{flex:1;min-width:260px;padding:11px 14px;border-radius:999px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
 .vm-controls{display:flex;gap:10px;flex-wrap:wrap;align-items:end;margin:12px 0}.vm-controls label{display:grid;gap:4px;font-size:13px;font-weight:700}.vm-controls select{padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);max-width:320px}
 .vm-controls.wrap2{align-items:center}
-.vm-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:14px}
-.vm-screen-box{background:#000;border-radius:14px;overflow:hidden;border:1px solid var(--line)}
-#v86_screen_container{position:relative;min-height:340px;background:#000;display:grid;place-items:center}
-#v86_screen{width:100%}#v86_screen canvas{width:100%!important;height:auto!important;display:block}
-#v86_screen_container:empty::after{content:"VM desligada — clique em Ligar";color:#64748b;font-size:14px}
-.vm-statusbar{display:flex;gap:14px;padding:8px 12px;background:#0b1220;color:#8ea0c2;font-size:12px;font-family:ui-monospace,monospace}
-.vm-serial-box{display:grid;gap:8px;align-content:start}
+.vm-grid{display:grid;grid-template-columns:1.25fr .75fr;gap:16px;align-items:start}
+.vm-screen-box{background:linear-gradient(180deg,#1b2540,#0b1122);border-radius:20px;overflow:hidden;border:1px solid #2b3a5e;box-shadow:0 24px 70px rgba(2,6,23,.45),inset 0 1px 0 rgba(255,255,255,.08);transition:box-shadow .25s,border-color .25s}
+.vm-screen-box.is-on{border-color:#38bdf8;box-shadow:0 24px 70px rgba(37,99,235,.35),0 0 0 1px rgba(56,189,248,.35),inset 0 1px 0 rgba(255,255,255,.1)}
+.vm-screen-box.is-paused{border-color:#fbbf24}
+.pc-chrome{display:flex;align-items:center;gap:10px;padding:10px 14px;background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,0));color:#dbe4ff;font-size:13px;font-weight:700}
+.pc-lights{display:flex;gap:6px}.pc-lights i{width:11px;height:11px;border-radius:50%;display:block}.pc-lights i:nth-child(1){background:#f87171}.pc-lights i:nth-child(2){background:#fbbf24}.pc-lights i:nth-child(3){background:#34d399}
+.pc-title{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pc-right{margin-left:auto;display:flex;align-items:center;gap:8px}
+.pc-led{width:10px;height:10px;border-radius:50%;background:#475569;box-shadow:0 0 0 3px rgba(255,255,255,.06);transition:background .2s,box-shadow .2s}
+.vm-screen-box.is-on .pc-led{background:#22c55e;box-shadow:0 0 10px #22c55e}
+.vm-screen-box.is-paused .pc-led{background:#fbbf24;box-shadow:0 0 10px #fbbf24}
+.pc-state{font-size:11px;font-weight:800;letter-spacing:.08em;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);padding:2px 9px;border-radius:999px}
+#v86_screen_container{position:relative;min-height:0;aspect-ratio:16/10;background:radial-gradient(600px 220px at 50% 0%,rgba(56,189,248,.14),transparent),#000;display:block;place-items:unset}
+#v86_screen{position:absolute;inset:0;width:100%;height:100%}#v86_screen canvas{width:100%!important;height:100%!important;object-fit:contain;display:block;image-rendering:auto;background:#000}
+.pc-overlay{position:absolute;inset:0;display:grid;place-content:center;gap:8px;text-align:center;color:#c7d5f2;padding:24px;background:radial-gradient(500px 220px at 50% 30%,rgba(37,99,235,.22),transparent)}
+.pc-overlay[hidden]{display:none}
+.pc-overlay-icon{font-size:52px;filter:drop-shadow(0 8px 20px rgba(37,99,235,.5))}
+.vm-statusbar{display:flex;gap:8px;padding:10px 12px;background:rgba(0,0,0,.55);color:#9fb2d8;font-size:12px;font-family:ui-monospace,monospace;flex-wrap:wrap;border-top:1px solid rgba(255,255,255,.08)}
+.vm-statusbar .st{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:999px;padding:3px 10px}
+.vm-serial-box{display:grid;gap:8px;align-content:start;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:var(--shadow)}
 .term.serial{min-height:300px;max-height:420px;overflow:auto}
 @media(max-width:900px){.vm-grid{grid-template-columns:1fr}}
 @media(max-width:860px){.hero{grid-template-columns:1fr}.nav{display:none}.nav.open{display:flex;position:absolute;top:60px;right:12px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;flex-direction:column}.only-mobile{display:inline-block}.foot-grid{grid-template-columns:1fr}}

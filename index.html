@@ -98,11 +98,6 @@
     <button class="btn ghost" onclick="dismissTour()">Entendi</button>
   </div>
 
-  <div id="tourBanner" class="wrap tour" hidden>
-    <span>👋 Novo aqui? Aperte <kbd>Ctrl K</kbd> para a paleta de comandos, ou clique em <strong>Ligar máquina agora</strong>.</span>
-    <button class="btn ghost" onclick="dismissTour()">Entendi</button>
-  </div>
-
   <section id="cloudpc" class="wrap section lab cloud-store">
     <div class="section-head">
       <div>
@@ -172,6 +167,25 @@
       <code class="code" id="calcOut">Total estimado: R$ 9,98</code>
       <p class="muted small">Valores de demonstração para você editar — troque pelos seus preços reais no código (procure por <code>cloudPlans</code>). Internet mínima recomendada: 15 Mbps estáveis.</p>
     </div>
+    <div class="gen">
+      <h3>🟥 Roblox real — sem fake, sem "jogar no navegador"</h3>
+      <p class="muted small">Direto: <strong>Roblox não roda dentro desta página</strong>. O emulador do navegador (Buildroot/KolibriOS/ReactOS) não tem GPU nem cliente oficial — qualquer botão de "jogar Roblox aqui" seria fake. O caminho real é instalar o cliente oficial no seu <strong>PC Windows, PC virtual da nuvem ou celular</strong> e entrar com sua conta.</p>
+      <div class="vm-controls">
+        <a class="btn primary" href="https://www.roblox.com/download" target="_blank" rel="noopener">⬇ Roblox oficial (PC)</a>
+        <a class="btn dark" href="https://play.google.com/store/apps/details?id=com.roblox.client" target="_blank" rel="noopener">📲 Roblox (Android)</a>
+        <a class="btn ghost" href="https://apps.apple.com/app/roblox/id431946152" target="_blank" rel="noopener">📲 Roblox (iPhone/iPad)</a>
+      </div>
+      <p class="muted small">No seu <strong>Windows real ou PC virtual Windows</strong>, abra o PowerShell e rode (requer Windows 10/11 com winget; se falhar, use o botão de download acima):</p>
+      <code class="code" id="robloxWinget">winget install -e --id RobloxCorporation.Roblox</code>
+      <div class="vm-controls">
+        <button class="btn ghost" type="button" onclick="copyRoblox()">📋 Copiar comando</button>
+      </div>
+      <ul class="about-list">
+        <li>1️⃣ No PC virtual/nuvem ou PC Windows: instale pelo link oficial acima e faça login na sua conta Roblox.</li>
+        <li>2️⃣ No celular: instale o app oficial da loja e jogue direto — sem precisar de PC.</li>
+        <li>3️⃣ Nunca baixe "Roblox APK/mod" de sites aleatórios — use só roblox.com e as lojas oficiais.</li>
+      </ul>
+    </div>
     <div class="grid">
       <div class="card"><h3>📲 Como conectar (celular)</h3><p>1. Instale o app de acesso remoto indicado no pedido. 2. Digite IP, usuário e senha que você recebeu. 3. Toque para mouse, teclado virtual para digitar. Use Wi-Fi 5G ou 4G bom.</p></div>
       <div class="card"><h3>💻 Como conectar (PC fraco)</h3><p>Use o app remoto de PC ou o navegador. Seu PC só exibe a imagem — todo o peso roda na nuvem. Fone + teclado USB no celular via OTG melhoram a mira.</p></div>
@@ -223,9 +237,20 @@
     <div class="progress" id="v86_progress" hidden><div id="v86_progress_bar"></div></div>
     <div class="vm-statusline"><span class="muted small" id="v86_status">Desligada.</span></div>
     <div class="vm-grid">
-      <div class="vm-screen-box">
-        <div id="v86_screen_container"><div id="v86_screen"></div><canvas id="v86_canvas" style="display:none"></canvas></div>
-        <div class="vm-statusbar"><span id="v86_time">0s</span><span id="v86_speed">0 mIPS</span><span id="v86_net">rede: off (Buildroot local)</span></div>
+      <div class="vm-screen-box" id="vmBox">
+        <div class="pc-chrome">
+          <span class="pc-lights" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="pc-title" id="pcTitle">NuvemPC — desligado</span>
+          <span class="pc-right"><span class="pc-led" id="pcLed"></span><span class="pc-state" id="pcState">OFF</span></span>
+        </div>
+        <div id="v86_screen_container"><div id="v86_screen"></div><canvas id="v86_canvas" style="display:none"></canvas>
+          <div class="pc-overlay" id="pcOverlay">
+            <div class="pc-overlay-icon" aria-hidden="true">🖥️</div>
+            <strong>PC pronto para ligar</strong>
+            <span>Escolha o sistema acima e aperte <b>Ligar</b>.<br>KolibriOS é o mais leve para testar a tela.</span>
+          </div>
+        </div>
+        <div class="vm-statusbar"><span class="st" id="v86_time">⏱ 0s</span><span class="st" id="v86_speed">⚡ 0 mIPS</span><span class="st" id="v86_net">🌐 rede local</span></div>
       </div>
       <div class="vm-serial-box">
         <strong>Terminal serial (digite e Enter — vai direto para a VM)</strong>
