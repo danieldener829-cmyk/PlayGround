@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>IGAMES PSP Clone — Biblioteca de Jogos PSP</title>
+<meta name="description" content="Clone estilo IGAMES PSP: biblioteca, busca, categorias, favoritos, trailers e guia PPSSPP." />
+<meta name="theme-color" content="#0b1020" />
+<link rel="manifest" href="manifest.json" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23ff6a00'/><text x='50' y='68' font-size='55' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>P</text></svg>" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<header class="topbar">
+  <div class="wrap topbar-inner">
+    <div class="logo">
+      <span class="logo-badge">🎮</span>
+      <div>
+        <strong>IGAMES <span>PSP</span></strong>
+        <small>clone • biblioteca portátil</small>
+      </div>
+    </div>
+    <nav class="tabs" id="tabs">
+      <button class="tab active" data-tab="inicio">Início</button>
+      <button class="tab" data-tab="favoritos">Favoritos <b id="favCount">0</b></button>
+      <button class="tab" data-tab="emulador">Como jogar</button>
+    </nav>
+  </div>
+  <div class="wrap search-row">
+    <div class="search">🔎 <input id="search" type="search" placeholder="Pesquisar jogo... ex: God of War, Naruto, Bomba Patch" autocomplete="off" /></div>
+    <select id="sort" aria-label="Ordenar">
+      <option value="destaques">🔥 Destaques</option>
+      <option value="nota">⭐ Melhor nota</option>
+      <option value="az">🔤 A–Z</option>
+      <option value="downloads">📥 Mais baixados</option>
+      <option value="ano">🆕 Mais recentes</option>
+    </select>
+  </div>
+  <div class="wrap chips" id="chips"></div>
+</header>
+
+<main class="wrap">
+  <section id="view-inicio">
+    <div class="hero">
+      <div>
+        <h1>Os melhores jogos de <span>PSP</span> em um só lugar</h1>
+        <p>Biblioteca estilo IGAMES com <b id="totalGames">0 jogos</b>, descrições, gameplays, categorias e favoritos. Para jogar, use seus arquivos com o emulador PPSSPP.</p>
+        <div class="hero-stats">
+          <div><b>1000+</b><small>na app original</small></div>
+          <div><b id="statCatalogo">43</b><small>neste clone demo</small></div>
+          <div><b>Offline</b><small>favoritos salvos</small></div>
+          <div><b>🎮</b><small>suporte a controle</small></div>
+        </div>
+      </div>
+      <div class="hero-card">
+        <div class="psp">PSP<br/><span>PlayStation Portable</span></div>
+        <button id="btnRandom">🎲 Jogo aleatório</button>
+      </div>
+    </div>
+    <div id="grid" class="grid"></div>
+    <p class="empty hidden" id="empty">Nenhum jogo encontrado. Tente outro nome ou categoria.</p>
+  </section>
+
+  <section id="view-favoritos" class="hidden">
+    <h2>⭐ Meus favoritos</h2>
+    <p class="muted">Salvos neste celular (localStorage). Toque no ❤️ dos cards para adicionar/remover.</p>
+    <div id="gridFav" class="grid"></div>
+    <p class="empty hidden" id="emptyFav">Você ainda não favoritou nada.</p>
+  </section>
+
+  <section id="view-emulador" class="hidden">
+    <h2>📱 Como jogar no celular (PPSSPP)</h2>
+    <div class="steps">
+      <div class="step"><b>1</b><div><strong>Instale o PPSSPP</strong><p>Emulador gratuito e legal na Play Store / App Store. Ative 60 FPS, salto de quadros e controle na tela.</p></div></div>
+      <div class="step"><b>2</b><div><strong>Use apenas arquivos seus</strong><p>Este clone é só um <u>catálogo informativo</u> — não hospeda ISOs. Faça dump dos seus UMDs ou use homebrews.</p></div></div>
+      <div class="step"><b>3</b><div><strong>Controle Bluetooth</strong><p>No PPSSPP: Configurações → Controles → Mapear. Funciona com controles de PS4, Xbox e genéricos.</p></div></div>
+      <div class="step"><b>4</b><div><strong>Celular fraco? Otimize</strong><p>Resolução 1x, pular quadros: 1, desativar shaders. A maioria dos jogos acima roda a 30–60fps.</p></div></div>
+    </div>
+    <div class="links">
+      <a href="https://www.ppsspp.org/downloads.html" target="_blank" rel="noopener">⬇ Baixar PPSSPP oficial</a>
+      <a href="https://www.youtube.com/results?search_query=ppsspp+configurar+android+fraco" target="_blank" rel="noopener">▶ Ver tutorial no YouTube</a>
+    </div>
+    <p class="muted small">Aviso legal: não baixe ou distribua ROMs/ISOs protegidas por direitos autorais. Use apenas cópias dos jogos que você possui.</p>
+  </section>
+</main>
+
+<div class="modal-backdrop hidden" id="modal">
+  <div class="modal" role="dialog" aria-modal="true">
+    <button class="close" id="modalClose">✕</button>
+    <div class="modal-cover" id="modalCover"></div>
+    <div class="modal-body">
+      <h2 id="mTitulo"></h2>
+      <div class="meta" id="mMeta"></div>
+      <p id="mDesc"></p>
+      <div class="actions">
+        <button id="mFav">❤️ Favoritar</button>
+        <a id="mYt" target="_blank" rel="noopener">▶ Ver gameplay</a>
+        <a href="https://www.ppsspp.org/" target="_blank" rel="noopener" class="ghost">📲 PPSSPP</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast hidden" id="toast"></div>
+
+<footer>
+  <div class="wrap">
+    <p><b>IGAMES PSP Clone</b> — projeto demo educacional, sem afiliação com Sony, PlayStation ou IGames BR. Não hospeda jogos.</p>
+    <p class="muted small">Feito em HTML/CSS/JS puro • PWA instalável • Favoritos offline</p>
+  </div>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
