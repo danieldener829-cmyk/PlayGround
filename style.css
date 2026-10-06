@@ -1,0 +1,64 @@
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'Segoe UI',Roboto,Arial,sans-serif;touch-action:none;overscroll-behavior:none;user-select:none;-webkit-user-select:none}
+#game-container,#game-container canvas{position:fixed;inset:0;width:100%;height:100%;display:block}
+.hidden{display:none!important}
+
+/* HUD */
+#hud{position:fixed;inset:0;pointer-events:none;z-index:10}
+#top-right{position:absolute;top:calc(10px + env(safe-area-inset-top));right:14px;text-align:right}
+#wanted{color:#ffcf3d;font-size:26px;letter-spacing:2px;text-shadow:0 2px 0 #000,-1px 0 0 #000,1px 0 0 #000}
+#money{color:#3dff7a;font-size:24px;font-weight:800;text-shadow:0 2px 0 #000;font-family:'Courier New',monospace}
+#clock{color:#fff;font-size:15px;text-shadow:0 1px 0 #000;opacity:.9}
+#vitals{position:absolute;bottom:calc(14px + env(safe-area-inset-bottom));right:14px;width:190px;display:flex;flex-direction:column;gap:6px}
+.bar{position:relative;height:18px;background:rgba(0,0,0,.55);border:1px solid #000;border-radius:3px;overflow:hidden}
+.bar span{position:absolute;right:5px;top:0;font-size:10px;color:#fff;line-height:16px;text-shadow:0 1px 0 #000}
+#health-fill{height:100%;width:100%;background:linear-gradient(#ff9a9a,#c40000)}
+#armor-fill{height:100%;width:0%;background:linear-gradient(#cfe9ff,#2d7dff)}
+#mission-text{position:absolute;top:calc(10px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);background:rgba(0,0,0,.55);color:#ffe27a;padding:8px 16px;border-radius:6px;font-size:14px;max-width:92vw;text-align:center;border:1px solid rgba(255,255,255,.15)}
+#speedo{position:absolute;bottom:calc(90px + env(safe-area-inset-bottom));right:16px;color:#fff;font-size:22px;font-weight:800;text-shadow:0 2px 0 #000}
+#killfeed{position:absolute;top:110px;right:14px;display:flex;flex-direction:column;gap:4px;align-items:flex-end}
+#killfeed div{background:rgba(0,0,0,.6);color:#fff;font-size:12px;padding:4px 8px;border-radius:4px}
+#chat{position:absolute;left:12px;top:calc(64px + env(safe-area-inset-top));width:min(330px,70vw)}
+#chat-lines{display:flex;flex-direction:column;gap:3px;max-height:30vh;overflow:hidden}
+#chat-lines div{background:rgba(0,0,0,.45);color:#fff;font-size:13px;padding:3px 8px;border-radius:4px;width:fit-content;max-width:100%}
+#chat-input-row{pointer-events:auto;margin-top:6px;display:flex}
+#chat-input{flex:1;background:rgba(0,0,0,.7);border:1px solid #555;color:#fff;padding:8px;border-radius:6px;font-size:14px;pointer-events:auto}
+#minimap{position:absolute;left:12px;bottom:calc(12px + env(safe-area-inset-bottom));border-radius:50%;border:3px solid rgba(0,0,0,.7);box-shadow:0 0 0 2px rgba(255,255,255,.25);background:#0a2a12}
+#crosshair{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);color:#fff;font-size:28px;text-shadow:0 0 4px #000}
+#wasted,#busted{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(120,0,0,.45)}
+#busted{background:rgba(0,40,120,.45)}
+#wasted h1,#busted h1{font-size:64px;color:#fff;letter-spacing:6px;text-shadow:0 4px 0 #000}
+#wasted p,#busted p{color:#fff;font-size:18px}
+
+/* touch */
+#touch-ui{position:fixed;inset:0;z-index:20;pointer-events:none;display:none}
+body.touch #touch-ui{display:block}
+#joystick-zone{position:absolute;left:0;bottom:0;width:45%;height:60%;pointer-events:auto}
+#joystick-base{position:absolute;left:36px;bottom:90px;width:130px;height:130px;border-radius:50%;background:rgba(255,255,255,.10);border:2px solid rgba(255,255,255,.35);display:none}
+#joystick-knob{position:absolute;left:50%;top:50%;width:58px;height:58px;border-radius:50%;background:rgba(255,255,255,.55);transform:translate(-50%,-50%)}
+#touch-buttons{position:absolute;right:10px;bottom:calc(110px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:10px;pointer-events:auto;align-items:flex-end}
+.tbtn{width:64px;height:64px;border-radius:50%;border:2px solid rgba(255,255,255,.5);background:rgba(0,0,0,.45);color:#fff;font-size:26px}
+.tbtn.small{width:50px;height:50px;font-size:20px}
+.tbtn.big{width:78px;height:78px;font-size:32px}
+.tbtn:active{background:rgba(255,255,255,.4)}
+#pedals{position:absolute;left:12px;bottom:calc(200px + env(safe-area-inset-bottom));display:flex;gap:12px;pointer-events:auto}
+#top-btns{position:fixed;top:calc(44px + env(safe-area-inset-top));right:12px;z-index:30;display:flex;gap:8px}
+#top-btns button{width:40px;height:40px;border-radius:8px;border:1px solid #666;background:rgba(0,0,0,.55);color:#fff;font-size:19px}
+#players-panel{position:fixed;top:100px;right:12px;z-index:30;background:rgba(0,0,0,.8);color:#fff;border-radius:8px;padding:10px 14px;font-size:14px;min-width:200px}
+#players-panel h4{color:#3dff7a;margin-bottom:6px}
+#help-panel{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:40;background:rgba(10,10,10,.94);color:#fff;border-radius:12px;padding:20px;max-width:92vw;width:430px;border:1px solid #444}
+#help-panel li{margin:6px 0 6px 18px;font-size:14px}
+#help-panel button{margin-top:10px;width:100%;padding:10px;background:#2d7dff;border:none;color:#fff;border-radius:8px;font-size:16px}
+
+/* menu */
+#menu{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at center,rgba(20,40,20,.88),rgba(0,0,0,.94));padding:16px}
+.menu-card{text-align:center;color:#fff;max-width:560px;width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);border-radius:16px;padding:28px 22px}
+.menu-card h1{font-size:64px;letter-spacing:4px}.menu-card h1 span{color:#3dff7a}
+.menu-card .sub{color:#ffe27a;margin:6px 0 12px}
+.menu-stats{font-size:14px;opacity:.9;margin-bottom:16px}
+#play-btn{font-size:22px;font-weight:800;padding:14px 44px;border-radius:10px;border:none;background:linear-gradient(#3dff7a,#0a9d3f);color:#04240f;cursor:pointer}
+#play-btn:active{transform:scale(.97)}
+.menu-row{display:flex;gap:10px;justify-content:center;margin-top:14px;flex-wrap:wrap;font-size:14px}
+.menu-row input,.menu-row select{padding:6px;border-radius:6px;border:1px solid #555;background:#111;color:#fff}
+.tiny{font-size:12px;opacity:.7;margin-top:12px;line-height:1.5}
+@media (max-width:700px){.menu-card h1{font-size:46px}#vitals{width:140px;bottom:200px}#minimap{width:130px;height:130px}#mission-text{font-size:12px}}

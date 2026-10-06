@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌆</text></svg>">
+<title>SAMP 3D — Grove Street | GTA San Andreas de bolso (C++)</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+<div id="game-container"></div>
+
+<!-- HUD estilo SAMP / GTA SA -->
+<div id="hud">
+  <div id="top-right">
+    <div id="wanted">☆☆☆☆☆</div>
+    <div id="money">$00000250</div>
+    <div id="clock">12:00</div>
+  </div>
+  <div id="vitals">
+    <div class="bar"><div id="health-fill"></div><span>VIDA</span></div>
+    <div class="bar"><div id="armor-fill"></div><span>COLETE</span></div>
+  </div>
+  <div id="mission-text">Bem-vindo a Grove Street! Roube um carro, faça entregas.</div>
+  <div id="speedo" class="hidden">0 km/h</div>
+  <div id="killfeed"></div>
+  <div id="chat">
+    <div id="chat-lines"></div>
+    <div id="chat-input-row" class="hidden">
+      <input id="chat-input" placeholder="Digite e Enter... (/ajuda)" maxlength="90">
+    </div>
+  </div>
+  <canvas id="minimap" width="180" height="180"></canvas>
+  <div id="crosshair" class="hidden">+</div>
+  <div id="wasted" class="hidden"><h1>DESMAIADO</h1><p>Taxa do hospital: -$100</p></div>
+  <div id="busted" class="hidden"><h1>PRESO</h1><p>A polícia te pegou!</p></div>
+</div>
+
+<!-- Controles touch Phone/Tablet -->
+<div id="touch-ui">
+  <div id="joystick-zone"><div id="joystick-base"><div id="joystick-knob"></div></div></div>
+  <div id="touch-buttons">
+    <button class="tbtn" id="btn-action">🚗</button>
+    <button class="tbtn" id="btn-jump">⤒</button>
+    <button class="tbtn" id="btn-shoot">🔫</button>
+    <button class="tbtn small" id="btn-run">🏃</button>
+    <button class="tbtn small" id="btn-cam">🎥</button>
+  </div>
+  <div id="pedals" class="hidden">
+    <button class="tbtn big" id="btn-brake">◀</button>
+    <button class="tbtn big" id="btn-gas">▶</button>
+  </div>
+</div>
+
+<div id="top-btns">
+  <button id="btn-chat">💬</button>
+  <button id="btn-players">👥</button>
+  <button id="btn-help">?</button>
+  <button id="btn-full">⛶</button>
+</div>
+<div id="players-panel" class="hidden"></div>
+<div id="help-panel" class="hidden">
+  <h3>🕹️ Como jogar (celular + PC)</h3>
+  <ul>
+    <li><b>PC:</b> WASD anda/dirige • Mouse arrasta = câmera • Shift corre • Espaço pula • <b>E</b> entra/sai do carro • Clique atira • T chat</li>
+    <li><b>📱 Celular:</b> joystick esquerdo anda/dirige • arraste lado direito = câmera • 🚗 entra/sai • ⤒ pula • 🔫 atira • 🏃 correr • ◀ ▶ pedais no carro</li>
+    <li>💰 Faça <b>entregas (marcador amarelo $)</b> • ❤️ verde = vida • 🛡️ azul = colete • ⭐ suborno limpa procurado</li>
+    <li>🚔 Com procurado a polícia persegue! Fuja ou seja preso.</li>
+    <li>Comandos: <b>/ajuda /carro /vida /colete /grana /procurado /hora</b></li>
+  </ul>
+  <button id="help-close">FECHAR</button>
+</div>
+
+<div id="menu">
+  <div class="menu-card">
+    <h1>SAMP <span>3D</span></h1>
+    <p class="sub">Grove Street • estilo GTA San Andreas • Núcleo C++17</p>
+    <div class="menu-stats">🌆 5×5 quarteirões • 🚗 10 carros • 🚶 12 pedestres • 🚔 polícia • ⭐ procurado • 📱 touch</div>
+    <button id="play-btn">▶ JOGAR AGORA</button>
+    <div class="menu-row">
+      <label>Qualidade: <select id="quality"><option value="low">📱 Celular (leve)</option><option value="high" selected>🎮 Normal</option></select></label>
+      <label>Nome: <input id="nick" value="CJ_Brasil" maxlength="16"></label>
+    </div>
+    <p class="tiny">C++ em <b>src/</b> (Vec3, World, Player, Vehicle, Wanted) — este WebGL espelha o mesmo modelo p/ jogar no navegador. No Android NDK compile com <b>CMake + Raylib</b> (ver README).</p>
+  </div>
+</div>
+
+<script src="game.js"></script>
+</body>
+</html>
