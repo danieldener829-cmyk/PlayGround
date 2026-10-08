@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>TV Aberta Brasil — Assista canais abertos ao vivo</title>
+<meta name="description" content="Assista aos canais abertos do Brasil ao vivo: Globo, SBT, Record, Band, RedeTV, Cultura, TV Brasil, Record News e mais.">
+<meta name="theme-color" content="#0a0f1e">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%2300d464'/><text x='50' y='68' font-size='55' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>TV</text></svg>">
+<script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.13/dist/hls.min.js"></script>
+<style>
+:root{
+  --bg:#0a0f1e; --bg2:#111936; --card:#161f42; --card2:#1c2650;
+  --txt:#f2f5ff; --mut:#9aa6c7; --acc:#00d464; --acc2:#00a3ff;
+  --red:#ff3b3b; --amber:#ffb020; --radius:18px;
+}
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
+body{margin:0; font-family:Inter,system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif; background:radial-gradient(1200px 600px at 20% -10%,#1a2a6b 0%,transparent 60%),radial-gradient(1000px 500px at 90% 0%,#0a4d3a 0%,transparent 55%),var(--bg); color:var(--txt); min-height:100vh}
+header{position:sticky; top:0; z-index:20; backdrop-filter:blur(14px); background:rgba(10,15,30,.82); border-bottom:1px solid rgba(255,255,255,.08)}
+.wrap{max-width:1180px; margin:0 auto; padding:0 16px}
+.top{display:flex; align-items:center; gap:12px; padding:14px 0}
+.logo{width:46px; height:46px; border-radius:14px; background:linear-gradient(135deg,var(--acc),var(--acc2)); display:grid; place-items:center; font-weight:900; font-size:20px; color:#04120a; box-shadow:0 6px 24px rgba(0,212,100,.35)}
+h1{font-size:19px; margin:0; line-height:1.1}
+h1 small{display:block; font-weight:500; color:var(--mut); font-size:12.5px}
+.search{margin-left:auto; display:flex; gap:8px; flex:1; max-width:420px; justify-content:flex-end}
+.search input{width:100%; max-width:300px; background:#0f1730; border:1px solid rgba(255,255,255,.12); color:var(--txt); border-radius:999px; padding:11px 16px; outline:none; font-size:14px}
+.search input:focus{border-color:var(--acc)}
+.btn{border:0; cursor:pointer; border-radius:999px; padding:11px 18px; font-weight:800; font-size:14px; transition:.15s}
+.btn-acc{background:var(--acc); color:#04120a}
+.btn-ghost{background:rgba(255,255,255,.08); color:var(--txt); border:1px solid rgba(255,255,255,.1)}
+.btn:active{transform:scale(.97)}
+.hero{padding:22px 0 6px}
+.hero h2{margin:0 0 6px; font-size:clamp(22px,4vw,34px)}
+.hero p{margin:0; color:var(--mut); font-size:14.5px; line-height:1.5}
+.live-pill{display:inline-flex; align-items:center; gap:8px; background:rgba(255,59,59,.12); border:1px solid rgba(255,59,59,.35); color:#ff8a8a; padding:6px 12px; border-radius:999px; font-size:12px; font-weight:800; letter-spacing:.06em; margin-bottom:12px}
+.dot{width:8px; height:8px; border-radius:50%; background:var(--red); box-shadow:0 0 0 4px rgba(255,59,59,.2); animation:blink 1.4s infinite}
+@keyframes blink{50%{opacity:.4}}
+.chips{display:flex; gap:8px; overflow-x:auto; padding:14px 0 6px; scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{white-space:nowrap; border-radius:999px; padding:9px 15px; background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.09); color:var(--txt); font-size:13px; font-weight:700; cursor:pointer}
+.chip.on{background:var(--txt); color:#0a0f1e; border-color:var(--txt)}
+.grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:14px; padding:12px 0 30px}
+.card{background:linear-gradient(180deg,var(--card),var(--bg2)); border:1px solid rgba(255,255,255,.09); border-radius:var(--radius); overflow:hidden; display:flex; flex-direction:column; transition:.18s}
+.card:hover{transform:translateY(-3px); border-color:rgba(0,212,100,.5); box-shadow:0 14px 40px rgba(0,0,0,.4)}
+.thumb{height:118px; display:flex; align-items:center; justify-content:center; position:relative; font-weight:900; font-size:44px; letter-spacing:-.02em; color:#fff; text-shadow:0 4px 20px rgba(0,0,0,.4)}
+.badge{position:absolute; top:10px; left:10px; display:flex; gap:6px; align-items:center}
+.aovivo{background:#0a0f1e; border:1px solid rgba(255,59,59,.5); color:#fff; font-size:11px; font-weight:900; padding:4px 9px; border-radius:999px; display:inline-flex; gap:6px; align-items:center}
+.aovivo i{width:7px; height:7px; background:var(--red); border-radius:50%; display:inline-block; animation:blink 1.2s infinite}
+.cat{position:absolute; top:10px; right:10px; font-size:11px; font-weight:800; background:rgba(0,0,0,.5); padding:4px 9px; border-radius:999px; border:1px solid rgba(255,255,255,.15)}
+.fav{position:absolute; bottom:8px; right:10px; background:rgba(0,0,0,.55); border:1px solid rgba(255,255,255,.18); color:#fff; width:34px; height:34px; border-radius:50%; cursor:pointer; font-size:17px}
+.fav.on{color:#ffd23b; border-color:#ffd23b}
+.info{padding:13px 14px 14px; display:flex; flex-direction:column; gap:8px; flex:1}
+.info h3{margin:0; font-size:16px}
+.info p{margin:0; color:var(--mut); font-size:12.8px; line-height:1.45; min-height:36px}
+.row{display:flex; gap:8px; margin-top:auto}
+.watch{flex:1; background:var(--acc); color:#04120a; border:0; border-radius:12px; padding:11px; font-weight:900; cursor:pointer; font-size:14px}
+.site{flex:0 0 44px; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.12); border-radius:12px; color:#fff; cursor:pointer; font-size:18px}
+/* player */
+.overlay{position:fixed; inset:0; z-index:50; background:rgba(3,6,16,.88); backdrop-filter:blur(8px); display:none; align-items:center; justify-content:center; padding:12px}
+.overlay.open{display:flex}
+.player{width:min(1020px,100%); background:#0d1430; border:1px solid rgba(255,255,255,.12); border-radius:20px; overflow:hidden; box-shadow:0 30px 80px rgba(0,0,0,.6)}
+.p-head{display:flex; align-items:center; gap:12px; padding:14px 16px; border-bottom:1px solid rgba(255,255,255,.08)}
+.p-head h3{margin:0; font-size:16px}
+.p-head span{color:var(--mut); font-size:12.5px}
+.x{margin-left:auto; background:rgba(255,255,255,.1); border:0; color:#fff; width:38px; height:38px; border-radius:50%; cursor:pointer; font-size:18px}
+.stage{background:#000; aspect-ratio:16/9; position:relative; display:grid; place-items:center}
+.stage iframe,.stage video{position:absolute; inset:0; width:100%; height:100%; border:0; background:#000}
+.loading{color:var(--mut); font-size:14px}
+.p-actions{display:flex; gap:8px; flex-wrap:wrap; padding:14px 16px}
+.p-actions a,.p-actions button{text-decoration:none; font-size:13.5px; font-weight:800; padding:10px 14px; border-radius:12px; border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.07); color:#fff; cursor:pointer}
+.p-actions .go{background:var(--acc); color:#04120a; border-color:var(--acc)}
+.hint{padding:0 16px 16px; color:var(--mut); font-size:12.5px; line-height:1.5}
+footer{border-top:1px solid rgba(255,255,255,.08); padding:22px 0 40px; color:var(--mut); font-size:12.5px; line-height:1.6}
+.empty{grid-column:1/-1; text-align:center; color:var(--mut); padding:30px; background:rgba(255,255,255,.04); border-radius:16px; border:1px dashed rgba(255,255,255,.15)}
+@media(max-width:640px){.top{flex-wrap:wrap}.search{margin:0; max-width:none; width:100%}.search input{max-width:none}h1{font-size:17px}.thumb{height:104px; font-size:38px}}
+</style>
+</head>
+<body>
+<header><div class="wrap top">
+<div class="logo">TV</div>
+<h1>TV Aberta Brasil <small>Canais abertos ao vivo • grátis • sem cadastro</small></h1>
+<div class="search"><input id="q" type="search" placeholder="Buscar canal… ex: cultura, notícias" autocomplete="off"></div>
+</div></header>
+
+<main class="wrap">
+<div class="hero">
+<span class="live-pill"><span class="dot"></span> NO AR • SINAL ABERTO</span>
+<h2>Assista aos canais abertos do Brasil</h2>
+<p>Toque em <b>Assistir</b> para abrir o player. Canais com transmissão liberada tocam aqui dentro do app. <b>Globo, SBT, Record e Band</b> exigem o app/site oficial — nesses casos abrimos o player oficial em nova aba.</p>
+</div>
+<div class="chips" id="chips"></div>
+<div class="grid" id="grid"></div>
+</main>
+
+<div class="overlay" id="overlay" role="dialog" aria-modal="true">
+<div class="player">
+<div class="p-head"><div class="logo" id="pLogo" style="width:38px;height:38px;font-size:16px">TV</div>
+<div><h3 id="pName">Canal</h3><span id="pDesc">Ao vivo</span></div>
+<button class="x" id="close" aria-label="Fechar">✕</button></div>
+<div class="stage" id="stage"><div class="loading" id="loading">Carregando sinal…</div></div>
+<div class="p-actions">
+<button class="go" id="btnOfficial" style="display:none">↗ Abrir player oficial</button>
+<button id="btnYT" style="display:none">▶ Abrir no YouTube</button>
+<button id="btnFav">☆ Favoritar</button>
+<button id="btnShare">⤴ Compartilhar</button>
+</div>
+<div class="hint" id="hint"></div>
+</div>
+</div>
+
+<footer><div class="wrap">
+<b style="color:#fff">TV Aberta Brasil</b> — agregador de sinais <b>oficiais e gratuitos</b>.<br>
+Não hospedamos nenhum vídeo: todo o conteúdo pertence às emissoras e é exibido via players/streamings oficiais (YouTube e HLS público). Globo, SBT, Record e Band bloqueiam incorporação, por isso direcionamos ao Globoplay, +SBT, PlayPlus e Band.com.br.<br>
+Dica de TV: na smart TV, abra este app no navegador e use tela cheia. Para instalar como app no celular: menu do navegador → “Adicionar à tela inicial”.
+</div></footer>
+
+<script>
+const CHANNELS = [
+ {id:"globo", name:"Globo", short:"GLO", cat:"Abertos", type:"externo", color:"linear-gradient(135deg,#ff6a00,#ff2d55)", desc:"TV aberta líder. Ao vivo oficial só no Globoplay.", site:"https://globoplay.globo.com/tv-globo/ao-vivo/"},
+ {id:"sbt", name:"SBT", short:"SBT", cat:"Abertos", type:"externo", color:"linear-gradient(135deg,#00a3ff,#0047ff)", desc:"Silvio Santos Television. Ao vivo no +SBT.", site:"https://mais.sbt.com.br/ao-vivo"},
+ {id:"record", name:"Record", short:"REC", cat:"Abertos", type:"externo", color:"linear-gradient(135deg,#001f8f,#00a3ff)", desc:"Record TV. Ao vivo oficial no PlayPlus / R7.", site:"https://www.playplus.com/"},
+ {id:"band", name:"Band", short:"BAN", cat:"Abertos", type:"externo", color:"linear-gradient(135deg,#00b140,#003b1f)", desc:"Band TV. Ao vivo no site Band.com.br.", site:"https://band.uol.com.br/ao-vivo/"},
+ {id:"redetv", name:"RedeTV!", short:"RTV", cat:"Abertos", type:"youtube", color:"linear-gradient(135deg,#ffcc00,#ff6a00)", desc:"RedeTV! — jornalismo e variedades ao vivo.", site:"https://www.redetv.uol.com.br/ao-vivo", yt:"UCd7VVhgnd2eCv9JEghvR_1w"},
+ {id:"tvcultura", name:"TV Cultura", short:"CUL", cat:"Educativos", type:"youtube", color:"linear-gradient(135deg,#7b2ff7,#00d464)", desc:"Cultura, jornalismo, Roda Viva e desenhos.", site:"https://culturaplay.tvcultura.com.br/", yt:"UCjOJvvYe6tyEHY21OD33h8A"},
+ {id:"tvbrasil", name:"TV Brasil", short:"TBR", cat:"Públicos", type:"youtube", color:"linear-gradient(135deg,#009c3b,#ffdf00)", desc:"Emissora pública da EBC. Grátis e aberta.", site:"https://tvbrasil.ebc.com.br/aovivo", yt:"UCSv9d0kQegylHWpP83jWSQg"},
+ {id:"gazeta", name:"TV Gazeta SP", short:"GAZ", cat:"Abertos", type:"youtube", color:"linear-gradient(135deg,#ff2d55,#7b2ff7)", desc:"Gazeta de São Paulo — aberta e gratuita.", site:"https://www.tvgazeta.com.br/ao-vivo/", yt:"UCwQ6N3gJGWFG8bXgaxkedIw"},
+ {id:"aparecida", name:"TV Aparecida", short:"APA", cat:"Religiosos", type:"youtube", color:"linear-gradient(135deg,#00a3ff,#7b2ff7)", desc:"TV Aparecida — fé e família.", site:"https://www.a12.com/tv/ao-vivo", yt:"UCfYrK5JU5EznsnK3wQE7iIg"},
+ {id:"recordnews", name:"Record News", short:"RN", cat:"Notícias", type:"youtube", color:"linear-gradient(135deg,#b30000,#ff3b3b)", desc:"Notícias 24h da Record. Sinal liberado no YouTube.", site:"https://www.youtube.com/@recordnews/live", yt:"UCuiLR4p6wQ3xLEm15pEn1Xw"},
+ {id:"jovempan", name:"Jovem Pan News", short:"JP", cat:"Notícias", type:"youtube", color:"linear-gradient(135deg,#111,#444)", desc:"Notícias e opinião ao vivo.", site:"https://www.youtube.com/@jovempannews/live", yt:"UCP391YRAjSOdM_bwievgaZA"},
+ {id:"bandnews", name:"Band Jornalismo", short:"BJ", cat:"Notícias", type:"youtube", color:"linear-gradient(135deg,#003b1f,#00d464)", desc:"Band Jornalismo ao vivo.", site:"https://www.youtube.com/@BandJornalismo/live", yt:"UCoa-D_VfMkFrCYodrOC9-mA"},
+ {id:"cnn", name:"CNN Brasil", short:"CNN", cat:"Notícias", type:"youtube", color:"linear-gradient(135deg,#cc0000,#330000)", desc:"CNN Brasil ao vivo no YouTube.", site:"https://www.youtube.com/@CNNBrasil/live", yt:"UCvdwhh_fDyWccR42-rReZLw"},
+ {id:"camara", name:"TV Câmara", short:"CAM", cat:"Públicos", type:"hls", color:"linear-gradient(135deg,#0047ff,#00d464)", desc:"Câmara dos Deputados — sinal oficial HLS.", site:"https://www.camara.leg.br/tv/", src:"https://stream3.camara.gov.br/tv1/manifest.m3u8"},
+ {id:"senado", name:"TV Senado", short:"SEN", cat:"Públicos", type:"youtube", color:"linear-gradient(135deg,#0a2a6b,#00a3ff)", desc:"Senado Federal ao vivo.", site:"https://www.youtube.com/@tvsenado/live", yt:"UCLgti7NuK0RuW9wty-fxPjQ"},
+ {id:"justica", name:"TV Justiça", short:"JUS", cat:"Públicos", type:"youtube", color:"linear-gradient(135deg,#5a3d00,#ffb020)", desc:"STF / Justiça ao vivo.", site:"https://www.youtube.com/@TVJustica/live", yt:"UCvZbqQ3yuXJHcjehr9nyXvw"},
+];
+const CATS = ["Todos","Favoritos","Abertos","Notícias","Públicos","Educativos","Religiosos"];
+let activeCat = "Todos";
+let favs = new Set(JSON.parse(localStorage.getItem("tvbr_favs")||"[]"));
+const grid = document.getElementById("grid"), chips = document.getElementById("chips"), q = document.getElementById("q");
+
+function saveFavs(){ localStorage.setItem("tvbr_favs", JSON.stringify([...favs])); }
+function renderChips(){
+ chips.innerHTML = CATS.map(c=>`<button class="chip${c===activeCat?" on":""}" data-c="${c}">${c==="Favoritos"?"★ ":""}${c}</button>`).join("");
+ chips.querySelectorAll(".chip").forEach(b=>b.onclick=()=>{activeCat=b.dataset.c; renderChips(); render();});
+}
+function card(c){
+ const isFav = favs.has(c.id) ? " on" : "";
+ return `<article class="card">
+  <div class="thumb" style="background:${c.color}">${c.short}
+   <div class="badge"><span class="aovivo"><i></i>AO VIVO</span></div>
+   <span class="cat">${c.cat}</span>
+   <button class="fav${isFav}" data-fav="${c.id}" aria-label="Favoritar">${favs.has(c.id)?"★":"☆"}</button>
+  </div>
+  <div class="info"><h3>${c.name}</h3><p>${c.desc}</p>
+   <div class="row"><button class="watch" data-watch="${c.id}">${c.type==="externo"?"Abrir oficial ↗":"▶ Assistir"}</button>
+   <button class="site" data-site="${c.id}" title="Site oficial">↗</button></div>
+  </div></article>`;
+}
+function render(){
+ const term = (q.value||"").toLowerCase();
+ let list = CHANNELS.filter(c=>{
+  if(activeCat==="Favoritos" && !favs.has(c.id)) return false;
+  if(activeCat!=="Todos" && activeCat!=="Favoritos" && c.cat!==activeCat) return false;
+  if(term && !(c.name+" "+c.desc).toLowerCase().includes(term)) return false;
+  return true;
+ });
+ grid.innerHTML = list.length ? list.map(card).join("") : `<div class="empty">Nenhum canal encontrado. Tente outra busca ou categoria.</div>`;
+ grid.querySelectorAll("[data-watch]").forEach(b=>b.onclick=()=>openChannel(b.dataset.watch));
+ grid.querySelectorAll("[data-site]").forEach(b=>b.onclick=()=>{const c=CHANNELS.find(x=>x.id===b.dataset.site); window.open(c.site,"_blank","noopener");});
+ grid.querySelectorAll("[data-fav]").forEach(b=>b.onclick=(e)=>{e.stopPropagation(); const id=b.dataset.fav; favs.has(id)?favs.delete(id):favs.add(id); saveFavs(); render();});
+}
+q.oninput = render;
+
+// Player
+const overlay=document.getElementById("overlay"), stage=document.getElementById("stage"),
+loading=document.getElementById("loading"), pName=document.getElementById("pName"),
+pDesc=document.getElementById("pDesc"), pLogo=document.getElementById("pLogo"),
+btnOfficial=document.getElementById("btnOfficial"), btnYT=document.getElementById("btnYT"),
+btnFav=document.getElementById("btnFav"), btnShare=document.getElementById("btnShare"),
+hint=document.getElementById("hint");
+let hls=null, current=null;
+function stop(){
+ if(hls){try{hls.destroy()}catch(e){} hls=null;}
+ stage.querySelectorAll("iframe,video").forEach(el=>el.remove());
+}
+function openChannel(id){
+ const c = CHANNELS.find(x=>x.id===id); if(!c) return;
+ current=c; stop();
+ pName.textContent=c.name; pDesc.textContent=c.desc+" • sinal oficial";
+ pLogo.textContent=c.short; pLogo.style.background=c.color;
+ btnFav.textContent = favs.has(c.id) ? "★ Favoritado" : "☆ Favoritar";
+ overlay.classList.add("open"); document.body.style.overflow="hidden";
+ loading.style.display="block"; loading.textContent="Carregando sinal…";
+ btnOfficial.style.display="inline-block"; btnOfficial.onclick=()=>window.open(c.site,"_blank","noopener");
+ if(c.type==="youtube"){
+  btnYT.style.display="inline-block";
+  btnYT.onclick=()=>window.open("https://www.youtube.com/channel/"+c.yt+"/live","_blank","noopener");
+  hint.innerHTML="Tocando o <b>ao vivo oficial do YouTube</b> dentro do app. Se aparecer “vídeo indisponível”, toque em <b>Abrir no YouTube</b> — a emissora pode estar sem live ativa no momento.";
+  const ifr=document.createElement("iframe");
+  ifr.allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
+  ifr.allowFullscreen=true;
+  ifr.referrerPolicy="origin";
+  ifr.src="https://www.youtube-nocookie.com/embed/live_stream?channel="+c.yt+"&autoplay=1&rel=0";
+  ifr.onload=()=>loading.style.display="none";
+  setTimeout(()=>loading.style.display="none",6000);
+  stage.appendChild(ifr);
+ } else if(c.type==="hls"){
+  btnYT.style.display="none";
+  hint.innerHTML="Sinal <b>HLS oficial</b> tocando direto no app. Se travar, toque em <b>Abrir player oficial</b>.";
+  const v=document.createElement("video");
+  v.controls=true; v.autoplay=true; v.playsInline=true;
+  stage.appendChild(v);
+  if(window.Hls && Hls.isSupported()){
+   hls=new Hls({maxBufferLength:30});
+   hls.loadSource(c.src); hls.attachMedia(v);
+   hls.on(Hls.Events.MANIFEST_PARSED,()=>{loading.style.display="none"; v.play().catch(()=>{});});
+   hls.on(Hls.Events.ERROR,(e,d)=>{ if(d.fatal){ loading.textContent="Falha no sinal. Tente o player oficial abaixo."; }});
+  } else if(v.canPlayType("application/vnd.apple.mpegurl")){
+   v.src=c.src; v.onloadedmetadata=()=>{loading.style.display="none"; v.play().catch(()=>{});};
+  } else { loading.textContent="Navegador sem suporte a HLS. Use o player oficial."; }
+ } else {
+  btnYT.style.display="none";
+  hint.innerHTML="<b>"+c.name+"</b> bloqueia exibição dentro de outros apps. Tocamos abrindo o <b>player oficial</b> (Globoplay, +SBT, PlayPlus, Band) em nova aba — é grátis, só criar conta.";
+  loading.innerHTML=`<div style="text-align:center;padding:20px">
+   <div style="font-size:15px;margin-bottom:12px">${c.name} só permite assistir no site oficial</div>
+   <button class="btn btn-acc" id="goNow">↗ Assistir no site oficial</button></div>`;
+  loading.style.display="block";
+  document.getElementById("goNow").onclick=()=>window.open(c.site,"_blank","noopener");
+ }
+ location.hash = "#"+c.id;
+}
+document.getElementById("close").onclick=closeP;
+overlay.addEventListener("click",(e)=>{ if(e.target===overlay) closeP(); });
+document.addEventListener("keydown",(e)=>{ if(e.key==="Escape") closeP(); });
+function closeP(){ overlay.classList.remove("open"); document.body.style.overflow=""; stop(); history.replaceState(null,"",location.pathname); }
+btnFav.onclick=()=>{ if(!current) return; favs.has(current.id)?favs.delete(current.id):favs.add(current.id); saveFavs(); btnFav.textContent=favs.has(current.id)?"★ Favoritado":"☆ Favoritar"; render(); };
+btnShare.onclick=async()=>{ const url=location.origin+location.pathname+"#"+(current?current.id:""); const data={title:"TV Aberta Brasil", text:"Assista "+(current?current.name:"TV aberta")+ " ao vivo grátis", url}; if(navigator.share){try{await navigator.share(data)}catch(e){}} else { try{await navigator.clipboard.writeText(url); btnShare.textContent="✓ Link copiado!"; setTimeout(()=>btnShare.textContent="⤴ Compartilhar",1800);}catch(e){ prompt("Copie o link:",url);} } };
+// deep link
+renderChips(); render();
+if(location.hash){ const id=location.hash.slice(1); if(CHANNELS.some(c=>c.id===id)) openChannel(id); }
+</script>
+</body>
+</html>
