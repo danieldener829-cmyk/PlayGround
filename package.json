@@ -1,0 +1,19 @@
+{
+  "name": "loja-virtual-premium",
+  "version": "1.0.0",
+  "description": "Loja virtual completa, moderna e profissional — frontend + backend + SQLite",
+  "type": "commonjs",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2"
+  }
+}

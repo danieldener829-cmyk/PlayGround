@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LUMIÈRE Store — Loja Virtual Premium</title>
+<meta name="description" content="LUMIÈRE Store: moda, beleza, casa e tech com ofertas, frete grátis acima de R$299 e pagamento seguro no Pix, cartão e boleto.">
+<meta property="og:title" content="LUMIÈRE Store — Loja Virtual Premium">
+<meta property="og:description" content="Ofertas, lançamentos e pagamento seguro. Frete grátis acima de R$299.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✨</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Store","name":"LUMIÈRE Store","description":"Loja virtual premium"}</script>
+</head>
+<body>
+<a class="skip" href="#conteudo">Pular para o conteúdo</a>
+<div class="topbar" id="topbar">Frete grátis acima de R$ 299 • Cupom BEMVINDO10 com 10% OFF</div>
+<header class="header">
+  <div class="wrap head-in">
+    <button class="iconbtn only-mobile" id="btnMenu" aria-label="Abrir menu">☰</button>
+    <a class="logo" href="#/" aria-label="Página inicial">✨ LUMIÈRE<span>store</span></a>
+    <div class="search" role="search">
+      <input id="busca" type="search" placeholder="Buscar vestidos, tênis, skincare…" aria-label="Buscar produtos">
+      <select id="fCat" aria-label="Categoria"><option value="">Todas</option></select>
+      <button id="btnBusca" aria-label="Buscar">🔍</button>
+    </div>
+    <nav class="actions">
+      <a href="#/favoritos" class="iconbtn" title="Favoritos" aria-label="Favoritos">♡ <b id="favCount" class="badge" hidden>0</b></a>
+      <a href="#/conta" class="iconbtn" title="Minha conta" aria-label="Minha conta">👤 <span class="hide-sm" id="userName">Entrar</span></a>
+      <button class="cartbtn" id="btnCart" aria-label="Abrir carrinho">🛒 <b id="cartCount" class="badge">0</b> <span class="hide-sm" id="cartTotal">R$ 0,00</span></button>
+    </nav>
+  </div>
+  <nav class="catnav wrap" id="catnav" aria-label="Categorias"></nav>
+</header>
+<nav class="mobilenav" id="mobilenav" hidden>
+  <a href="#/">Início</a><a href="#/ofertas">Ofertas</a><a href="#/lancamentos">Lançamentos</a>
+  <a href="#/pedidos">Meus pedidos</a><a href="#/contato">Contato</a><a href="#/faq">Ajuda / FAQ</a>
+</nav>
+
+<main id="conteudo" class="wrap"></main>
+
+<footer>
+  <div class="wrap fgrid">
+    <div><h4>✨ LUMIÈRE store</h4><p>Loja premium com pagamento seguro, troca fácil em 7 dias e suporte humano no WhatsApp.</p>
+      <div class="social"><a id="sInsta" href="#" aria-label="Instagram">📸</a><a id="sFace" href="#" aria-label="Facebook">📘</a><a id="sTtk" href="#" aria-label="TikTok">🎵</a></div></div>
+    <div><h4>Institucional</h4><a href="#/sobre">Sobre a loja</a><a href="#/contato">Contato</a><a href="#/faq">Perguntas frequentes</a><a href="#/privacidade">Privacidade (LGPD)</a><a href="#/termos">Termos de uso</a><a href="#/trocas">Trocas e devoluções</a></div>
+    <div><h4>Minha conta</h4><a href="#/conta">Entrar / Cadastrar</a><a href="#/pedidos">Meus pedidos</a><a href="#/favoritos">Favoritos</a><a href="#/admin">Painel admin</a></div>
+    <div><h4>Atendimento</h4><p>Seg–Sáb, 9h às 18h<br><a id="fZap" href="#">Chamar no WhatsApp</a></p><p class="pay">💠 Pix • 💳 Cartão em até 12x • 🧾 Boleto</p></div>
+  </div>
+  <div class="copy">© 2026 LUMIÈRE Store • CNPJ 00.000.000/0001-00 • Preços e estoque sujeitos a alteração • <a href="#/privacidade">LGPD</a></div>
+</footer>
+
+<a id="zap" href="#" target="_blank" rel="noopener" aria-label="Atendimento pelo WhatsApp">💬</a>
+<div class="drawer" id="drawer" hidden><div class="scrim" data-close></div>
+  <aside role="dialog" aria-label="Carrinho de compras"><h3>🛒 Seu carrinho <button data-close class="x" aria-label="Fechar">✕</button></h3>
+    <div id="cartItems"></div>
+    <div class="cupom"><input id="cupom" placeholder="Cupom (ex: BEMVINDO10)"><button id="btnCupom">Aplicar</button></div>
+    <div id="totais"></div>
+    <a class="btn primary big" href="#/checkout">Finalizar compra →</a>
+    <a class="link" href="#/">continuar comprando</a></aside></div>
+<div id="toast" role="status" aria-live="polite"></div>
+<script src="/app.js"></script>
+</body>
+</html>
