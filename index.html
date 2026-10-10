@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quenq Clone | Museu Interativo da Cultura da Internet</title>
+  <meta name="description" content="Um museu interativo da cultura da internet: arcade retrô, apps clássicos e arquivos da web — tudo grátis no navegador. Projeto de estudo inspirado no quenq.com" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🕹️</text></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+
+  <div id="global-loader" class="global-loader" aria-hidden="true">
+    <div class="loader-logo">🕹️</div>
+  </div>
+
+  <div id="wrapper">
+    <header id="head">
+      <div id="logo"><a href="#home" title="Home"><span class="logo-badge">Q</span></a></div>
+      <div id="head-mid">
+        <p class="header-line1">Quenq Clone</p>
+        <p class="header-line2">Onde a Web Vem para Jogar.</p>
+      </div>
+      <button id="menu-toggle" aria-label="Abrir menu">☰</button>
+    </header>
+
+    <nav id="nav-H" aria-label="Navegação principal">
+      <div id="nav-H-Box">
+        <ul id="butn-block">
+          <li><a class="Butn1 active-nav" href="#home">Home</a></li>
+          <li><a class="Butn1" href="#arcade">Arcade</a></li>
+          <li><a class="Butn1" href="#apps">Apps</a></li>
+          <li><a class="Butn1" href="#diretorio">Diretório</a></li>
+          <li><a class="Butn1" href="#arquivos">Arquivos</a></li>
+          <li><a class="Butn1" href="#sobre">Sobre</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <div id="main">
+      <aside id="col-R">
+        <div class="nav-box">
+          <div class="nav-head"><h5>Links Rápidos</h5></div>
+          <div class="nav-filler">
+            <div class="nav-links">
+              <ul>
+                <li><a href="#arcade">🎮 O Arcade Flash</a></li>
+                <li><a href="#apps">💾 A Biblioteca Apps</a></li>
+                <li><a href="#diretorio">📂 O Diretório</a></li>
+                <li><a href="#arquivos">📜 Os Arquivos</a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="nav-ft"></div>
+        </div>
+
+        <div class="nav-box">
+          <div class="nav-head"><h5>Comunidade</h5></div>
+          <div class="nav-filler">
+            <div class="nav-links">
+              <ul>
+                <li><a href="#sobre">Sobre o projeto</a></li>
+                <li><a href="#sobre">Fale conosco</a></li>
+                <li><a href="#sobre">Entre no Discord</a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="nav-ft"></div>
+        </div>
+
+        <div class="nav-box stats-box">
+          <div class="nav-head"><h5>Museu em números</h5></div>
+          <div class="nav-filler">
+            <div class="stats">
+              <div><strong id="stat-games">1300+</strong><span>jogos</span></div>
+              <div><strong>48</strong><span>apps</span></div>
+              <div><strong>100%</strong><span>grátis</span></div>
+            </div>
+          </div>
+          <div class="nav-ft"></div>
+        </div>
+      </aside>
+
+      <main id="col-L">
+        <!-- WELCOME -->
+        <section class="cnt-box" id="home">
+          <div class="cnt-head"><h1>Bem-vindo ao Museu</h1></div>
+          <div class="cnt-filler">
+            <div class="cnt-info">
+              <p>Este é um <strong>museu interativo da cultura da internet</strong> — uma recriação de estudo inspirada no <em>quenq.com</em>. Aqui você encontra emuladores, jogos preservados e artefatos digitais, todos rodando no navegador.</p>
+              <p>Explore o simulador <i>Retro XP</i>, brinque com os <i>Apps</i> ou mergulhe no <i>Arcade</i> de jogos Flash preservados. Sem downloads, sem paywall. Pura nostalgia.</p>
+              <a href="#apps" class="apps-card hero-card" style="--bg1:#1e6fd9;--bg2:#0b2a5b">
+                <div class="apps-card-overlay-hero"></div>
+                <div class="apps-card-content">
+                  <span class="pill">⭐ Destaque</span>
+                  <h2>Retro XP Simulator</h2>
+                  <p>A nostalgia do Windows XP no navegador! Programas funcionais, temas, sistema de arquivos e muito mais.</p>
+                </div>
+                <div class="hero-art" aria-hidden="true">🖥️</div>
+              </a>
+            </div>
+          </div>
+          <div class="cnt-ft"></div>
+        </section>
+
+        <!-- APPS -->
+        <section class="cnt-box" id="apps">
+          <div class="cnt-head"><h1>Apps em Destaque</h1></div>
+          <div class="cnt-filler">
+            <div class="cnt-info">
+              <p class="section-sub">Uma seleção dos softwares mais populares. De emulação de console a pegadinhas clássicas da internet.</p>
+              <div id="apps-grid"></div>
+              <div class="center"><button class="action-btn" onclick="alert('Página completa em breve!')">Explorar Todos os Apps →</button></div>
+            </div>
+          </div>
+          <div class="cnt-ft"></div>
+        </section>
+
+        <!-- ARCADE -->
+        <section class="cnt-box" id="arcade">
+          <div class="cnt-head"><h1>O Arcade Flash</h1></div>
+          <div class="cnt-filler">
+            <div class="cnt-info">
+              <p class="section-sub">Redescubra a era de ouro dos jogos de navegador. Mais de 1.300 títulos preservados. Busque ou filtre por gênero:</p>
+              <div class="arcade-controls">
+                <input id="search-bar" class="search-bar" type="search" placeholder="🔍 Buscar jogo... (ex: tanque, corrida)" />
+                <div class="genre-filters" id="genre-filters">
+                  <button class="chip active" data-genre="todos">Todos</button>
+                  <button class="chip" data-genre="acao">Ação</button>
+                  <button class="chip" data-genre="corrida">Corrida</button>
+                  <button class="chip" data-genre="puzzle">Puzzle</button>
+                  <button class="chip" data-genre="esporte">Esporte</button>
+                </div>
+              </div>
+              <div class="game-grid" id="game-grid"></div>
+              <p class="no-games-found" id="no-games">Nenhum jogo encontrado. Tente outro termo. 😢</p>
+              <div class="center"><button class="action-btn" onclick="alert('Coleção completa em breve!')">Ver Coleção Completa →</button></div>
+              <!-- Player fake -->
+              <div id="player" class="app-container" hidden>
+                <h3 id="player-title">Jogando agora</h3>
+                <div id="player-screen">▶ Clique em um jogo para “carregar”</div>
+                <div class="player-controls">
+                  <button class="action-btn" id="btn-full">⛶ Tela cheia</button>
+                  <button class="action-btn" id="btn-close">✕ Fechar</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="cnt-ft"></div>
+        </section>
+
+        <!-- DIRETORIO -->
+        <section class="cnt-box" id="diretorio">
+          <div class="cnt-head"><h1>Diretório da Web Retrô</h1></div>
+          <div class="cnt-filler">
+            <div class="cnt-info">
+              <div class="dir-grid">
+                <div class="dir-card"><h3>🌐 Sites clássicos</h3><p>Portais, GeoCities e webrings preservados.</p></div>
+                <div class="dir-card"><h3>🔊 Sons & MIDI</h3><p>Bips, temas e ringtones polifônicos.</p></div>
+                <div class="dir-card"><h3>🖼️ Pixel art</h3><p>Wallpapers, cursores e GIFs animados.</p></div>
+                <div class="dir-card"><h3>📼 Emuladores</h3><p>Console, DOS e arcade no navegador.</p></div>
+              </div>
+            </div>
+          </div>
+          <div class="cnt-ft"></div>
+        </section>
+
+        <!-- ARQUIVOS / BLOG -->
+        <section class="cnt-box" id="arquivos">
+          <div class="cnt-head"><h1>Direto dos Arquivos</h1></div>
+          <div class="cnt-filler">
+            <div class="cnt-info">
+              <p class="section-sub">Mergulhos profundos na cultura da internet e histórias de preservação digital.</p>
+              <div class="blog-list">
+                <article class="apps-card blog-card" style="--bg1:#7c3aed;--bg2:#2e1065">
+                  <div class="apps-card-overlay"></div>
+                  <div class="apps-card-content">
+                    <p class="blog-date">10 de outubro de 2026</p>
+                    <h2>Guia definitivo de cheats que ainda funcionam</h2>
+                    <p>Lembra de digitar o código do tanque? Reunimos todos os cheats clássicos...</p>
+                  </div>
+                </article>
+                <article class="apps-card blog-card" style="--bg1:#059669;--bg2:#064e3b">
+                  <div class="apps-card-overlay"></div>
+                  <div class="apps-card-content">
+                    <p class="blog-date">13 de junho de 2026</p>
+                    <h2>Além do Bliss: os outros papéis de parede do XP</h2>
+                    <p>Todo mundo conhece o Bliss, mas e o Azul, Outono ou Deserto da Lua Vermelha?...</p>
+                  </div>
+                </article>
+                <article class="apps-card blog-card" style="--bg1:#dc2626;--bg2:#450a0a">
+                  <div class="apps-card-overlay"></div>
+                  <div class="apps-card-content">
+                    <p class="blog-date">2 de junho de 2026</p>
+                    <h2>Ajudante ou ameaça? A história do Gorila Roxo</h2>
+                    <p>Ele contava piadas, cantava e espionava tudo. Relembre o assistente mais infame da web...</p>
+                  </div>
+                </article>
+              </div>
+              <div class="center"><button class="action-btn">Entrar nos Arquivos →</button></div>
+            </div>
+          </div>
+          <div class="cnt-ft"></div>
+        </section>
+
+        <!-- SOBRE -->
+        <section class="cnt-box" id="sobre">
+          <div class="cnt-head"><h1>Sobre o Projeto</h1></div>
+          <div class="cnt-filler">
+            <div class="cnt-info">
+              <p>Recriação <strong>original para fins de estudo</strong>, inspirada no layout do quenq.com. Nenhum texto, imagem ou código foi copiado — todo o conteúdo aqui é placeholder.</p>
+              <div class="faq-item"><button class="faq-question">Posso usar este código?</button><div class="faq-answer"><p>Sim! É um projeto educacional de código aberto.</p></div></div>
+              <div class="faq-item"><button class="faq-question">Os jogos funcionam de verdade?</button><div class="faq-answer"><p>Nesta demo, o player é simulado. Conecte um emulador (ex: Ruffle/EmulatorJS) para jogos reais.</p></div></div>
+            </div>
+          </div>
+          <div class="cnt-ft"></div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <footer id="footer">
+    <div id="foot-info">
+      <div class="footer-column">
+        <div class="ft-title">Links Rápidos</div>
+        <ul><li><a href="#arcade">O Arcade</a></li><li><a href="#apps">A Biblioteca Apps</a></li><li><a href="#diretorio">O Diretório</a></li><li><a href="#arquivos">Os Arquivos</a></li></ul>
+      </div>
+      <div class="footer-column">
+        <div class="ft-title">Comunidade</div>
+        <ul><li><a href="#sobre">Sobre nós</a></li><li><a href="#sobre">Contato</a></li><li><a href="#sobre">Discord</a></li></ul>
+      </div>
+      <div class="footer-column">
+        <div class="ft-title">Projeto</div>
+        <ul><li><a href="#sobre">Privacidade</a></li><li><a href="#sobre">Termos de Uso</a></li></ul>
+        <p class="made">Feito com 💾 para estudo — inspirado em quenq.com</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
