@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GmailGen — Gerador de Gmails + Senhas</title>
+<meta name="description" content="Gere sugestões de Gmail para testes + senhas fortes. Simples, rápido e 100% no navegador.">
+<style>
+:root{--bg:#0b1020;--card:#151d33;--card2:#1c2540;--line:#2a3658;--txt:#eaf0ff;--mut:#9fb0d6;--acc:#4da3ff;--acc2:#7c5cff;--ok:#2ecc71;--warn:#ffb020;--r:14px}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:radial-gradient(1200px 600px at 20% -10%,#1a2a5a 0%,var(--bg) 55%),var(--bg);color:var(--txt)}
+.wrap{max-width:1020px;margin:0 auto;padding:20px 16px 60px}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 0}
+.logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:20px}
+.badge{background:linear-gradient(90deg,var(--acc),var(--acc2));width:38px;height:38px;border-radius:11px;display:grid;place-items:center;font-size:20px}
+.pill{font-size:12px;color:var(--mut);border:1px solid var(--line);padding:6px 10px;border-radius:999px;background:#111936}
+.hero{display:grid;grid-template-columns:1.15fr .85fr;gap:16px;margin:10px 0 16px}
+@media(max-width:820px){.hero{grid-template-columns:1fr}}
+.card{background:linear-gradient(180deg,var(--card),#111936);border:1px solid var(--line);border-radius:var(--r);padding:18px}
+h1{font-size:30px;line-height:1.15;margin:6px 0 8px}
+h2{font-size:18px;margin:18px 0 10px}
+h3{font-size:15px;margin:14px 0 8px}
+p,li{color:#d6e0f7;font-size:14.5px;line-height:1.55}
+.mut{color:var(--mut);font-size:13px}
+.modes{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.mode{flex:1;min-width:140px;border:1px solid var(--line);border-radius:12px;padding:10px 12px;cursor:pointer;background:#101832}
+.mode b{display:block;font-size:14px}
+.mode span{font-size:12px;color:var(--mut)}
+.mode.on{border-color:var(--acc);background:#16224a;box-shadow:0 0 0 1px var(--acc) inset}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:560px){.grid{grid-template-columns:1fr}}
+label{font-size:12.5px;color:var(--mut);display:block;margin:10px 0 4px}
+input[type=text],input[type=number],select{width:100%;background:#0c1330;border:1px solid var(--line);color:var(--txt);border-radius:10px;padding:10px 12px;font-size:14px;outline:none}
+input[type=range]{width:100%}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.btn{border:0;border-radius:11px;padding:12px 16px;font-weight:800;font-size:14px;cursor:pointer;color:#fff;background:linear-gradient(90deg,var(--acc),var(--acc2))}
+.btn.ghost{background:#0e1736;border:1px solid var(--line);color:var(--txt);font-weight:600}
+.btn.small{padding:8px 10px;font-size:12.5px;border-radius:9px}
+.toggles{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+.tg{display:flex;align-items:center;gap:7px;font-size:13px;color:#d6e0f7;background:#0c1330;border:1px solid var(--line);border-radius:999px;padding:7px 11px}
+.result{margin-top:12px;display:flex;flex-direction:column;gap:8px}
+.item{background:#0c1330;border:1px solid var(--line);border-radius:12px;padding:10px 12px;display:flex;gap:8px;align-items:center;justify-content:space-between}
+.item code{font-size:13px;word-break:break-all}
+.item .cp{display:flex;gap:6px;flex-shrink:0}
+.meter{height:8px;background:#0a1128;border-radius:99px;overflow:hidden;border:1px solid var(--line)}
+.meter i{display:block;height:100%;width:0;background:linear-gradient(90deg,#ff5d5d,#ffb020,#2ecc71);transition:width .2s}
+pre{background:#0a1128;border:1px solid var(--line);border-radius:12px;padding:12px;overflow:auto;font-size:12.8px;line-height:1.5;color:#d8e4ff}
+ul.check{list-style:none;padding:0;margin:8px 0}
+ul.check li{padding:7px 0 7px 30px;position:relative;border-bottom:1px dashed #24315a}
+ul.check li:before{content:"☐";position:absolute;left:4px;color:var(--acc);font-weight:800}
+.kv{display:flex;gap:8px;flex-wrap:wrap}
+.kv span{background:#0c1330;border:1px solid var(--line);border-radius:8px;padding:5px 9px;font-size:12px;color:var(--mut)}
+footer{margin-top:18px;color:var(--mut);font-size:12.5px}
+a{color:var(--acc)}
+.notice{background:#231a06;border:1px solid #6b4c12;border-radius:12px;padding:10px 12px;font-size:13px;color:#ffe1a8;margin-top:12px}
+.okmsg{color:var(--ok);font-size:13px;min-height:18px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+<div class="logo"><div class="badge">✉️</div> GmailGen <span class="pill">estilo 22.do + senha</span></div>
+<div class="pill">100% local • sem login</div>
+</header>
+
+<div class="hero">
+<div class="card">
+<div class="pill">⚡ Versão rápida (5 linhas)</div>
+<h1>Gere Gmail de teste + senha forte em 1 clique</h1>
+<p>1. Escolha o modo: simples, intermediária ou avançada.<br>2. Clique em <b>Gerar</b>.<br>3. Copie e-mail + senha.<br>4. Use o truque <b>+alias</b> no seu Gmail real para receber.<br>5. Não cria conta real no Google — é sugestão para testes.</p>
+<div class="modes" role="tablist">
+<div class="mode on" id="m-simples" tabindex="0"><b>🌱 Simples</b><span>1 e-mail + senha 12</span></div>
+<div class="mode" id="m-media" tabindex="0"><b>⚙️ Intermediária</b><span>10 de uma vez + CSV</span></div>
+<div class="mode" id="m-avancada" tabindex="0"><b>🚀 Avançada</b><span>regras, prefixo, domínio</span></div>
+</div>
+<div class="grid">
+<div><label>Prefixo (opcional)</label><input id="prefix" type="text" placeholder="ex: teste, qa, contato" value="teste"></div>
+<div><label>Domínio</label><select id="domain"><option value="gmail.com">gmail.com</option><option value="googlemail.com">googlemail.com</option><option value="teste.local">teste.local (para QA)</option><option value="custom">personalizado…</option></select></div>
+</div>
+<div id="customDom" style="display:none"><label>Domínio personalizado</label><input id="customVal" type="text" placeholder="suaempresa.com"></div>
+<div class="grid">
+<div><label>Tamanho senha: <b id="lenOut">16</b></label><input id="plen" type="range" min="8" max="64" value="16"></div>
+<div><label>Qtd por lote: <b id="qtdOut">1</b></label><input id="qtd" type="range" min="1" max="10" value="1"></div>
+</div>
+<div class="toggles">
+<label class="tg"><input type="checkbox" id="upper" checked> Maiúsculas</label>
+<label class="tg"><input type="checkbox" id="numbers" checked> Números</label>
+<label class="tg"><input type="checkbox" id="symbols" checked> Símbolos</label>
+<label class="tg"><input type="checkbox" id="dots" checked> Truque ponto (j.oao)</label>
+</div>
+<div class="row" style="margin-top:12px">
+<button class="btn" id="gen">🎲 Gerar agora</button>
+<button class="btn ghost" id="copyAll">Copiar tudo</button>
+<button class="btn ghost" id="csv">Baixar CSV</button>
+<button class="btn ghost" id="clear">Limpar</button>
+</div>
+<div style="margin-top:10px"><div class="mut">Força da senha: <b id="entropy">—</b></div><div class="meter"><i id="bar"></i></div><div class="okmsg" id="msg"></div></div>
+<div class="result" id="list"></div>
+<div class="notice">⚠️ <b>Transparente:</b> este site <b>não cria contas reais</b> no Google e não burla verificação/CAPTCHA/telefone. Ele gera <b>sugestões de e-mail + senhas fortes</b> para testes, QA e organização. Para conta válida, crie em <b>accounts.google.com</b>. Para receber de verdade com 1 caixa, use <b>seuemail+loja@gmail.com</b> — tudo cai na mesma caixa.</div>
+</div>
+
+<div>
+<div class="card">
+<h2>📦 Exemplo pronto (copie e use)</h2>
+<pre id="exemplo">teste.q4821@gmail.com
+Senha: K7#mQ9!xT2$vL5@pQ8
+---
+qa.loja9273@gmail.com
+Senha: 9$gH2@Kw8!Nz5#Qr4T</pre>
+<button class="btn small" id="copyEx">Copiar exemplo</button>
+<h3>🧩 Modelo para repetir</h3>
+<pre>[prefixo][.+alias][números]@gmail.com
+Senha: [16-20 chars Aa0#@!]
+Ex: teste+netflix4821@gmail.com / K7#mQ9!xT2$vL5@pQ8</pre>
+<h3>📬 Truque do seu Gmail real</h3>
+<label>Seu Gmail real</label>
+<input id="real" type="text" placeholder="voce@gmail.com">
+<div class="row" style="margin-top:8px"><button class="btn small" id="dotGen">Gerar variações</button></div>
+<pre id="dotsOut">Digite seu Gmail acima e clique em gerar.
+Ex: voce+promo1@gmail.com, v.oce@gmail.com</pre>
+<div class="kv"><span>✔ cai na mesma caixa</span><span>✔ filtro por alias</span><span>✔ sem nova conta</span></div>
+</div>
+<div class="card" style="margin-top:12px">
+<h2>📘 Versão completa</h2>
+<p><b>O que este gerador faz:</b> cria combinações <i>nome + números + alias</i> com @gmail.com e senha aleatória com <span id="cryptoNote">crypto.getRandomValues</span>. Tudo roda no seu navegador, nada é enviado.</p>
+<p><b>O que ele NÃO faz:</b> não registra conta no Google, não envia e-mail, não recebe código OTP, não fura anti-spam. Sites tipo 22.do que prometem “caixa Gmail temporária real” geralmente usam domínio próprio, não @gmail.com oficial.</p>
+<p><b>Quando usar:</b> formulários de teste, QA, staging, demonstração, organizar promoções por alias.</p>
+<h2>✅ Passo a passo (checklist)</h2>
+<ul class="check">
+<li>Escolher modo (simples p/ 1 conta, intermediária p/ lote, avançada p/ regras)</li>
+<li>Ajustar prefixo, domínio, tamanho da senha</li>
+<li>Clicar Gerar e conferir força &gt; 70 bits</li>
+<li>Copiar ou baixar CSV</li>
+<li>Se precisar receber de verdade: usar seuemail+alias@gmail.com</li>
+<li>Criar filtro no Gmail para arquivar/etiquetar o alias</li>
+<li>Nunca reutilizar a mesma senha em 2 sites</li>
+</ul>
+</div>
+</div>
+</div>
+
+<div class="card">
+<h2>🔀 3 opções: simples / intermediária / avançada</h2>
+<div class="grid" style="grid-template-columns:1fr 1fr 1fr">
+<div><h3>🌱 Simples</h3><p>1 par e-mail + senha 12. Ideal para cadastro rápido e demonstração.</p><button class="btn small ghost" data-preset="s">Usar simples</button></div>
+<div><h3>⚙️ Intermediária</h3><p>Lote de 5–10, senha 16, CSV. Ideal para QA e testes de carga leve.</p><button class="btn small ghost" data-preset="m">Usar intermediária</button></div>
+<div><h3>🚀 Avançada</h3><p>Senha 20–32, símbolos, prefixo fixo, domínio custom, dot-trick. Ideal para staging/segurança.</p><button class="btn small ghost" data-preset="a">Usar avançada</button></div>
+</div>
+<h2>❓ Melhor próxima pergunta</h2>
+<p><b>“Você quer que eu salve histórico com cadeado (criptografado) ou exporte direto para seu gerenciador de senhas?”</b></p>
+<p class="mut">Feito no Brasil • direto, sem enrolação • código aberto em 1 arquivo. Histórico fica só no seu navegador (localStorage).</p>
+</div>
+
+<footer> GmailGen — ferramenta de teste. Não afiliado ao Google/Gmail. Gmail é marca da Google LLC.</footer>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const list=$('list'),msg=$('msg');
+function rand(n){const a=new Uint32Array(n);crypto.getRandomValues(a);return [...a];}
+const L='abcdefghijkmnopqrstuvwxyz',LU='ABCDEFGHJKLMNPQRSTUVWXYZ',N='23456789',S='!@#$%&*?+-=';
+function user(prefix){const r=rand(6);let s='';for(let i=0;i<6;i++)s+=L[r[i]%L.length];let num=String(1000+ (r[5]%9000));let base=(prefix?prefix.replace(/[^a-z0-9]/gi,'').toLowerCase()+'.':'')+s+num;
+if($('dots').checked&&Math.random()<0.5){const p=1+Math.floor(Math.random()*(base.length-2));base=base.slice(0,p)+'.'+base.slice(p);}return base;}
+function pwd(len,u,n,s){let pool='abcdefghijkmnopqrstuvwxyzabcdefghijkmnopqrstuvwxyz';if(u)pool+=LU;if(n)pool+=N;if(s)pool+=S;const r=rand(len);let o='';for(let i=0;i<len;i++)o+=pool[r[i]%pool.length];return o;}
+function bits(len,pool){return Math.round(len*Math.log2(pool));}
+function strength(p){let pool=26;if(/[A-Z]/.test(p))pool+=26;if(/[0-9]/.test(p))pool+=10;if(/[^A-Za-z0-9]/.test(p))pool+=12;const b=bits(p.length,pool);$('entropy').textContent=b+' bits';$('bar').style.width=Math.min(100,b/1.2)+'%';return b;}
+function dom(){const d=$('domain').value;if(d==='custom'){return ($('customVal').value||'exemplo.com').replace(/[^a-z0-9.\-]/gi,'').toLowerCase()||'exemplo.com';}return d;}
+function pair(){const u=user($('prefix').value.trim());const p=pwd(+$('plen').value,$('upper').checked,$('numbers').checked,$('symbols').checked);return {email:u+'@'+dom(),pass:p};}
+function render(items){list.innerHTML='';items.forEach(o=>{strength(o.pass);const d=document.createElement('div');d.className='item';d.innerHTML='';const c=document.createElement('code');c.textContent=o.email+'  |  '+o.pass;const w=document.createElement('div');w.className='cp';const b1=document.createElement('button');b1.className='btn small';b1.textContent='Copiar';b1.onclick=()=>{navigator.clipboard.writeText(o.email+'\n'+o.pass);ok('Copiado: '+o.email)};const b2=document.createElement('button');b2.className='btn small ghost';b2.textContent='E-mail';b2.onclick=()=>{navigator.clipboard.writeText(o.email);ok('E-mail copiado')};w.append(b2,b1);d.append(c,w);list.append(d);});save(items);}
+let hist=[];try{hist=JSON.parse(localStorage.getItem('gg_hist')||'[]')}catch{}
+function save(items){hist=[...items,...hist].slice(0,30);try{localStorage.setItem('gg_hist',JSON.stringify(hist))}catch{}}
+function ok(t){msg.textContent='✔ '+t;setTimeout(()=>msg.textContent='',2500);}
+function gen(){const q=+($('qtd').value);const arr=[];for(let i=0;i<q;i++)arr.push(pair());render(arr);ok(q+' gerado(s) — 100% local');}
+$('gen').onclick=gen;
+$('plen').oninput=e=>$('lenOut').textContent=e.target.value;
+$('qtd').oninput=e=>$('qtdOut').textContent=e.target.value;
+$('domain').onchange=e=>$('customDom').style.display=e.target.value==='custom'?'block':'none';
+$('copyAll').onclick=()=>{const t=[...list.querySelectorAll('code')].map(c=>c.textContent).join('\n');if(!t)return ok('Nada para copiar');navigator.clipboard.writeText(t);ok('Lote copiado');};
+$('csv').onclick=()=>{const rows=[['email','password'],...[...list.querySelectorAll('code')].map(c=>{const [e,p]=c.textContent.split('|').map(s=>s.trim());return [e,p];})];if(rows.length<2)return ok('Gere primeiro');const csv=rows.map(r=>r.map(x=>'"'+String(x).replace(/"/g,'""')+'"').join(',')).join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='gmails.csv';a.click();ok('CSV baixado');};
+$('clear').onclick=()=>{list.innerHTML='';ok('Limpo')};
+$('copyEx').onclick=()=>{navigator.clipboard.writeText($('exemplo').textContent);ok('Exemplo copiado')};
+function preset(k){document.querySelectorAll('.mode').forEach(m=>m.classList.remove('on'));if(k==='s'){$('m-simples').classList.add('on');$('plen').value=12;$('qtd').value=1;$('symbols').checked=false;}if(k==='m'){$('m-media').classList.add('on');$('plen').value=16;$('qtd').value=10;$('symbols').checked=true;}if(k==='a'){$('m-avancada').classList.add('on');$('plen').value=24;$('qtd').value=5;$('upper').checked=$('numbers').checked=$('symbols').checked=true;}$('lenOut').textContent=$('plen').value;$('qtdOut').textContent=$('qtd').value;}
+$('m-simples').onclick=()=>preset('s');$('m-media').onclick=()=>preset('m');$('m-avancada').onclick=()=>preset('a');
+document.querySelectorAll('[data-preset]').forEach(b=>b.onclick=()=>{preset(b.dataset.preset);gen();window.scrollTo({top:0,behavior:'smooth'})});
+$('dotGen').onclick=()=>{const v=$('real').value.trim();if(!v||!v.includes('@')){$('dotsOut').textContent='Digite um Gmail válido, ex: voce@gmail.com';return;}const [u,d]=v.split('@');const base=u.replace(/\./g,'');const outs=[v,base+'+promo1@'+d,base+'+teste'+Math.floor(1000+Math.random()*9000)+'@'+d];if(base.length>2)outs.push(base.slice(0,2)+'.'+base.slice(2)+'@'+d);outs.push(base+'+nota-fiscal@'+d);$('dotsOut').textContent=outs.join('\n');};
+// auto-generate 1 on load for screenshot richness
+gen();
+</script>
+</body>
+</html>
