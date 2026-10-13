@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Gerador de Emails Temporários — estilo 22.do</title>
+<style>
+:root { color-scheme: light dark; --bg:#0f172a; --card:#1e293b; --line:#334155; --txt:#f1f5f9; --mut:#94a3b8; --acc:#22c55e; }
+* { box-sizing: border-box; }
+body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; margin:0; background:var(--bg); color:var(--txt); }
+header { padding:28px 20px; text-align:center; }
+header h1 { margin:0 0 8px; font-size:2rem; }
+header p { margin:0; color:var(--mut); }
+main { max-width:900px; margin:0 auto; padding:0 16px 60px; }
+.tabs { display:flex; gap:8px; justify-content:center; margin:16px 0 20px; }
+.tabs button { padding:10px 18px; border-radius:999px; border:1px solid var(--line); background:transparent; color:var(--txt); cursor:pointer; }
+.tabs button.active { background:var(--acc); color:#052e16; border-color:transparent; font-weight:700; }
+.card { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:20px; margin-bottom:16px; }
+.row { display:flex; gap:10px; flex-wrap:wrap; }
+input, select { flex:1; min-width:200px; padding:12px 14px; border-radius:10px; border:1px solid var(--line); background:#0b1220; color:var(--txt); font-size:1rem; }
+button.primary { padding:12px 20px; border-radius:10px; border:0; background:var(--acc); color:#052e16; font-weight:800; cursor:pointer; }
+button.ghost { padding:12px 16px; border-radius:10px; border:1px solid var(--line); background:transparent; color:var(--txt); cursor:pointer; }
+.email-box { display:flex; gap:10px; align-items:center; background:#0b1220; border:1px dashed var(--line); border-radius:12px; padding:14px; font-size:1.1rem; word-break:break-all; margin:12px 0; }
+.small { color:var(--mut); font-size:.9rem; line-height:1.5; }
+#inbox { list-style:none; margin:12px 0 0; padding:0; }
+#inbox li { border:1px solid var(--line); border-radius:12px; padding:12px 14px; margin-bottom:10px; cursor:pointer; }
+#inbox li strong { display:block; }
+#inbox li span { color:var(--mut); font-size:.85rem; }
+#view { white-space:pre-wrap; background:#0b1220; border-radius:12px; padding:14px; margin-top:12px; max-height:400px; overflow:auto; }
+.grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:12px; }
+@media(max-width:600px){ .grid{grid-template-columns:1fr;} }
+.var { background:#0b1220; border:1px solid var(--line); padding:10px; border-radius:10px; font-size:.9rem; word-break:break-all; display:flex; justify-content:space-between; gap:8px; align-items:center; }
+.var button { flex-shrink:0; }
+</style>
+</head>
+<body>
+<header>
+<h1>Gerador de Emails Temporários</h1>
+<p>Inspirado no 22.do — gera inbox descartável na hora, sem cadastro. Usa a API pública gratuita mail.tm</p>
+</header>
+<main>
+<div class="tabs">
+<button id="tab-temp" class="active" type="button">Email temporário</button>
+<button id="tab-gmail" type="button">Variações Gmail (+ e .)</button>
+</div>
+
+<section id="panel-temp" class="card">
+<h2 style="margin-top:0">1. Gerar endereço</h2>
+<div class="row">
+<input id="prefix" placeholder="prefixo personalizado (opcional) ex: meu-teste123" />
+<select id="domain"><option>carregando domínios...</option></select>
+</div>
+<div class="row" style="margin-top:10px">
+<button class="primary" id="btn-new" type="button">Gerar email</button>
+<button class="ghost" id="btn-copy" type="button">Copiar</button>
+<button class="ghost" id="btn-refresh" type="button">Atualizar inbox ↻</button>
+<label class="small" style="align-self:center"><input type="checkbox" id="auto" checked /> auto-atualizar 15s</label>
+</div>
+<div class="email-box"><span id="current">nenhum email gerado ainda</span></div>
+<p class="small">Status: <span id="status">pronto</span></p>
+<p class="small">⚠️ Importante: não é possível criar contas reais <b>@gmail.com</b> por código — só o Google cria. Qualquer site tipo “fake gmail generator” na verdade usa: 1) contas próprias + aliases com <b>+</b> e ponto, ou 2) domínios temporários próprios. Aqui usamos a opção 2 (domínio temporário). Use para testes, privacidade e anti-spam. Não use para fraude / bypass de verificação.</p>
+
+<h2>Inbox</h2>
+<ul id="inbox"><li class="small">Nenhuma mensagem ainda. Envie um email de teste para o endereço acima.</li></ul>
+<div id="view" hidden></div>
+</section>
+
+<section id="panel-gmail" class="card" hidden>
+<h2 style="margin-top:0">2. Gerador de variações Gmail</h2>
+<p class="small">O Gmail ignora pontos antes do @ e tudo depois de +. Ou seja <b>joao.silva@gmail.com = joaosilva@gmail.com</b> e <b>joao+loja@gmail.com</b> cai tudo na mesma caixa. Use isso para filtrar e testar cadastros sem criar várias contas.</p>
+<div class="row">
+<input id="gmail-base" placeholder="seu gmail real ex: joaosilva@gmail.com" />
+<input id="gmail-qtd" type="number" value="20" min="1" max="200" style="max-width:120px;flex:0" />
+</div>
+<div class="row" style="margin-top:10px">
+<button class="primary" id="btn-var" type="button">Gerar variações</button>
+</div>
+<div class="grid" id="vars"></div>
+</section>
+
+<p class="small" style="text-align:center">Feito com API pública https://api.mail.tm — inbox expira em ~7 dias. Para produção, hospede seu próprio backend e não exponha senha no front.</p>
+</main>
+
+<script>
+const API = 'https://api.mail.tm';
+let account = null; // {address, password, token, id}
+let timer = null;
+
+const $ = id => document.getElementById(id);
+const status = t => $('status').textContent = t;
+
+async function loadDomains(){
+  const r = await fetch(API + '/domains');
+  const j = await r.json();
+  const sel = $('domain');
+  sel.innerHTML = '';
+  j['hydra:member'].forEach(d=>{
+    if(d.isActive){ const o=document.createElement('option'); o.value=d.domain; o.textContent='@'+d.domain; sel.appendChild(o); }
+  });
+}
+function rand(n=10){ const c='abcdefghijklmnopqrstuvwxyz0123456789'; let s=''; crypto.getRandomValues(new Uint8Array(n)).forEach(v=>s+=c[v%c.length]); return s; }
+
+async function newEmail(){
+  try{
+    status('criando conta...');
+    const domain = $('domain').value;
+    const prefix = ($('prefix').value.trim() || 'user-'+rand(6)).toLowerCase().replace(/[^a-z0-9._-]/g,'');
+    const address = `${prefix}@${domain}`;
+    const password = rand(16)+'A1!';
+    let r = await fetch(API+'/accounts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({address,password})});
+    if(!r.ok){ const t=await r.text(); throw new Error('falha ao criar: '+t); }
+    const acc = await r.json();
+    r = await fetch(API+'/token',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({address,password})});
+    const tok = await r.json();
+    account = {address,password,token:tok.token,id:acc.id||acc['@id']};
+    $('current').textContent = address;
+    $('inbox').innerHTML = '<li class="small">Caixa criada. Aguardando mensagens...</li>';
+    $('view').hidden = true;
+    status('ativo • '+address);
+    fetchInbox();
+    setupAuto();
+  }catch(e){ status('erro: '+e.message); }
+}
+
+async function fetchInbox(){
+  if(!account) return;
+  try{
+    status('atualizando inbox...');
+    const r = await fetch(API+'/messages',{headers:{Authorization:'Bearer '+account.token}});
+    const j = await r.json();
+    const msgs = j['hydra:member']||[];
+    if(!msgs.length){ $('inbox').innerHTML='<li class="small">Nenhuma mensagem ainda.</li>'; status('ativo • 0 mensagens'); return; }
+    $('inbox').innerHTML='';
+    msgs.forEach(m=>{
+      const li=document.createElement('li');
+      li.innerHTML=`<strong></strong><span></span><div class="small"></div>`;
+      li.querySelector('strong').textContent = m.subject||'(sem assunto)';
+      li.querySelector('span').textContent = 'De: '+(m.from?.address||m.from||'?')+' • '+new Date(m.createdAt).toLocaleString();
+      li.querySelector('div').textContent = (m.intro||'').slice(0,120);
+      li.onclick=()=>openMsg(m.id);
+      $('inbox').appendChild(li);
+    });
+    status('ativo • '+msgs.length+' mensagem(ns)');
+  }catch(e){ status('erro inbox: '+e.message); }
+}
+
+async function openMsg(id){
+  const r = await fetch(API+'/messages/'+id,{headers:{Authorization:'Bearer '+account.token}});
+  const m = await r.json();
+  const v = $('view');
+  v.hidden=false;
+  v.textContent = `De: ${m.from?.address||''}\nPara: ${(m.to||[]).map(t=>t.address).join(', ')}\nAssunto: ${m.subject||''}\nData: ${m.createdAt||''}\n\n${m.text||m.html?.replace(/<[^>]+>/g,'')||'(sem corpo texto)'}`;
+  v.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function setupAuto(){
+  clearInterval(timer);
+  if($('auto').checked){ timer=setInterval(fetchInbox,15000); }
+}
+
+// Variações Gmail
+function gmailVars(){
+  const raw = $('gmail-base').value.trim();
+  const qtd = Math.min(200, Math.max(1, Number($('gmail-qtd').value)||20));
+  const box = $('vars'); box.innerHTML='';
+  const m = raw.match(/^([^@+]+)@(gmail\.com|googlemail\.com)$/i);
+  if(!m){ box.innerHTML='<p class="small">Digite um Gmail válido ex: joaosilva@gmail.com</p>'; return; }
+  let user = m[1].replace(/\./g,'').toLowerCase();
+  // 1) plus-aliases
+  const tags=['loja','teste','app','site','promo','news','a1','b2'];
+  const out=new Set();
+  tags.forEach(t=>out.add(`${user}+${t}@gmail.com`));
+  for(let i=0;i<qtd;i++) out.add(`${user}+test${i+1}@gmail.com`);
+  // 2) dot-variações (limitadas)
+  if(user.length>3){
+    out.add(`${user.slice(0,2)}.${user.slice(2)}@gmail.com`);
+    out.add(`${user.slice(0,3)}.${user.slice(3)}@gmail.com`);
+  }
+  [...out].slice(0,qtd).forEach(v=>{
+    const d=document.createElement('div'); d.className='var';
+    const s=document.createElement('span'); s.textContent=v;
+    const b=document.createElement('button'); b.className='ghost'; b.textContent='copiar'; b.style.padding='6px 10px';
+    b.onclick=()=>navigator.clipboard.writeText(v);
+    d.append(s,b); box.appendChild(d);
+  });
+}
+
+// tabs
+$('tab-temp').onclick=()=>{ $('tab-temp').classList.add('active'); $('tab-gmail').classList.remove('active'); $('panel-temp').hidden=false; $('panel-gmail').hidden=true; };
+$('tab-gmail').onclick=()=>{ $('tab-gmail').classList.add('active'); $('tab-temp').classList.remove('active'); $('panel-gmail').hidden=false; $('panel-temp').hidden=true; };
+$('btn-new').onclick=newEmail;
+$('btn-refresh').onclick=fetchInbox;
+$('btn-copy').onclick=()=>{ if(account) navigator.clipboard.writeText(account.address); };
+$('btn-var').onclick=gmailVars;
+$('auto').onchange=setupAuto;
+loadDomains();
+</script>
+</body>
+</html>
