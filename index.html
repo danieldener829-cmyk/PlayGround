@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>YouTube IA Pro — Crie Vídeos de IA que Monetizam | R$ 25,99</title>
+<meta name="description" content="Aprenda a criar vídeos de IA para YouTube sem aparecer. Roteiro, voz, imagem, vídeo IA e monetização. Apenas R$25,99 no Pix." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#07070f; --bg2:#0d0d1a; --card:#121222; --card2:#171730;
+  --line:rgba(255,255,255,.09); --line2:rgba(255,255,255,.14);
+  --red:#ff0033; --rose:#ff4d6d; --violet:#8b5cf6; --pink:#ec4899; --cyan:#22d3ee; --yellow:#facc15; --green:#22c55e;
+  --text:#f6f6fb; --muted:#a3a3bd; --muted2:#6d6d8a;
+  --grad:linear-gradient(135deg,#ff0033 0%,#ec4899 45%,#8b5cf6 100%);
+  --grad-soft:linear-gradient(135deg,rgba(255,0,51,.16),rgba(139,92,246,.16));
+  --r:20px; --shadow:0 20px 60px rgba(0,0,0,.5);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation:none!important;transition:none!important}}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.65;overflow-x:hidden;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+section{content-visibility:auto;contain-intrinsic-size:auto 600px}
+h1,h2,h3,.sora{font-family:'Sora',sans-serif}
+a{color:inherit;text-decoration:none}
+.container{max-width:1140px;margin:0 auto;padding:0 22px}
+section{padding:76px 0;position:relative}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:.76rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#fff;background:rgba(139,92,246,.15);border:1px solid rgba(139,92,246,.4);padding:7px 16px;border-radius:100px;margin-bottom:16px}
+.eyebrow.red{background:rgba(255,0,51,.12);border-color:rgba(255,0,51,.4)}
+h2{font-size:clamp(1.7rem,3.8vw,2.6rem);line-height:1.12;font-weight:800;text-align:center;margin-bottom:12px;letter-spacing:-.5px}
+h2 .grad{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.subtitle{text-align:center;color:var(--muted);max-width:660px;margin:0 auto 40px;font-size:1.05rem}
+/* BG ORBS - estático, sem blur pesado (performance) */
+.orb{position:absolute;border-radius:50%;pointer-events:none;z-index:0;opacity:.22;background:radial-gradient(closest-side,currentColor,transparent)}
+.grid-bg{display:none}
+/* STRIP - sem animação infinita */
+.strip{background:#facc15;color:#111;font-weight:800;text-align:center;padding:9px 12px;font-size:.88rem;position:relative;z-index:60}
+/* HEADER - sem blur pesado */
+header{position:sticky;top:0;z-index:50;background:#0a0a15;border-bottom:1px solid var(--line)}
+.nav{display:flex;align-items:center;justify-content:space-between;height:68px}
+.logo{font-family:'Sora';font-weight:800;font-size:1.2rem;display:flex;align-items:center;gap:10px}
+.logo-ic{width:36px;height:36px;border-radius:11px;background:var(--grad);display:flex;align-items:center;justify-content:center;font-size:1.1rem}
+.logo span{background:linear-gradient(90deg,#fff,#ffb3c1);-webkit-background-clip:text;background-clip:text;color:transparent}
+.nav-links{display:flex;gap:26px;font-size:.92rem;color:var(--muted);font-weight:500}
+.nav-links a:hover{color:#fff}
+.nav-cta{display:flex;gap:10px;align-items:center}
+.badge-live{font-size:.72rem;background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.4);color:#4ade80;font-weight:700;padding:5px 12px;border-radius:100px;display:flex;align-items:center;gap:6px}
+.badge-live i{width:7px;height:7px;background:#4ade80;border-radius:50%}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;font-weight:800;border-radius:14px;padding:16px 30px;border:0;cursor:pointer;transition:transform .2s;font-size:1rem;font-family:'Sora';will-change:transform}
+.btn-primary{background:var(--grad);color:#fff;box-shadow:0 8px 22px rgba(255,0,51,.35)}
+.btn-primary:hover{transform:translateY(-2px)}
+.btn-ghost{background:rgba(255,255,255,.06);border:1px solid var(--line2);color:var(--text);box-shadow:none}
+.btn-ghost::after{display:none}
+.btn-ghost:hover{background:rgba(255,255,255,.1)}
+.btn-small{padding:11px 20px;font-size:.88rem;border-radius:11px}
+.btn-pix{background:linear-gradient(135deg,#00c9a7,#22d3ee);box-shadow:0 12px 34px rgba(34,211,238,.35),inset 0 1px 0 rgba(255,255,255,.3)}
+.hamburger{display:none;background:none;border:0;color:#fff;font-size:1.6rem;cursor:pointer}
+/* HERO */
+.hero{padding:70px 0 70px;overflow:hidden;background:var(--bg)}
+.hero-grid{display:grid;grid-template-columns:1.08fr .92fr;gap:48px;align-items:center;position:relative;z-index:1}
+.pill{display:inline-flex;align-items:center;gap:9px;background:#141427;border:1px solid var(--line2);padding:8px 16px;border-radius:100px;font-size:.83rem;color:#d5d5e8;margin-bottom:20px;font-weight:600}
+.pill i{width:8px;height:8px;background:var(--green);border-radius:50%}
+h1{font-size:clamp(2.1rem,5.2vw,3.5rem);line-height:1.05;font-weight:800;margin-bottom:18px;letter-spacing:-1px}
+h1 .grad{background:linear-gradient(92deg,#ff0033,#ec4899 40%,#8b5cf6 75%,#22d3ee);-webkit-background-clip:text;background-clip:text;color:transparent}
+h1 .hl{position:relative;white-space:nowrap}
+h1 .hl::after{content:"";position:absolute;left:0;right:0;bottom:4px;height:10px;background:rgba(250,204,21,.35);z-index:-1;border-radius:4px;transform:skewX(-8deg)}
+.hero p.sub{color:var(--muted);font-size:1.12rem;margin-bottom:24px;max-width:520px}
+.hero p.sub strong{color:#fff}
+.feat-list{list-style:none;margin:0 0 26px;display:grid;gap:12px}
+.feat-list li{display:flex;gap:12px;align-items:center;background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:13px;padding:11px 15px;font-size:.94rem;font-weight:500}
+.feat-list li b{width:30px;height:30px;flex-shrink:0;border-radius:9px;background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.35);display:flex;align-items:center;justify-content:center;font-size:.95rem}
+.cta-row{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px}
+.cta-note{font-size:.82rem;color:var(--muted2);margin-top:10px}
+.social-proof{display:flex;align-items:center;gap:14px;margin-top:6px;flex-wrap:wrap}
+.avatars{display:flex}
+.avatars span{width:36px;height:36px;border-radius:50%;border:2px solid var(--bg);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.8rem;margin-left:-10px;font-family:'Sora'}
+.avatars span:first-child{margin-left:0}
+.stars-row{font-size:.85rem;color:var(--muted)}
+.stars-row strong{color:var(--yellow)}
+/* PHONE - sem blur, sem animação pesada */
+.phone-wrap{position:relative;display:flex;justify-content:center}
+.phone-glow{display:none}
+.phone-mock{position:relative;background:#151527;border:1px solid rgba(255,255,255,.14);border-radius:32px;padding:14px;width:300px;box-shadow:0 18px 44px rgba(0,0,0,.5)}
+.notch{width:110px;height:24px;background:#000;border-radius:0 0 14px 14px;margin:0 auto 10px}
+.video-card{background:#000;border-radius:18px;overflow:hidden;border:1px solid rgba(255,255,255,.12)}
+.video-thumb{aspect-ratio:9/11.5;background:linear-gradient(180deg,#1e1b4b 0%,#6d28d9 28%,#ec4899 58%,#0a0a12 100%);position:relative;display:flex;flex-direction:column;justify-content:flex-end;padding:18px;text-align:left;overflow:hidden}
+.video-thumb::before{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(0,0,0,.75),transparent 60%)}
+.play-btn{position:absolute;top:42%;left:50%;transform:translate(-50%,-50%);width:68px;height:68px;border-radius:50%;background:#ff0033;display:flex;align-items:center;justify-content:center;font-size:1.6rem;color:#fff;box-shadow:0 8px 22px rgba(0,0,0,.5)}
+.float-card{position:absolute;background:#fff;color:#111;border-radius:14px;padding:10px 14px;font-size:.8rem;font-weight:800;box-shadow:0 10px 24px rgba(0,0,0,.4);border:1px solid #fff;z-index:2}
+.fc1{top:90px;left:0} .fc2{bottom:110px;right:0}
+.fc1 small,.fc2 small{display:block;font-weight:500;color:#555;font-size:.72rem}
+/* MARQUEE - GPU, pausa fora da tela */
+.marquee{overflow:hidden;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:#0b0b16;padding:16px 0;white-space:nowrap}
+.marquee-track{display:inline-flex;gap:12px;padding-right:12px;will-change:transform;transform:translateZ(0)}
+.marquee-track.anim{animation:marq 28s linear infinite}
+@keyframes marq{to{transform:translate3d(-50%,0,0)}}
+.tool{background:rgba(255,255,255,.06);border:1px solid var(--line2);padding:9px 18px;border-radius:100px;font-size:.86rem;font-weight:700;flex-shrink:0}
+/* CARDS - hover simples, sem sombra pesada */
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;position:relative;z-index:1}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:26px;position:relative}
+.card .icon{width:52px;height:52px;border-radius:15px;background:rgba(139,92,246,.12);border:1px solid rgba(139,92,246,.3);display:flex;align-items:center;justify-content:center;font-size:1.5rem;margin-bottom:14px}
+.card h3{margin-bottom:8px;font-size:1.06rem}
+.card p{color:var(--muted);font-size:.93rem}
+/* PROBLEM */
+.problem{background:var(--bg2)}
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:10px;position:relative;z-index:1}
+.vs-box{border-radius:var(--r);padding:28px;border:1px solid var(--line);background:var(--card)}
+.vs-no{border-color:rgba(255,0,51,.3);background:linear-gradient(180deg,rgba(255,0,51,.08),transparent)}
+.vs-yes{border-color:rgba(34,197,94,.35);background:#0e1a13}
+.vs-box h3{margin-bottom:16px}
+.vs-box ul{list-style:none;display:grid;gap:11px;color:var(--muted);font-size:.95rem}
+.vs-box li{display:flex;gap:10px;align-items:flex-start}
+/* MODULES */
+.modulo{border:1px solid var(--line);border-radius:16px;margin-bottom:12px;overflow:hidden;background:linear-gradient(180deg,var(--card2),var(--card));transition:.25s}
+.modulo.open{border-color:rgba(139,92,246,.55);box-shadow:0 12px 34px rgba(139,92,246,.15)}
+.mod-head{padding:19px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:14px;font-weight:700;font-family:'Sora';font-size:.98rem}
+.mod-num{width:38px;height:38px;flex-shrink:0;border-radius:12px;background:var(--grad);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.9rem}
+.mod-head small{display:block;color:var(--muted);font-weight:400;font-family:'Inter';font-size:.85rem;margin-top:3px}
+.mod-body{display:none;padding:0 20px 20px 72px;color:var(--muted);font-size:.93rem;line-height:1.8}
+.modulo.open .mod-body{display:block}
+.tag{font-size:.7rem;background:var(--grad);padding:5px 12px;border-radius:100px;font-weight:800;white-space:nowrap;letter-spacing:.5px}
+/* BONUS */
+.bonus-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;position:relative;z-index:1}
+.bonus{border:1px dashed rgba(139,92,246,.5);background:#151527;border-radius:var(--r);padding:22px;display:flex;gap:15px;align-items:flex-start}
+.bonus-ic{width:48px;height:48px;flex-shrink:0;border-radius:14px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:1.4rem}
+.bonus s{color:var(--muted2)}
+.bonus .free{color:#4ade80;font-weight:800;font-size:.8rem;background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.35);padding:2px 10px;border-radius:100px;margin-left:6px}
+/* DEPO */
+.depo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;position:relative;z-index:1}
+.depo{background:#fff;color:#111;border-radius:var(--r);padding:24px;position:relative}
+.depo-head{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.avatar{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-family:'Sora';flex-shrink:0}
+.stars{color:#eab308;margin-bottom:8px;letter-spacing:2px}
+.depo small{color:#555}
+.verified{font-size:.72rem;color:#16a34a;font-weight:700}
+/* PRICE */
+.price-sec{background:var(--bg2)}
+.price-card{max-width:500px;margin:0 auto;background:#fff;color:#111;border-radius:26px;overflow:hidden;box-shadow:0 20px 50px rgba(0,0,0,.5);position:relative;z-index:1}
+.price-top{background:#160a2e;color:#fff;padding:26px 24px 22px;text-align:center;position:relative;overflow:hidden}
+.ribbon{display:inline-block;font-weight:800;letter-spacing:1px;font-size:.82rem;background:var(--grad);padding:7px 18px;border-radius:100px;margin-bottom:6px;position:relative}
+.countdown{display:flex;gap:10px;justify-content:center;margin:16px 0;position:relative}
+.cd{background:#23233a;border:1px solid rgba(255,255,255,.15);color:#fff;border-radius:13px;padding:9px 12px;min-width:70px;text-align:center}
+.cd strong{font-size:1.5rem;display:block;font-family:'Sora'}
+.cd span{font-size:.68rem;opacity:.7;letter-spacing:1px}
+.price-body{padding:30px 28px}
+.price-old{text-decoration:line-through;color:#999;font-size:.95rem}
+.price-new{font-size:3.4rem;font-weight:800;color:#111;font-family:'Sora';letter-spacing:-2px;line-height:1}
+.price-new small{font-size:1.3rem}
+.pix-line{display:inline-flex;align-items:center;gap:7px;background:#ecfdf5;border:1px solid #a7f3d0;color:#065f46;font-weight:700;font-size:.85rem;padding:7px 14px;border-radius:100px;margin-top:10px}
+.check-list{list-style:none;margin:20px 0;display:grid;gap:11px;font-size:.95rem}
+.check-list li{display:flex;gap:10px;align-items:flex-start}
+.check-list li::before{content:"✔";color:#fff;background:var(--green);font-weight:900;font-size:.7rem;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
+.garantia{display:flex;gap:14px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:16px;padding:16px;margin-top:18px;font-size:.88rem;color:#14532d}
+/* FAQ */
+.faq-item{border:1px solid var(--line);border-radius:14px;margin-bottom:10px;background:var(--card);transition:.2s;position:relative;z-index:1}
+.faq-item.open{border-color:rgba(139,92,246,.5)}
+.faq-q{padding:17px 19px;cursor:pointer;font-weight:700;display:flex;justify-content:space-between;align-items:center;gap:10px;font-family:'Sora';font-size:.95rem}
+.faq-q span{width:28px;height:28px;flex-shrink:0;border-radius:50%;background:rgba(139,92,246,.15);display:flex;align-items:center;justify-content:center}
+.faq-a{display:none;padding:0 19px 19px;color:var(--muted);font-size:.94rem}
+.faq-item.open .faq-a{display:block}
+/* FINAL - sem blur */
+.final{text-align:center;background:#0d0712;overflow:hidden}
+.final-box{position:relative;z-index:1;background:#141427;border:1px solid var(--line2);border-radius:28px;padding:52px 30px}
+.whats{position:fixed;bottom:22px;right:22px;background:#25d366;color:#fff;width:58px;height:58px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.7rem;box-shadow:0 8px 20px rgba(0,0,0,.4);z-index:40}
+footer{border-top:1px solid var(--line);padding:30px 0;color:var(--muted2);font-size:.83rem;text-align:center;background:#050509}
+.reveal{opacity:0;transform:translateY(16px);transition:opacity .45s ease,transform .45s ease}
+.reveal.visible{opacity:1;transform:none}
+/* MODAL - sem blur */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.78);display:none;align-items:center;justify-content:center;z-index:100;padding:18px}
+.modal-bg.show{display:flex}
+.modal{background:#fff;color:#111;border-radius:24px;max-width:440px;width:100%;padding:30px 26px;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,.6);max-height:92vh;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.modal input{width:100%;padding:13px;border-radius:12px;border:1.5px solid #e5e5ef;margin:8px 0;font-size:.9rem;font-family:'Inter'}
+#qrcode img{border-radius:14px !important;border:4px solid #111 !important}
+@media(max-width:900px){
+  .hero-grid,.vs,.grid3,.depo-grid,.bonus-grid{grid-template-columns:1fr}
+  section{padding:56px 0}
+  .nav-links{display:none;position:absolute;top:68px;left:0;right:0;background:#0d0d1a;flex-direction:column;padding:20px;border-bottom:1px solid var(--line)}
+  .nav-links.show{display:flex}
+  .hamburger{display:block}
+  .badge-live{display:none}
+  .fc1{left:6px} .fc2{right:6px}
+  .phone-mock{transform:none;width:280px}
+  .mod-body{padding-left:20px}
+  .final-box{padding:36px 20px}
+}
+</style>
+</head>
+<body>
+
+<div class="strip">🔥 LANÇAMENTO: 82% OFF + 4 Bônus grátis — termina em <span id="strip-timer">15:00</span> ⏳</div>
+
+<header>
+  <div class="container nav">
+    <div class="logo"><div class="logo-ic">🎬</div><span>YouTube IA Pro</span></div>
+    <nav class="nav-links" id="navLinks">
+      <a href="#aprender">Aprender</a>
+      <a href="#modulos">Módulos</a>
+      <a href="#depoimentos">Resultados</a>
+      <a href="#preco">Preço</a>
+      <a href="#faq">Dúvidas</a>
+    </nav>
+    <div class="nav-cta">
+      <span class="badge-live"><i></i> 217 online</span>
+      <a href="#preco" class="btn btn-primary btn-small">QUERO ENTRAR</a>
+      <button class="hamburger" onclick="document.getElementById('navLinks').classList.toggle('show')">☰</button>
+    </div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="orb" style="width:420px;height:420px;background:#8b5cf6;top:-100px;left:-120px"></div>
+  <div class="orb" style="width:380px;height:380px;background:#ff0033;top:20px;right:-100px;opacity:.25"></div>
+  <div class="grid-bg"></div>
+  <div class="container hero-grid">
+    <div>
+      <div class="pill"><i></i> 100% prático • Sem aparecer • Do zero ao monetizado</div>
+      <h1>Crie vídeos de <span class="grad">Inteligência Artificial</span> e lucre no YouTube 📱</h1>
+      <p class="sub">O método completo pra criar <strong>canais Dark de IA</strong>: roteiro com ChatGPT, voz realista, imagens e vídeos com IA, edição em 20 min e monetização. <strong>Funciona no celular.</strong></p>
+      <ul class="feat-list">
+        <li><b>✔</b> Sem gravar, sem aparecer, sem PC potente</li>
+        <li><b>✔</b> Roteiro + voz + thumbnail + Shorts em minutos</li>
+        <li><b>✔</b> Monetização tripla: AdSense + afiliados + freelancers</li>
+      </ul>
+      <div class="cta-row">
+        <a href="#preco" class="btn btn-primary">🚀 QUERO MEU CANAL IA — R$ 25,99 →</a>
+        <a href="#modulos" class="btn btn-ghost">Ver aulas</a>
+      </div>
+      <div class="cta-note">⚡ Acesso imediato após o Pix • Garantia de 7 dias • Suporte no WhatsApp</div>
+      <div class="social-proof">
+        <div class="avatars">
+          <span style="background:linear-gradient(135deg,#ff0033,#ec4899)">L</span>
+          <span style="background:linear-gradient(135deg,#8b5cf6,#22d3ee)">C</span>
+          <span style="background:linear-gradient(135deg,#22c55e,#22d3ee)">D</span>
+          <span style="background:#222;color:#fff;font-size:.7rem">+1.8k</span>
+        </div>
+        <div class="stars-row">⭐⭐⭐⭐⭐ <strong>4.9/5</strong> — 1.847 alunos felizes</div>
+      </div>
+    </div>
+    <div class="phone-wrap">
+      <div class="phone-glow"></div>
+      <div class="phone-mock">
+        <div class="notch"></div>
+        <div class="video-card">
+          <div class="video-thumb">
+            <div style="position:relative;z-index:1">
+              <small style="background:#ff0033;padding:4px 11px;border-radius:100px;font-weight:800;font-size:.7rem;letter-spacing:.5px">● SHORT • IA VIRAL</small>
+              <h3 style="margin-top:10px;font-size:1.25rem;line-height:1.25;font-family:'Sora'">Como fiz 2.3 MILHÕES de views sem aparecer</h3>
+              <p style="font-size:.82rem;opacity:.85">Gerado 100% com IA 🤖</p>
+            </div>
+            <div class="play-btn">▶</div>
+          </div>
+          <div style="padding:13px;background:#0f0f1c">
+            <div style="font-weight:700;font-size:.87rem">Canal Dark de Curiosidades IA</div>
+            <div style="font-size:.76rem;color:#999">1,2 mi views • 48 mil inscritos</div>
+            <div style="display:flex;gap:6px;margin-top:9px">
+              <span style="font-size:.7rem;background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.4);color:#4ade80;padding:3px 9px;border-radius:100px;font-weight:700">💰 R$ 4.830/mês</span>
+              <span style="font-size:.7rem;background:rgba(139,92,246,.15);border:1px solid rgba(139,92,246,.4);color:#c4b5fd;padding:3px 9px;border-radius:100px;font-weight:700">🤖 100% IA</span>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:10px">
+          <div style="flex:1;background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:12px;padding:10px;text-align:center;font-size:.75rem">🎙️ Voz IA<br><strong>ElevenLabs</strong></div>
+          <div style="flex:1;background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:12px;padding:10px;text-align:center;font-size:.75rem">🎬 Vídeo IA<br><strong>Runway + Pika</strong></div>
+        </div>
+      </div>
+      <div class="float-card fc1">💰 +R$ 4.830/mês<small>AdSense com IA</small></div>
+      <div class="float-card fc2">🔥 2.3M views<small>sem aparecer</small></div>
+    </div>
+  </div>
+</section>
+
+<div class="marquee">
+  <div class="marquee-track" id="marq">
+    <span class="tool">🤖 ChatGPT</span><span class="tool">🎙️ ElevenLabs</span><span class="tool">🎨 Midjourney</span><span class="tool">🎬 Runway</span><span class="tool">⚡ Pika</span><span class="tool">✂️ CapCut App</span><span class="tool">🖼️ Leonardo AI</span><span class="tool">📈 VidIQ</span><span class="tool">🔥 Luma Dream</span><span class="tool">💡 Haiper AI</span>
+  </div>
+</div>
+
+<section class="problem">
+  <div class="orb" style="width:300px;height:300px;background:#22c55e;bottom:0;right:0;opacity:.12"></div>
+  <div class="container">
+    <div style="text-align:center"><span class="eyebrow red">💡 A oportunidade</span></div>
+    <h2>Por que canais de IA estão <span class="grad">explodindo?</span></h2>
+    <p class="subtitle">O YouTube paga por views. Quem produz mais rápido e com qualidade, ganha mais. A IA permite postar todo dia sem equipe.</p>
+    <div class="vs">
+      <div class="vs-box vs-no">
+        <h3>❌ Jeito antigo</h3>
+        <ul>
+          <li>✖️ <span>Precisa câmera, microfone e aparecer</span></li>
+          <li>✖️ <span>6-8 horas pra editar 1 vídeo</span></li>
+          <li>✖️ <span>Trava no roteiro e nas ideias</span></li>
+          <li>✖️ <span>Desiste em 30 dias sem views</span></li>
+        </ul>
+      </div>
+      <div class="vs-box vs-yes">
+        <h3>✅ Método YouTube IA Pro</h3>
+        <ul>
+          <li>✔️ <span><strong style="color:#fff">Vídeo 100% com IA</strong>, sem aparecer</span></li>
+          <li>✔️ <span>Roteiro + voz + imagens em <strong style="color:#fff">20 min</strong></span></li>
+          <li>✔️ <span>30 ideias virais prontas por nicho</span></li>
+          <li>✔️ <span>Shorts + vídeos longos que monetizam</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="aprender">
+  <div class="orb" style="width:400px;height:400px;background:#8b5cf6;top:10%;left:-150px;opacity:.18"></div>
+  <div class="container">
+    <div style="text-align:center"><span class="eyebrow">🎓 O que você vai aprender</span></div>
+    <h2>Do zero ao canal <span class="grad">monetizado</span></h2>
+    <p class="subtitle">Tudo passo a passo, direto no celular ou PC. Mesmo sendo iniciante total.</p>
+    <div class="grid3">
+      <div class="card reveal"><div class="icon">🧠</div><h3>Roteiros virais com ChatGPT</h3><p>Prompts prontos pra história, curiosidades, finanças, motivação e terror que prendem até o final.</p></div>
+      <div class="card reveal"><div class="icon">🎙️</div><h3>Vozes realistas de IA</h3><p>Narração humana com ElevenLabs e CapCut. Sem microfone, sem sotaque robótico.</p></div>
+      <div class="card reveal"><div class="icon">🎨</div><h3>Imagens e personagens</h3><p>Midjourney + Leonardo pra thumbnails e cenários com CTR acima de 8%.</p></div>
+      <div class="card reveal"><div class="icon">🎬</div><h3>Vídeos cinematográficos</h3><p>Runway, Pika, Haiper e Luma: de texto e foto pra cenas de cinema.</p></div>
+      <div class="card reveal"><div class="icon">✂️</div><h3>Edição em 20 min no App</h3><p>Template CapCut arrasta-e-solta: legendas automáticas, zoom, som e cortes.</p></div>
+      <div class="card reveal"><div class="icon">💰</div><h3>Monetização tripla</h3><p>AdSense + afiliados + freelancers. Como bater 1k inscritos e 4k horas rápido.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="modulos" style="background:var(--bg2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)">
+  <div class="container" style="max-width:780px">
+    <div style="text-align:center"><span class="eyebrow">📚 Conteúdo completo</span></div>
+    <h2>6 módulos • 47 aulas • 8h</h2>
+    <p class="subtitle">Acesso vitalício pelo celular + certificado + atualizações grátis</p>
+    <div class="modulo open"><div class="mod-head" onclick="this.parentElement.classList.toggle('open')"><div style="display:flex;gap:12px;align-items:center"><div class="mod-num">1</div><div>Fundação: canal pronto em 1 dia <small>Nicho lucrativo, nome, capa, SEO e AdSense</small></div></div><span class="tag">7 AULAS</span></div><div class="mod-body">• 5 nichos de IA que mais pagam em 2026<br>• Canal Dark sem cair em “conteúdo reutilizado”<br>• Configuração e regras do YouTube pra IA</div></div>
+    <div class="modulo"><div class="mod-head" onclick="this.parentElement.classList.toggle('open')"><div style="display:flex;gap:12px;align-items:center"><div class="mod-num">2</div><div>Roteiros que viralizam <small>Prompts + retenção máxima</small></div></div><span class="tag">9 AULAS</span></div><div class="mod-body">• 30 prompts prontos por nicho<br>• Estrutura gancho → loop → CTA<br>• Como adaptar vídeos gringos com IA</div></div>
+    <div class="modulo"><div class="mod-head" onclick="this.parentElement.classList.toggle('open')"><div style="display:flex;gap:12px;align-items:center"><div class="mod-num">3</div><div>Voz + Imagem IA <small>ElevenLabs, Midjourney, Leonardo</small></div></div><span class="tag">8 AULAS</span></div><div class="mod-body">• Voz perfeita em português<br>• Personagens consistentes<br>• Thumbnails com CTR acima de 8%</div></div>
+    <div class="modulo"><div class="mod-head" onclick="this.parentElement.classList.toggle('open')"><div style="display:flex;gap:12px;align-items:center"><div class="mod-num">4</div><div>Vídeo IA cinematográfico <small>Runway, Pika, Luma, Haiper</small></div></div><span class="tag">10 AULAS</span></div><div class="mod-body">• Texto-para-vídeo e imagem-para-vídeo<br>• Câmera, lip-sync e consistência<br>• Shorts virais em 5 minutos</div></div>
+    <div class="modulo"><div class="mod-head" onclick="this.parentElement.classList.toggle('open')"><div style="display:flex;gap:12px;align-items:center"><div class="mod-num">5</div><div>Edição no App CapCut <small>Template arrasta-e-solta</small></div></div><span class="tag">7 AULAS</span></div><div class="mod-body">• Edição completa pelo celular<br>• Legendas, efeitos, transições<br>• Exportação perfeita pro YouTube</div></div>
+    <div class="modulo"><div class="mod-head" onclick="this.parentElement.classList.toggle('open')"><div style="display:flex;gap:12px;align-items:center"><div class="mod-num">6</div><div>Monetização acelerada <small>0 → 4.000 horas</small></div></div><span class="tag">6 AULAS</span></div><div class="mod-body">• 1 Short + 1 longo por dia<br>• Títulos e SEO com VidIQ<br>• Como escalar pra 2-3 canais</div></div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div style="text-align:center"><span class="eyebrow">🎁 Bônus de hoje</span></div>
+    <h2>4 bônus <span class="grad">grátis</span> pra você</h2>
+    <p class="subtitle">Só pra quem garantir nesta oferta de R$ 25,99</p>
+    <div class="bonus-grid">
+      <div class="bonus reveal"><div class="bonus-ic">📦</div><div><strong>Bônus 1 — 500 prompts virais</strong> <span class="free">GRÁTIS</span> <s>R$197</s><br><span style="color:var(--muted);font-size:.9rem">Copie e cole por nicho. Economiza horas.</span></div></div>
+      <div class="bonus reveal"><div class="bonus-ic">🎨</div><div><strong>Bônus 2 — 200 thumbnails editáveis</strong> <span class="free">GRÁTIS</span> <s>R$147</s><br><span style="color:var(--muted);font-size:.9rem">Canva + PSD com CTR alto.</span></div></div>
+      <div class="bonus reveal"><div class="bonus-ic">📱</div><div><strong>Bônus 3 — Grupo VIP + App de alunos</strong> <span class="free">GRÁTIS</span> <s>R$297</s><br><span style="color:var(--muted);font-size:.9rem">Suporte diário + desafio 30 dias.</span></div></div>
+      <div class="bonus reveal"><div class="bonus-ic">💼</div><div><strong>Bônus 4 — Freelancer IA</strong> <span class="free">GRÁTIS</span> <s>R$247</s><br><span style="color:var(--muted);font-size:.9rem">Ganhe R$500–2.000 por vídeo pra empresas.</span></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="depoimentos" style="background:var(--bg2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)">
+  <div class="container">
+    <div style="text-align:center"><span class="eyebrow">⭐ Resultados</span></div>
+    <h2>Alunos que já estão <span class="grad">faturando</span></h2>
+    <p class="subtitle">Gente comum que começou do zero, pelo celular.</p>
+    <div class="depo-grid">
+      <div class="depo reveal"><div class="depo-head"><div class="avatar" style="background:linear-gradient(135deg,#ff0033,#ec4899)">L</div><div><strong>Lucas M.</strong><br><span class="verified">✔ Compra verificada • 28k inscritos</span></div></div><div class="stars">★★★★★</div><p>"Saí do zero e monetizei em 43 dias com canal de histórias IA. Hoje tiro <strong>R$2.400/mês</strong> só de AdSense."</p><br><small>📍 São Paulo/SP</small></div>
+      <div class="depo reveal"><div class="depo-head"><div class="avatar" style="background:linear-gradient(135deg,#8b5cf6,#22d3ee)">C</div><div><strong>Camila R.</strong><br><span class="verified">✔ Compra verificada • 52k inscritos</span></div></div><div class="stars">★★★★★</div><p>"Nunca tinha editado nada. Faço tudo no celular no almoço. Meu Short bateu <strong>4,1M de views!</strong>"</p><br><small>📍 Fortaleza/CE</small></div>
+      <div class="depo reveal"><div class="depo-head"><div class="avatar" style="background:linear-gradient(135deg,#22c55e,#22d3ee)">D</div><div><strong>Diego S.</strong><br><span class="verified">✔ Compra verificada • Freelancer</span></div></div><div class="stars">★★★★★</div><p>"Além do canal, fechei 3 clientes como editor IA. O bônus freelancer <strong>pagou o curso 10x.</strong>"</p><br><small>📍 Curitiba/PR</small></div>
+    </div>
+  </div>
+</section>
+
+<section id="preco" class="price-sec">
+  <div class="orb" style="width:500px;height:300px;background:#8b5cf6;top:0;left:50%;transform:translateX(-50%);opacity:.2"></div>
+  <div class="container">
+    <div style="text-align:center"><span class="eyebrow red">🔥 Oferta por tempo limitado</span></div>
+    <h2>Acesso vitalício por apenas</h2>
+    <p class="subtitle">Curso + 4 bônus + certificado + suporte. De <s>R$147</s> por:</p>
+    <div class="price-card reveal visible">
+      <div class="price-top">
+        <div class="ribbon">🔥 82% OFF ATIVO HOJE</div>
+        <div class="countdown">
+          <div class="cd"><strong id="hh">00</strong><span>HORAS</span></div>
+          <div class="cd"><strong id="mm">14</strong><span>MIN</span></div>
+          <div class="cd"><strong id="ss">59</strong><span>SEG</span></div>
+        </div>
+        <div style="font-size:.88rem;opacity:.85;position:relative">⚡ Vagas com bônus: <strong id="vagas" style="color:#facc15">17</strong> restantes</div>
+      </div>
+      <div class="price-body">
+        <div class="price-old">De R$ 147,00</div>
+        <div class="price-new">R$ 25<small>,99</small></div>
+        <div><span class="pix-line">💠 Pix QR Code • aprovação imediata</span></div>
+        <ul class="check-list">
+          <li>Curso completo YouTube IA Pro (47 aulas)</li>
+          <li>Acesso vitalício no celular + PC</li>
+          <li>4 Bônus (R$888 em valor) grátis</li>
+          <li>Certificado + Suporte VIP no WhatsApp</li>
+          <li>Atualizações de novas IAs grátis</li>
+        </ul>
+        <button class="btn btn-primary btn-pix" style="width:100%;font-size:1.15rem;padding:19px" onclick="openCheckout()">💠 PAGAR R$ 25,99 NO PIX →</button>
+        <div style="text-align:center;margin-top:11px;font-size:.83rem;color:#666">🔑 Chave Pix: <strong>546.768.188-58</strong> • QR Code na próxima tela</div>
+        <div class="garantia"><div style="font-size:2.2rem">🛡️</div><div><strong>Garantia incondicional de 7 dias.</strong> Se não gostar por qualquer motivo, devolvemos 100%. Sem perguntas, sem burocracia.</div></div>
+      </div>
+    </div>
+    <p style="text-align:center;margin-top:20px;color:var(--muted);font-size:.92rem;position:relative;z-index:1">❓ Dúvidas? Fale comigo no WhatsApp: <a href="https://wa.me/5511977141984" style="color:#4ade80;font-weight:800">(11) 97714-1984</a> 💬</p>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="container" style="max-width:740px">
+    <div style="text-align:center"><span class="eyebrow">❓ Dúvidas frequentes</span></div>
+    <h2>Perguntas & respostas</h2>
+    <p class="subtitle">Tudo o que você precisa saber antes de entrar</p>
+    <div class="faq-item open"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Preciso aparecer ou ter computador? <span>+</span></div><div class="faq-a">Não. O método é 100% canal Dark/faceless. Você faz tudo pelo celular Android ou iPhone com CapCut + sites de IA.</div></div>
+    <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Sou iniciante total, vou conseguir? <span>+</span></div><div class="faq-a">Sim. Começamos do zero: criar conta, criar canal e gerar o primeiro vídeo passo a passo. E tem suporte no grupo VIP.</div></div>
+    <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">O YouTube monetiza vídeo de IA? <span>+</span></div><div class="faq-a">Sim, com narração original e edição transformativa (não só slideshow). É exatamente o que ensinamos nos Módulos 1 e 6 pra evitar “conteúdo reutilizado”.</div></div>
+    <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Como recebo o acesso? <span>+</span></div><div class="faq-a">Pagou no Pix → envie o comprovante no WhatsApp (11) 97714-1984 → você recebe o login com acesso vitalício na hora.</div></div>
+    <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">E se eu não gostar? <span>+</span></div><div class="faq-a">Você tem 7 dias de garantia total. Devolvemos 100% do valor sem perguntas.</div></div>
+  </div>
+</section>
+
+<section class="final">
+  <div class="orb" style="width:500px;height:300px;background:#ec4899;bottom:-100px;left:50%;transform:translateX(-50%);opacity:.2"></div>
+  <div class="container">
+    <div class="final-box">
+      <div style="font-size:2.6rem;margin-bottom:10px">🚀</div>
+      <h2>Poste seu primeiro vídeo de IA <span class="grad">ainda hoje</span></h2>
+      <p class="subtitle" style="margin-bottom:28px">Junte-se a +1.847 alunos. Vagas com bônus encerrando em breve.</p>
+      <a href="#preco" class="btn btn-primary" style="font-size:1.15rem;padding:19px 42px">SIM, QUERO POR R$ 25,99 →</a>
+      <div style="margin-top:14px;font-size:.85rem;color:var(--muted)">🛡️ Garantia 7 dias • 💠 Pix • 📱 Acesso imediato</div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <div style="font-weight:800;color:#fff;margin-bottom:8px;font-family:'Sora'">🎬 YouTube IA Pro</div>
+    Este produto não garante ganhos. Resultados variam por dedicação. YouTube é marca do Google LLC. Este site não é afiliado ao YouTube, OpenAI, ElevenLabs ou Runway.<br><br>
+    <a href="#">Termos</a> • <a href="#">Privacidade</a> • <a href="https://wa.me/5511977141984">Suporte: (11) 97714-1984</a><br>© 2026 YouTube IA Pro — Todos os direitos reservados.
+  </div>
+</footer>
+
+<a class="whats" href="https://wa.me/5511977141984?text=Quero%20saber%20mais%20sobre%20o%20curso%20YouTube%20IA%20Pro%20de%20R%24%2025%2C99!">💬</a>
+
+<div class="modal-bg" id="checkoutModal">
+  <div class="modal">
+    <div style="width:56px;height:56px;border-radius:18px;background:linear-gradient(135deg,#00c9a7,#22d3ee);display:flex;align-items:center;justify-content:center;font-size:1.7rem;margin:0 auto 10px">💠</div>
+    <h3 style="font-family:'Sora'">Pagamento via Pix</h3>
+    <p style="color:#555;font-size:.92rem"><strong>YouTube IA Pro</strong> — acesso vitalício + bônus</p>
+    <div style="font-size:2.4rem;font-weight:800;font-family:'Sora';margin:6px 0;letter-spacing:-1px">R$ 25,99</div>
+    <div id="qrcode" style="display:flex;justify-content:center;margin:14px 0;min-height:180px"></div>
+    <div style="background:#f6f7fb;border:1.5px dashed #bbb;border-radius:14px;padding:12px;font-size:.83rem;text-align:left">
+      <strong>1.</strong> Abra o app do banco e escaneie o QR<br>
+      <strong>2.</strong> Ou use o copia e cola:
+      <div style="display:flex;gap:6px;margin-top:8px">
+        <input id="pixCode" readonly style="flex:1;font-size:.68rem" value="gerando código..." />
+        <button onclick="copyPix()" style="background:#111;color:#fff;border:0;border-radius:9px;padding:0 15px;font-weight:800;cursor:pointer">Copiar</button>
+      </div>
+      <div style="margin-top:9px">🔑 Chave Pix (CPF): <strong id="pixKeyText">546.768.188-58</strong> <button onclick="copyKey()" style="border:1px solid #ccc;border-radius:7px;padding:2px 9px;cursor:pointer;background:#fff">Copiar</button></div>
+    </div>
+    <a id="zapComprovante" href="https://wa.me/5511977141984?text=Ol%C3%A1!%20Paguei%20os%20R%24%2025%2C99%20do%20curso%20YouTube%20IA%20Pro%20no%20Pix%20(chave%20546.768.188-58).%20Segue%20o%20comprovante%3A" target="_blank" class="btn btn-primary" style="width:100%;margin-top:13px;background:#25d366">✅ JÁ PAGUEI — ENVIAR COMPROVANTE →</a>
+    <p style="font-size:.78rem;color:#888;margin-top:10px">Envie o comprovante no WhatsApp <strong>(11) 97714-1984</strong> e receba o acesso na hora.</p>
+    <button onclick="closeCheckout()" style="background:none;border:0;margin-top:4px;color:#999;cursor:pointer">fechar</button>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" defer></script>
+<script>
+/* Timer leve - 1 intervalo */
+let total = 15*60;
+const stripEl = document.getElementById('strip-timer');
+const hhEl = document.getElementById('hh'), mmEl = document.getElementById('mm'), ssEl = document.getElementById('ss'), vagasEl = document.getElementById('vagas');
+function tick(){
+  const h = String(Math.floor(total/3600)).padStart(2,'0');
+  const m = String(Math.floor((total%3600)/60)).padStart(2,'0');
+  const s = String(total%60).padStart(2,'0');
+  if(hhEl) hhEl.textContent=h; if(mmEl) mmEl.textContent=m; if(ssEl) ssEl.textContent=s;
+  if(stripEl) stripEl.textContent = m+':'+s;
+  if(total>0) total--;
+}
+tick();
+setInterval(tick,1000);
+let vagas = 17;
+setInterval(()=>{ if(vagas>6 && Math.random()>0.6){ vagas--; if(vagasEl) vagasEl.textContent=vagas; } },20000);
+/* Reveal: observa uma vez e desconecta (sem custo contínuo) */
+const io = new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('visible'); io.unobserve(e.target); } }),{threshold:.1,rootMargin:'0px 0px -40px 0px'});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+/* Marquee: só anima quando visível */
+const marq = document.getElementById('marq');
+if(marq){
+  marq.innerHTML += marq.innerHTML;
+  const mo = new IntersectionObserver(es=>es.forEach(e=>{ marq.classList.toggle('anim', e.isIntersecting); }),{threshold:0});
+  mo.observe(marq);
+}
+let pixPronto = false;
+function openCheckout(){ document.getElementById('checkoutModal').classList.add('show'); document.body.style.overflow='hidden'; geraPix(); }
+function closeCheckout(){ document.getElementById('checkoutModal').classList.remove('show'); document.body.style.overflow=''; }
+document.getElementById('checkoutModal').addEventListener('click',e=>{ if(e.target.id==='checkoutModal') closeCheckout(); });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeCheckout(); });
+const PIX_CHAVE_NUMERICA = "54676818858";
+const PIX_VALOR = "25.99";
+const PIX_NOME = "YOUTUBE IA PRO";
+const PIX_CIDADE = "SAO PAULO";
+const PIX_TXID = "***";
+function tlv(id, value){ return id + String(value.length).padStart(2,'0') + value; }
+function crc16(str){
+  let crc = 0xFFFF;
+  for(let i=0;i<str.length;i++){
+    crc ^= str.charCodeAt(i) << 8;
+    for(let j=0;j<8;j++){ crc = (crc & 0x8000) ? ((crc << 1) ^ 0x1021) : (crc << 1); crc &= 0xFFFF; }
+  }
+  return crc.toString(16).toUpperCase().padStart(4,'0');
+}
+function geraPix(){
+  const gui = tlv("00","br.gov.bcb.pix") + tlv("01", PIX_CHAVE_NUMERICA);
+  let payload = tlv("00","01") + tlv("26", gui) + tlv("52","0000") + tlv("53","986") + tlv("54", PIX_VALOR) + tlv("58","BR") + tlv("59", PIX_NOME) + tlv("60", PIX_CIDADE) + tlv("62", tlv("05", PIX_TXID)) + "6304";
+  payload += crc16(payload);
+  const input = document.getElementById('pixCode');
+  if(input) input.value = payload;
+  /* QR só gera 1x e só quando abre o popup (não trava o carregamento) */
+  if(pixPronto) return payload;
+  const qrBox = document.getElementById('qrcode');
+  if(qrBox && window.QRCode){ qrBox.innerHTML = ""; try{ new QRCode(qrBox, { text: payload, width: 184, height: 184, correctLevel: QRCode.CorrectLevel.M }); pixPronto = true; }catch(e){} }
+  else if(qrBox && !window.QRCode){ qrBox.innerHTML = '<small style="color:#555">Carregando QR...<br>Use o código copia e cola.</small>'; setTimeout(()=>{ if(!pixPronto) geraPix(); },1200); }
+  return payload;
+}
+function copyPix(){
+  const el = document.getElementById('pixCode');
+  el.select(); el.setSelectionRange(0, 99999);
+  if(navigator.clipboard) navigator.clipboard.writeText(el.value).then(()=>alert('Código Pix copiado! Cole no app do banco 🙂'));
+  else { document.execCommand('copy'); alert('Código copiado!'); }
+}
+function copyKey(){
+  const k = "546.768.188-58";
+  if(navigator.clipboard) navigator.clipboard.writeText(k).then(()=>alert('Chave Pix copiada: '+k));
+  else alert('Chave: '+k);
+}
+/* Não gera nada no load — só quando o usuário clica em pagar */
+</script>
+</body>
+</html>
