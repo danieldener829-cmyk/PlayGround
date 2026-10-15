@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel Admin — IA Tube Master</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+.admin-wrap{max-width:1080px;margin:0 auto;padding:24px 20px 60px}
+.login-box{max-width:420px;margin:60px auto;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:30px;text-align:center}
+.login-box input{width:100%;margin-bottom:10px}
+.hint{background:#0f0f1c;border:1px dashed var(--pri);padding:10px;border-radius:10px;font-size:13px;margin:12px 0;color:var(--mut)}
+.tabs-admin{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0}
+.tabs-admin button{padding:10px 16px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:#fff;cursor:pointer;font-weight:700}
+.tabs-admin button.active{background:linear-gradient(90deg,var(--pri),var(--pri2))}
+.panel{display:none}.panel.active{display:block}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;text-align:center}
+.kpi b{font-size:24px;display:block}
+table{width:100%;border-collapse:collapse;background:var(--card);border-radius:12px;overflow:hidden;font-size:14px}
+th,td{padding:10px 12px;border-bottom:1px solid var(--line);text-align:left}
+th{background:#0f0f1c;color:var(--mut);font-size:12px;text-transform:uppercase}
+.btn-del{background:#7f1d1d;color:#fff;border:0;padding:6px 10px;border-radius:8px;cursor:pointer}
+.btn-ok{background:#14532d;color:#fff;border:0;padding:6px 10px;border-radius:8px;cursor:pointer}
+.form-grid{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;display:grid;gap:10px;margin-bottom:16px}
+.form-grid .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+label{font-size:13px;color:var(--mut)}
+@media(max-width:800px){.kpis{grid-template-columns:1fr 1fr}table{font-size:12px}}
+</style>
+</head>
+<body>
+<div class="admin-wrap">
+  <a href="index.html" style="color:var(--mut);text-decoration:none">← Voltar ao site</a>
+  <h1 style="margin-top:10px">⚙️ Painel Admin — <span class="grad">IA Tube Master</span></h1>
+  <p class="muted">Gerencie aulas, vendas, leads e preços. Login necessário.</p>
+
+  <!-- LOGIN -->
+  <div id="login-screen" class="login-box">
+    <div style="font-size:48px">🔐</div>
+    <h2>Acesso Restrito</h2>
+    <div class="hint">Demonstração — use:<br><b>Usuário: ADMIN</b><br><b>Senha: CLIENTE</b></div>
+    <input id="adm-user" placeholder="Usuário (ex: ADMIN)" autocomplete="username">
+    <input id="adm-pass" type="password" placeholder="Senha (ex: CLIENTE)" autocomplete="current-password">
+    <button class="btn primary full" onclick="doLogin()">ENTRAR NO PAINEL</button>
+    <p id="login-err" style="color:#f87171;margin-top:10px"></p>
+  </div>
+
+  <!-- DASH -->
+  <div id="dash-screen" style="display:none">
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:12px">
+      <span class="badge">👤 Logado como <b>ADMIN</b></span>
+      <button class="btn ghost small" onclick="doLogout()">Sair</button>
+      <a href="index.html" class="btn outline small">👁️ Ver site</a>
+      <button class="btn ghost small" onclick="resetDemo()">♻️ Restaurar dados demo</button>
+    </div>
+
+    <div class="tabs-admin">
+      <button class="active" onclick="tab('geral',this)">📊 Visão Geral</button>
+      <button onclick="tab('aulas',this)">🎬 Aulas / Módulos</button>
+      <button onclick="tab('vendas',this)">💰 Vendas</button>
+      <button onclick="tab('leads',this)">📩 Leads</button>
+      <button onclick="tab('config',this)">⚙️ Config / Preço</button>
+    </div>
+
+    <div id="tab-geral" class="panel active">
+      <div class="kpis">
+        <div class="kpi"><b id="k-fatur">R$ 0</b><span class="muted small">Faturamento</span></div>
+        <div class="kpi"><b id="k-vendas">0</b><span class="muted small">Vendas</span></div>
+        <div class="kpi"><b id="k-leads">0</b><span class="muted small">Leads</span></div>
+        <div class="kpi"><b id="k-aulas">0</b><span class="muted small">Aulas</span></div>
+      </div>
+      <div class="card"><h3>🚀 Como usar</h3><p class="muted">1) Vá em <b>Aulas</b> e cadastre módulos/aulas — elas aparecem na hora na página de vendas.<br>2) Teste uma compra no site — ela cai em <b>Vendas</b>.<br>3) Troque preço, Pix e WhatsApp em <b>Config</b>.<br>4) Exporte vendas em CSV para o financeiro.</p></div>
+    </div>
+
+    <div id="tab-aulas" class="panel">
+      <div class="form-grid">
+        <h3>➕ Nova aula / módulo</h3>
+        <label>Módulo (ex: Módulo 7 — Shorts Virais)</label>
+        <input id="f-mod" placeholder="Nome do módulo">
+        <label>Descrição do módulo</label>
+        <input id="f-moddesc" placeholder="O que o aluno aprende...">
+        <div class="row2">
+          <div><label>Título da aula</label><input id="f-title" placeholder="Ex: Criando viral com Sora"></div>
+          <div><label>Duração</label><input id="f-dur" placeholder="Ex: 18 min"></div>
+        </div>
+        <div class="row2">
+          <div><label>Vídeo YouTube (embed URL, opcional)</label><input id="f-video" placeholder="https://www.youtube.com/embed/..."></div>
+          <div><label>Aula grátis? </label><br><input type="checkbox" id="f-free" style="width:22px;height:22px"> Sim, liberar como amostra</div>
+        </div>
+        <button class="btn primary" onclick="addLesson()">SALVAR AULA</button>
+      </div>
+      <div id="admin-modules"></div>
+    </div>
+
+    <div id="tab-vendas" class="panel">
+      <div style="display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap">
+        <button class="btn outline small" onclick="exportCSV()">📥 Exportar CSV</button>
+        <button class="btn ghost small" onclick="clearSales()">🗑️ Limpar vendas</button>
+      </div>
+      <div style="overflow:auto"><table><thead><tr><th>Data</th><th>Nome</th><th>Email / Whats</th><th>Valor</th><th>Pagto</th><th>Status</th><th>Ações</th></tr></thead><tbody id="sales-body"></tbody></table></div>
+    </div>
+
+    <div id="tab-leads" class="panel">
+      <button class="btn outline small" onclick="clearLeads()" style="margin-bottom:12px">🗑️ Limpar leads</button>
+      <div style="overflow:auto"><table><thead><tr><th>Data</th><th>Nome</th><th>Email</th><th>Ação</th></tr></thead><tbody id="leads-body"></tbody></table></div>
+    </div>
+
+    <div id="tab-config" class="panel">
+      <div class="form-grid">
+        <h3>💲 Preço e checkout</h3>
+        <div class="row2">
+          <div><label>Preço atual (R$)</label><input id="c-price" type="number"></div>
+          <div><label>Preço antigo (riscado)</label><input id="c-old" type="number"></div>
+        </div>
+        <div class="row2">
+          <div><label>Desconto (ex: 90% OFF)</label><input id="c-desc"></div>
+          <div><label>Vagas restantes</label><input id="c-vagas" type="number"></div>
+        </div>
+        <div class="row2">
+          <div><label>WhatsApp (só números com DDI)</label><input id="c-whats"></div>
+          <div><label>Chave PIX</label><input id="c-pix"></div>
+        </div>
+        <button class="btn primary" onclick="saveConfig()">💾 SALVAR CONFIGURAÇÕES</button>
+        <p id="config-msg" class="muted small"></p>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="admin.js"></script>
+</body>
+</html>
